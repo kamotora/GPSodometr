@@ -1,24 +1,22 @@
 package com.practica.gpsodometr.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.Servicies.Listener;
+
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     registerProviders();
                     watchKilometers();
                 } else {
-                    Msg.showMsg("Нет доступа к GPS");
+                    Msg.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
                 }
                 break;
             default:

@@ -14,6 +14,9 @@ import android.os.IBinder;
 
 import androidx.core.app.ActivityCompat;
 
+/**
+ * не используется
+ */
 public class OdometrService extends Service {
 
     private final IBinder binder = new OdometerBinder();
@@ -21,6 +24,7 @@ public class OdometrService extends Service {
     private static Location lastLocation = null;
     private static LocationListener listener = null;
     private static LocationManager locationManager = null;
+
     @Override
     public IBinder onBind(Intent intent) {
         return binder;

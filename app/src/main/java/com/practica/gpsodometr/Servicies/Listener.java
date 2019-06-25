@@ -31,12 +31,12 @@ public class Listener implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-        System.out.println(provider +  "enabled");
+        Msg.showMsg(provider + "enabled");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        System.out.println(provider +  "disabled");
+        Msg.showMsg(provider + "disabled");
     }
 
     public double getKilometers(){
