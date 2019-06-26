@@ -1,4 +1,4 @@
-package com.practica.gpsodometr.Data.Model;
+package com.practica.gpsodometr.data.model;
 
 import io.realm.BuildConfig;
 import io.realm.RealmObject;

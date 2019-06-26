@@ -1,4 +1,4 @@
-package com.practica.gpsodometr.Activities;
+package com.practica.gpsodometr.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,11 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.practica.gpsodometr.Data.Model.Stat;
-import com.practica.gpsodometr.Data.Repository.StatRep;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
-import com.practica.gpsodometr.Servicies.Listener;
+import com.practica.gpsodometr.data.model.Stat;
+import com.practica.gpsodometr.data.repository.StatRep;
+import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.time.LocalDate;
 
@@ -30,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
-    private Listener locationListener = null;
+
+    //Обработчик событий от gps
+    private MyLocationListener locationListener = null;
     private static Realm realm = null;
     private static Stat todayStat = null;
     @Override
@@ -39,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Realm.init(this);
         realm = Realm.getDefaultInstance();
+
         // Приложение запущено впервые или восстановлено из памяти?
-        //TODO: добавить выборку из бд, если на сегодня уже есть запись
         /*
         if (savedInstanceState == null)   // приложение запущено впервые
         {
@@ -53,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
         }
         */
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new Listener();
+        locationListener = new MyLocationListener();
+
+        //Вывод всех записей из бд
         for (Stat stat : realm.where(Stat.class).findAll())
             System.out.println(stat);
         Msg.initial(this);
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         //outState.putDouble("kilometers", kilometers);
@@ -95,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         clearProviders();
 
+        //Если ещё нет записи на сегодня, создаём
+        //Сохраняем пройденное расстояние
         if (todayStat == null) {
             LocalDate todayDate = LocalDate.now();
             todayStat = new Stat(todayDate.getYear(), todayDate.getMonthValue(), todayDate.getDayOfMonth(), kilometers);
@@ -105,15 +111,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    //Ответ пользователя на запрос прак
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_PERMISSION_GPS:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    //Права есть
                     registerProviders();
                     watchKilometers();
                 } else {
+                    //Пользователь запретил доступ к GPS
                     Msg.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
                 }
                 break;
@@ -123,13 +131,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerProviders() {
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        //Проверка прав
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Если прав нет, запросим
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_CODE_PERMISSION_GPS);
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-        //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 10000, 10, locationListener);
+        //TODO: добавить просмотр координат через passive provider
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
         //locationManager.requestLocationUpdates(PASSIVE_PROVIDER, 5000, 10, locationListener);
     }
 
@@ -144,7 +155,9 @@ public class MainActivity extends AppCompatActivity {
         handler.post(new Runnable() {
             @Override
             public void run() {
+                //Сколько прошли с прошлого запроса
                 double newKm = locationListener.updateDistance();
+                //Добавляем к общему расстоянию
                 kilometers += newKm;
                 String distanceStr = String.format("Пройдено сегодня: %1$,.2f км", kilometers);
                 distanceText.setText(distanceStr);

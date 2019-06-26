@@ -1,7 +1,7 @@
-package com.practica.gpsodometr.Data.Repository;
+package com.practica.gpsodometr.data.repository;
 
-import com.practica.gpsodometr.Activities.MainActivity;
-import com.practica.gpsodometr.Data.Model.Stat;
+import com.practica.gpsodometr.activities.MainActivity;
+import com.practica.gpsodometr.data.model.Stat;
 
 import java.time.LocalDate;
 
@@ -50,7 +50,7 @@ public class StatRep {
     }
 
     //Получить статистику начиная с определённого дня
-    public RealmResults<Stat> getDays(LocalDate date) {
+    public static RealmResults<Stat> getDays(LocalDate date) {
         Realm realm = MainActivity.getRealm();
         int curYear = date.getYear();
         int curMonth = date.getMonthValue();
@@ -61,7 +61,6 @@ public class StatRep {
         query.beginGroup().equalTo("year", curYear).and().greaterThan("month", curMonth).or();
         query.beginGroup().equalTo("month", curMonth).and().greaterThanOrEqualTo("day", curDay).endGroup().endGroup();
 
-        RealmResults<Stat> res = query.findAll();
-        return res;
+        return query.findAll();
     }
 }

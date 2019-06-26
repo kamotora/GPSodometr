@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.practica.gpsodometr.Activities.MainActivity;
+import com.practica.gpsodometr.activities.MainActivity;
 
 public class Msg {
     private static Context context = null;

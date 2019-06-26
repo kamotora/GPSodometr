@@ -1,4 +1,4 @@
-package com.practica.gpsodometr.Servicies;
+package com.practica.gpsodometr.servicies;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -6,15 +6,17 @@ import android.os.Bundle;
 
 import com.practica.gpsodometr.Msg;
 
-public class Listener implements LocationListener {
+public class MyLocationListener implements LocationListener {
     private static double distanceInMeters = 0;
     private static Location lastLocation = null;
+    //Минимальная скорость в м/с
     private final double minSpeedInMetersPerSecond = 20.0 / 3.6;
     @Override
     public void onLocationChanged(Location location) {
         if (lastLocation == null) {
             lastLocation = location;
         }
+        //TODO: скорость возвращается не всегда корректная
         if(location.getSpeed() > minSpeedInMetersPerSecond){
             distanceInMeters += location.distanceTo(lastLocation);
             Msg.showMsg(Double.toString(distanceInMeters));
