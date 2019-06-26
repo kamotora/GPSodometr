@@ -9,7 +9,7 @@ import com.practica.gpsodometr.Msg;
 public class Listener implements LocationListener {
     private static double distanceInMeters = 0;
     private static Location lastLocation = null;
-    private static double minSpeedInMetersPerSecond = 20.0 / 3.6;
+    private final double minSpeedInMetersPerSecond = 20.0 / 3.6;
     @Override
     public void onLocationChanged(Location location) {
         if (lastLocation == null) {
@@ -20,7 +20,7 @@ public class Listener implements LocationListener {
             Msg.showMsg(Double.toString(distanceInMeters));
         }
         else
-            Msg.showMsg("Скорость меньше минимальной");
+            Msg.showMsg("Скорость меньше минимальной " + location.getSpeed());
         lastLocation = location;
     }
 
@@ -39,7 +39,9 @@ public class Listener implements LocationListener {
         Msg.showMsg(provider + "disabled");
     }
 
-    public double getKilometers(){
-        return distanceInMeters / 1000.00;
+    public double updateDistance() {
+        double res = distanceInMeters / 1000.00;
+        distanceInMeters = 0;
+        return res;
     }
 }
