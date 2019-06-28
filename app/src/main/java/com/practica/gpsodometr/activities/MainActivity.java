@@ -2,10 +2,12 @@ package com.practica.gpsodometr.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +25,7 @@ import java.time.LocalDate;
 import io.realm.Realm;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Пройденное за сегодня расстояние
     private double kilometers = 0.0;
@@ -35,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationListener locationListener = null;
     private static Realm realm = null;
     private static Stat todayStat = null;
+
+    //Spinner spinner = (Spinner)findViewById(R.id.action_bar_spinner);
+    //String selected = spinner.getSelectedItem().toString();
+
+    //String [] spin_array = getResources().getStringArray(R.array.interval);
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         */
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener();
-
         //Вывод всех записей из бд
         for (Stat stat : realm.where(Stat.class).findAll())
             System.out.println(stat);
@@ -88,6 +97,17 @@ public class MainActivity extends AppCompatActivity {
         watchKilometers();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.setButton:
+                Intent intent = new Intent(this, settingsActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
 
     @Override
     protected void onPause() {
@@ -139,9 +159,13 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_CODE_PERMISSION_GPS);
             return;
         }
-        //TODO: добавить просмотр координат через passive provider
+
+        //TODO: Looper
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            Msg.showMsg("Включите GPS");
+
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
-        //locationManager.requestLocationUpdates(PASSIVE_PROVIDER, 5000, 10, locationListener);
     }
 
     private void clearProviders(){
@@ -159,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 double newKm = locationListener.updateDistance();
                 //Добавляем к общему расстоянию
                 kilometers += newKm;
-                String distanceStr = String.format("Пройдено сегодня: %1$,.2f км", kilometers);
+                String distanceStr = String.format("%1$,.2f км", kilometers);
                 distanceText.setText(distanceStr);
 
                 //TODO: сделать обновление показаний при смене позиции, а не по таймеру

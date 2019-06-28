@@ -16,19 +16,21 @@ public class MyLocationListener implements LocationListener {
         if (lastLocation == null) {
             lastLocation = location;
         }
-        //TODO: скорость возвращается не всегда корректная
-        if(location.getSpeed() > minSpeedInMetersPerSecond){
-            distanceInMeters += location.distanceTo(lastLocation);
-            Msg.showMsg(Double.toString(distanceInMeters));
-        }
-        else
-            Msg.showMsg("Скорость меньше минимальной " + location.getSpeed());
+        //TODO: скорость возвращается не всегда
+        if (location.hasSpeed()) {
+            if (location.getSpeed() > minSpeedInMetersPerSecond) {
+                distanceInMeters += location.distanceTo(lastLocation);
+                Msg.showMsg(Double.toString(distanceInMeters));
+            } else
+                Msg.showMsg("Скорость меньше минимальной " + location.getSpeed());
+        } else
+            Msg.showMsg("Не удалось определить скорость");
         lastLocation = location;
     }
 
     @Override
+    @Deprecated
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     @Override

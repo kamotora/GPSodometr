@@ -20,10 +20,10 @@ public class Stat extends RealmObject {
     }
 
     public Stat(Integer year, Integer month, Integer day, Double kilometers) {
-        this.year = year;
-        this.month = month;
-        this.day = day;
-        this.kilometers = kilometers;
+        setDay(day);
+        setMonth(month);
+        setYear(year);
+        setKilometers(kilometers);
     }
 
     public Integer getYear() {
@@ -61,6 +61,9 @@ public class Stat extends RealmObject {
     }
 
     public void setKilometers(Double kilometers) {
+        if (BuildConfig.DEBUG && !(kilometers >= 0)) {
+            throw new AssertionError();
+        }
         this.kilometers = kilometers;
     }
 
