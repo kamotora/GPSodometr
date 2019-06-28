@@ -9,11 +9,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.model.Stat;
@@ -25,7 +32,7 @@ import java.time.LocalDate;
 import io.realm.Realm;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity{
 
     //Пройденное за сегодня расстояние
     //lhilhilh
@@ -50,6 +57,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        new Drawer().withActivity(this).withToolbar(toolbar).withActionBarDrawerToggle(true).withHeader(R.layout.drawer_header).addDrawerItems(
+                new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withBadge("99").withIdentifier(1),
+                new PrimaryDrawerItem().withName(R.string.drawer_item_free_play).withIcon(FontAwesome.Icon.faw_gamepad),
+                new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(2),
+                new SectionDrawerItem().withName(R.string.drawer_item_settings),
+                new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_cog),
+                new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
+                new DividerDrawerItem(),
+                new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
+        ).build();
         Realm.init(this);
         realm = Realm.getDefaultInstance();
 
@@ -72,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println(stat);
         Msg.initial(this);
     }
-
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -98,17 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         watchKilometers();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.setButton:
-                Intent intent = new Intent(this, settingsActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-    }
 
     @Override
     protected void onPause() {

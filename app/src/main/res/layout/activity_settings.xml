@@ -7,79 +7,43 @@
     android:background="@drawable/settingss"
     tools:context=".activities.settingsActivity">
 
-    <TextView
-        android:id="@+id/textMinSpeed"
+    <EditText
+        android:id="@+id/typeOfWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="78dp"
-        android:text="Минимальная скорость"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Вид работы"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/textkmch"
-        app:layout_constraintEnd_toStartOf="@+id/minSpeed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textkmch" />
-
-    <TextView
-        android:id="@+id/textMileage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="162dp"
-        android:layout_marginEnd="76dp"
-        android:text="Рекомендуемый пробег"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toStartOf="@+id/minMileage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/minSpeed"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="67dp"
+        android:id="@+id/kilometrs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="17dp"
         android:ems="10"
         android:inputType="number"
+        android:text="Количество километров"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/minMileage"
-        app:layout_constraintEnd_toStartOf="@+id/textkmch"
-        app:layout_constraintStart_toEndOf="@+id/textMinSpeed"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeOfWork" />
 
     <EditText
-        android:id="@+id/minMileage"
-        android:layout_width="0dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="146dp"
+        android:id="@+id/dateOfStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
-        android:inputType="number"
+        android:inputType="date"
+        android:text="Дата начала"
         android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toStartOf="@+id/textkmch1"
-        app:layout_constraintStart_toEndOf="@+id/textMileage"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textkmch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="21dp"
-        android:text="км/ч"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBaseline_toBaselineOf="@+id/minSpeed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/minSpeed" />
-
-    <TextView
-        android:id="@+id/textkmch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="21dp"
-        android:text="км/ч"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/minMileage"
-        app:layout_constraintTop_toTopOf="@+id/minMileage" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

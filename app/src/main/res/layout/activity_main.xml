@@ -7,6 +7,17 @@
     android:background="@drawable/result"
     tools:context=".activities.MainActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id = "@+id/toolbar"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:background = "?attr/colorPrimary"
+        android:elevation = "4dp"
+        android:minHeight = "?attr/actionBarSize"
+        android:paddingTop = "@dimen/tool_bar_top_padding"
+        android:transitionName = "actionBar"
+        />
+
     <TextView
         android:id="@+id/distance"
         android:layout_width="wrap_content"
@@ -67,48 +78,5 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
-
-    <Button
-        android:id="@+id/setButton"
-        android:layout_width="0dp"
-        android:layout_height="49dp"
-        android:layout_marginEnd="40dp"
-        android:background="@drawable/iconsettingss"
-        android:onClick="onClick"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnProfile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnProfile" />
-
-    <Button
-        android:id="@+id/btnMainScreen"
-        android:layout_width="0dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="56dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/iconhome"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnResultat"
-        app:layout_constraintEnd_toStartOf="@+id/btnResultat"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnResultat"
-        android:layout_width="0dp"
-        android:layout_height="49dp"
-        android:layout_marginEnd="19dp"
-        android:background="@drawable/iconresultat"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnProfile"
-        app:layout_constraintEnd_toStartOf="@+id/btnProfile"
-        app:layout_constraintStart_toEndOf="@+id/btnMainScreen" />
-
-    <Button
-        android:id="@+id/btnProfile"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="83dp"
-        android:background="@drawable/iconprofile"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/setButton"
-        app:layout_constraintStart_toEndOf="@+id/btnResultat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
