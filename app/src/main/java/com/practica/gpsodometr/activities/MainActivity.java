@@ -2,17 +2,15 @@ package com.practica.gpsodometr.activities;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
@@ -27,7 +25,7 @@ import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import io.realm.Realm;
 
@@ -35,7 +33,6 @@ import io.realm.Realm;
 public class MainActivity extends AppCompatActivity{
 
     //Пройденное за сегодня расстояние
-    //lhilhilh
     private double kilometers = 0.0;
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
@@ -72,7 +69,6 @@ public class MainActivity extends AppCompatActivity{
         ).build();
         Realm.init(this);
         realm = Realm.getDefaultInstance();
-
         // Приложение запущено впервые или восстановлено из памяти?
         /*
         if (savedInstanceState == null)   // приложение запущено впервые
@@ -108,7 +104,7 @@ public class MainActivity extends AppCompatActivity{
         //Проверяем, вдруг есть что-то сохранённое
         if (kilometers < 0.0001) {
             if (todayStat == null) {
-                todayStat = StatRep.findByDate(LocalDate.now());
+                todayStat = StatRep.findByDate(new Date());
             }
             if (todayStat != null) {
                 kilometers = todayStat.getKilometers();
@@ -131,8 +127,7 @@ public class MainActivity extends AppCompatActivity{
         //Если ещё нет записи на сегодня, создаём
         //Сохраняем пройденное расстояние
         if (todayStat == null) {
-            LocalDate todayDate = LocalDate.now();
-            todayStat = new Stat(todayDate.getYear(), todayDate.getMonthValue(), todayDate.getDayOfMonth(), kilometers);
+            todayStat = new Stat(kilometers);
             StatRep.add(todayStat);
         } else
             StatRep.updateKm(todayStat, kilometers);

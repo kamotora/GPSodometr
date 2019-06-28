@@ -1,9 +1,10 @@
 package com.practica.gpsodometr.data.repository;
 
 import com.practica.gpsodometr.activities.MainActivity;
+import com.practica.gpsodometr.data.ParseDate;
 import com.practica.gpsodometr.data.model.Stat;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -32,34 +33,22 @@ public class StatRep {
     }
 
     //Поиск по дд.мм.гг
-    public static Stat findByDate(LocalDate date) {
+    public static Stat findByDate(Date date) {
         Realm realm = MainActivity.getRealm();
-        int curYear = date.getYear();
-        int curMonth = date.getMonthValue();
-        int curDay = date.getDayOfMonth();
-        Stat res = realm.where(Stat.class).equalTo("year", curYear)
-                .and().equalTo("month", curMonth)
-                .and().equalTo("day", curDay)
+        date = ParseDate.parse(date);
+        Stat res = realm.where(Stat.class).equalTo("date", date)
                 .findFirst();
         return res;
     }
 
-    public static Stat getTodayStat() {
-        LocalDate todayDate = LocalDate.now();
-        return findByDate(todayDate);
-    }
 
     //Получить статистику начиная с определённого дня
-    public static RealmResults<Stat> getDays(LocalDate date) {
+    public static RealmResults<Stat> getDays(Date date) {
         Realm realm = MainActivity.getRealm();
-        int curYear = date.getYear();
-        int curMonth = date.getMonthValue();
-        int curDay = date.getDayOfMonth();
 
-        //select from stat where year > curYear or (year = curYear and month > curMonth or (month = curMonth and day >= curDay));
-        RealmQuery<Stat> query = realm.where(Stat.class).greaterThan("year", curYear).or();
-        query.beginGroup().equalTo("year", curYear).and().greaterThan("month", curMonth).or();
-        query.beginGroup().equalTo("month", curMonth).and().greaterThanOrEqualTo("day", curDay).endGroup().endGroup();
+        date = ParseDate.parse(date);
+
+        RealmQuery<Stat> query = realm.where(Stat.class).greaterThanOrEqualTo("date", date);
 
         return query.findAll();
     }

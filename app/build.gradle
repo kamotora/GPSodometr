@@ -6,7 +6,7 @@ android {
     buildToolsVersion "29.0.0"
     defaultConfig {
         applicationId "com.practica.gpsodometr"
-        minSdkVersion 26
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -32,5 +32,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     compileOnly 'com.google.android.wearable:wearable:2.4.0'
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:support-v4:20.0.0'
 }
