@@ -28,6 +28,7 @@ import io.realm.Realm;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Пройденное за сегодня расстояние
+    //lhilhilh
     private double kilometers = 0.0;
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
