@@ -8,59 +8,62 @@
     tools:context=".activities.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id = "@+id/toolbar"
-        android:layout_width = "match_parent"
-        android:layout_height = "wrap_content"
-        android:background = "?attr/colorPrimary"
-        android:elevation = "4dp"
-        android:minHeight = "?attr/actionBarSize"
-        android:paddingTop = "@dimen/tool_bar_top_padding"
-        android:transitionName = "actionBar"
-        />
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#0000"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingTop="@dimen/tool_bar_top_padding"
+        app:title="Результат"
+        android:transitionName="actionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="19dp"
         android:text="0.00"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/textRes"
+        app:layout_constraintEnd_toEndOf="@+id/textRes"
         app:layout_constraintTop_toBottomOf="@+id/textRes" />
 
     <TextView
         android:id="@+id/textMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="38dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="25dp"
         android:text="Выберите период"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/action_bar_spinner"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <Spinner
         android:id="@+id/action_bar_spinner"
         style="@android:style/Widget.Material.Spinner.Underlined"
-        android:layout_width="0dp"
+        android:layout_width="197dp"
         android:layout_height="96dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="49dp"
+        android:layout_marginBottom="50dp"
         android:entries="@array/interval"
         android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="@+id/textRes"
-        app:layout_constraintStart_toStartOf="@+id/headlineDate"
-        app:layout_constraintTop_toBottomOf="@+id/textMain" />
+        app:layout_constraintBottom_toBottomOf="@+id/textRes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textMain" />
 
     <TextView
         android:id="@+id/headlineDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
-        android:layout_marginTop="55dp"
+        android:layout_marginStart="95dp"
+        android:layout_marginTop="26dp"
         android:text="Дата"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
@@ -71,12 +74,12 @@
         android:id="@+id/textRes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
-        android:layout_marginEnd="75dp"
+        android:layout_marginTop="252dp"
+        android:layout_marginEnd="78dp"
         android:text="Результат"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

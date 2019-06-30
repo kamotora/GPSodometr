@@ -15,7 +15,6 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".activities.settingsActivity"></activity>
         <activity android:name=".activities.profileActivity" />
-        <activity android:name=".activities.mainScreen" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
