@@ -21,30 +21,29 @@ public class ActionRep {
         realm.commitTransaction();
     }
 
-    public static RealmResults<Action> findAll(){
+    public static RealmResults<Action> findAll() {
         return Realm.getDefaultInstance().where(Action.class).findAll();
     }
 
-    public static List<Pair<Action,Double>> countForEveryKilometersLeft(){
+    public static List<Pair<Action, Double>> countForEveryKilometersLeft() {
         RealmResults<Action> actions = findAll().sort("dateStart");
-        if(actions.isEmpty())
+        if (actions.isEmpty())
             return null;
         //Получить статистику, начиная с самой прошлой даты
         //Первая дата - самая ближайшая
         RealmResults<Stat> statistics = StatRep.getDays(actions.get(0).getDateStart()).sort("date", Sort.DESCENDING);
-        List<Pair<Action,Double>> res = new ArrayList<>();
+        List<Pair<Action, Double>> res = new ArrayList<>();
 
         Double sum = 0.0;
-        for(int i = actions.size() - 1, j = 0; i >= 0; i--){
+        for (int i = actions.size() - 1, j = 0; i >= 0; i--) {
             Action action = actions.get(i);
             try {
                 while (!statistics.get(j).getDate().before(action.getDateStart()))
                     sum += statistics.get(j++).getKilometers();
-            }catch (ArrayIndexOutOfBoundsException exp)
-            {
+            } catch (ArrayIndexOutOfBoundsException exp) {
                 //TODO:...
             }
-            res.add(new Pair<Action, Double>(action,action.getKilometers() - Double.valueOf(sum)));
+            res.add(new Pair<Action, Double>(action, action.getKilometers() - Double.valueOf(sum)));
         }
         return res;
     }

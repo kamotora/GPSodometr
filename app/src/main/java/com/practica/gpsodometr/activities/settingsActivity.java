@@ -2,31 +2,38 @@ package com.practica.gpsodometr.activities;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.repository.ActionRep;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class settingsActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -87,9 +94,6 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         tvDate = (TextView)findViewById(R.id.dateOfStart);
         typeOfWork = (TextView)findViewById(R.id.typeOfWork);
         kilometrs = (TextView)findViewById(R.id.kilometrs);
-        typeOfWork.setOnFocusChangeListener((View.OnFocusChangeListener)this);
-        kilometrs.setOnFocusChangeListener((View.OnFocusChangeListener)this);
-        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);
 
         listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
@@ -159,6 +163,10 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                 //Если строка пустая или только из пробелов, ошибка
                 if(name.trim().isEmpty()){
                     Msg.showMsg("Тип работы не может быть пустой строкой");
+                    errorOfWork.setErrorEnabled(true);
+                    errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
+                    errorOfKilometrs.setError("");
+                    errorOfDate.setError("");
                     return;
                 }
 
@@ -170,9 +178,17 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
 
                 }catch (NumberFormatException parseDoubExcept){
                     Msg.showMsg("Кол-во километров содержит недопустимое число");
+                    errorOfKilometrs.setErrorEnabled(true);
+                    errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
+                    errorOfWork.setError("");
+                    errorOfDate.setError("");
                     return;
                 }catch (ParseException parseDateExcept){
                     Msg.showMsg("Дата должна быть в формате дд/мм/гггг");
+                    errorOfDate.setErrorEnabled(true);
+                    errorOfDate.setError(getResources().getString(R.string.tvDate));
+                    errorOfKilometrs.setError("");
+                    errorOfWork.setError("");
                     return;
                 }
                 //Сохранение события, если всё норм
@@ -185,38 +201,6 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                 typeOfWork.setText("");
                 kilometrs.setText("");
                 tvDate.setText("");
-        }
-
-        if(typeOfWork.getText().toString().isEmpty()){
-            errorOfWork.setErrorEnabled(true);
-            errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
-            errorOfKilometrs.setError("");
-            errorOfDate.setError("");
-        }
-        else
-        if (kilometrs.getText().toString().isEmpty()){
-            errorOfKilometrs.setErrorEnabled(true);
-            errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
-            errorOfWork.setError("");
-            errorOfDate.setError("");
-        }
-        else
-        if(tvDate.getText().toString().isEmpty()){
-            errorOfDate.setErrorEnabled(true);
-            errorOfDate.setError(getResources().getString(R.string.tvDate));
-            errorOfKilometrs.setError("");
-            errorOfWork.setError("");
-        }
-        else{
-            String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
-            tasks.add(0,str);
-            adapter.notifyDataSetChanged();
-            typeOfWork.setText("");
-            kilometrs.setText("");
-            tvDate.setText("");
-            errorOfWork.setError("");
-            errorOfKilometrs.setError("");
-            errorOfDate.setError("");
         }
     }
 

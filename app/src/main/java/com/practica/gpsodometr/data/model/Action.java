@@ -15,7 +15,7 @@ import io.realm.annotations.Required;
     Если начиная с даты dateStart проехали больше, чем kilometers
     Событие произошло, пользователя нужно оповестить(Нужно заменить масло и т.п.)
 */
-public class Action  extends RealmObject {
+public class Action extends RealmObject {
     @Required
     //Название события
     private String name;
@@ -28,7 +28,8 @@ public class Action  extends RealmObject {
     //Нужно проехать км
     private Double kilometers;
 
-    public Action(){}
+    public Action() {
+    }
 
     public Action(String name, Date dateStart, Double kilometers) {
         setDateStart(dateStart);
@@ -67,7 +68,7 @@ public class Action  extends RealmObject {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         String date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(this.dateStart);
         return name + " " + date + " " + kilometers;
     }

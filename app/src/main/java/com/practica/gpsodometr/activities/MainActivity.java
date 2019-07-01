@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity{
             locationListener.setKilometers(todayStat.getKilometers());
             showDistance(todayStat.getKilometers());
         }
-}
+    }
 
 
     @Override
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity{
         //Если ещё нет записи на сегодня, создаём
         //Сохраняем пройденное расстояние
         if (todayStat == null) {
-            if(locationListener.getKilometers() > 0) {
+            if (locationListener.getKilometers() > 0) {
                 todayStat = new Stat(locationListener.getKilometers());
                 StatRep.add(todayStat);
             }
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity{
 
         HandlerThread t = new HandlerThread("locationListener");
         t.start();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5.0f,locationListener, t.getLooper());
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5.0f, locationListener, t.getLooper());
     }
 
     private void clearProviders(){

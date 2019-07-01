@@ -21,7 +21,7 @@ public class MyLocationListener implements LocationListener {
     private MainActivity mainActivity = null;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    public  MyLocationListener(MainActivity mainActivity){
+    public MyLocationListener(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
     }
 
@@ -32,13 +32,13 @@ public class MyLocationListener implements LocationListener {
         }
 
         double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
-        final double deltaDistance = location.distanceTo(lastLocation) /  METERS_TO_KILOMETERS;
+        final double deltaDistance = location.distanceTo(lastLocation) / METERS_TO_KILOMETERS;
 
         System.out.println(String.format("Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; Расстояние = %f км; Время = %f ч; Общеее расстояние = %f"
-                ,deltaDistance / deltaTime, location.getSpeed(),deltaDistance,deltaTime,kilometers));
+                , deltaDistance / deltaTime, location.getSpeed(), deltaDistance, deltaTime, kilometers));
 
-        if(deltaDistance / deltaTime > minSpeed){
-            mainHandler.post( new Runnable() {
+        if (deltaDistance / deltaTime > minSpeed) {
+            mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     kilometers += deltaDistance;
@@ -64,7 +64,7 @@ public class MyLocationListener implements LocationListener {
         Msg.showMsg(provider + " отключён");
     }
 
-    public  void setKilometers(double kilometers) {
+    public void setKilometers(double kilometers) {
         this.kilometers = kilometers;
     }
 

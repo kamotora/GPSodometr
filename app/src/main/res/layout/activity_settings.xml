@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mask="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -74,86 +75,71 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
     </com.google.android.material.textfield.TextInputLayout>
-    <EditText
-        android:id="@+id/kilometrs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Кол-во километров"
-        android:inputType="number"
-        android:text="Количество километров"
-        android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/typeOfWork" />
 
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dateOfStartlogin"
-        android:layout_width="0dp"
+        android:layout_width="411dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="19dp"
         app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/addWork"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kilometrslogin">
-    <br.com.sapereaude.maskedEditText.MaskedEditText
-        android:id="@+id/dateOfStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:inputType="date"
-        android:maxLength="10"
-        android:onClick="inClick"
-        android:textColor="#FFFFFF"
-        app:keep_hint="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kilometrs"
-        mask:allowed_chars="1234567890"
-        mask:mask="##/##/####" />
+        app:layout_constraintBottom_toTopOf="@+id/minSpeed"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <br.com.sapereaude.maskedEditText.MaskedEditText
+            android:id="@+id/dateOfStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:ems="10"
+            android:inputType="date"
+            android:maxLength="10"
+            android:onClick="inClick"
+            android:textColor="#FFFFFF"
+            app:keep_hint="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/kilometrs"
+            mask:allowed_chars="1234567890"
+            mask:mask="##/##/####" />
     </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="307dp"
         android:background="#60000000"
         android:onClick="onClick"
         android:text="Добавить"
-        app:layout_constraintBottom_toTopOf="@+id/listWork"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
 
     <ListView
         android:id="@+id/listWork"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        style="@style/CustomListView"
+        android:layout_width="403dp"
+        android:layout_height="253dp"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        style = "@style/CustomListView"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addWork" />
+        app:layout_constraintTop_toBottomOf="@+id/addWork"
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/minSpeed"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
         android:hint="Минимальная скорость"
         android:inputType="numberDecimal"
         android:maxLength="3"
         android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
+        app:layout_constraintBottom_toTopOf="@+id/addWork"
+        tools:layout_editor_absoluteX="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
