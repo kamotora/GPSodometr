@@ -18,6 +18,8 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -26,12 +28,15 @@ import com.practica.gpsodometr.R;
 
 import java.util.ArrayList;
 
-public class settingsActivity extends AppCompatActivity implements View.OnClickListener{
+public class settingsActivity extends AppCompatActivity/* implements View.OnClickListener*/{
 
     int DIALOG_DATE = 1;
     int myYear = 2019;
     int myMonth = 06;
     int myDay = 30;
+    TextInputLayout errorOfWork;
+    TextInputLayout errorOfKilometrs;
+    TextInputLayout errorOfDate;
     TextView typeOfWork;
     TextView kilometrs;
     TextView tvDate;
@@ -67,27 +72,49 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }).build();
+        errorOfWork = (TextInputLayout) findViewById(R.id.typeOfWorklogin);
+        errorOfKilometrs = (TextInputLayout) findViewById(R.id.kilometrslogin);
+        errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
         tvDate = (TextView)findViewById(R.id.dateOfStart);
         typeOfWork = (TextView)findViewById(R.id.typeOfWork);
         kilometrs = (TextView)findViewById(R.id.kilometrs);
+        typeOfWork.setOnFocusChangeListener((View.OnFocusChangeListener)this);
+        kilometrs.setOnFocusChangeListener((View.OnFocusChangeListener)this);
+        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);
+
         listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
 
         listWork.setAdapter(adapter);
     }
 
+
     //Для кнопки "Добавить"
     public void onClick(View v){
-        switch(v.getId()){
-            case R.id.addWork:
-                String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
-                tasks.add(0,str);
-                adapter.notifyDataSetChanged();
-                typeOfWork.setText("");
-                kilometrs.setText("");
-                tvDate.setText("");
+        if(typeOfWork.getText().toString().isEmpty()){
+            errorOfWork.setErrorEnabled(true);
+            errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
         }
+        else
+            if (kilometrs.getText().toString().isEmpty()){
+                errorOfKilometrs.setErrorEnabled(true);
+                errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
+            }
+            else
+                if(tvDate.getText().toString().isEmpty()){
+                    errorOfDate.setErrorEnabled(true);
+                    errorOfDate.setError(getResources().getString(R.string.tvDate));
+                }
+                else{
+                    String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
+                    tasks.add(0,str);
+                    adapter.notifyDataSetChanged();
+                    typeOfWork.setText("");
+                    kilometrs.setText("");
+                    tvDate.setText("");
+                }
     }
+
     //Для выпадающего календарика
     public void inClick(View view){
         showDialog(DIALOG_DATE);

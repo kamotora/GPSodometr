@@ -11,75 +11,116 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="260dp"
+        android:layout_marginBottom="65dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        app:layout_constraintBottom_toTopOf="@+id/addWork"
+        app:layout_constraintBottom_toTopOf="@+id/typeOfWorklogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Настройки" />
 
-    <EditText
-        android:id="@+id/typeOfWork"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/typeOfWorklogin"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="96dp"
-        android:ems="10"
-        android:hint="Вид работы"
-        android:inputType="textPersonName"
-        android:textColor="#FFFFFF"
+        android:layout_marginBottom="11dp"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/kilometrslogin"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-    <EditText
-        android:id="@+id/kilometrs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Кол-во километров"
-        android:inputType="number"
-        android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/typeOfWork" />
+        <EditText
+            android:id="@+id/typeOfWork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="96dp"
+            android:ems="10"
+            android:hint="Вид работы"
+            android:inputType="textCapCharacters"
+            android:textColor="#FFFFFF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/dateOfStart"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/kilometrslogin"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="Дата начала"
-        android:inputType="date"
-        android:onClick="inClick"
-        android:textColor="#FFFFFF"
+        android:layout_marginBottom="26dp"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/dateOfStartlogin"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
+        app:layout_constraintTop_toBottomOf="@+id/typeOfWorklogin">
+
+        <EditText
+            android:id="@+id/kilometrs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="19dp"
+            android:ems="10"
+            android:hint="Кол-во километров"
+            android:inputType="number"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/dateOfStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dateOfStartlogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="46dp"
+        app:errorEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/addWork"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kilometrslogin">
+
+        <EditText
+            android:id="@+id/dateOfStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="39dp"
+            android:ems="10"
+            android:hint="Дата начала"
+            android:inputType="date"
+            android:onClick="inClick"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/addWork"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="21dp"
         android:background="#60000000"
         android:onClick="onClick"
         android:text="Добавить"
         app:layout_constraintBottom_toTopOf="@+id/listWork"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
 
     <ListView
         android:id="@+id/listWork"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
         android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
