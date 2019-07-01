@@ -28,7 +28,7 @@ import com.practica.gpsodometr.R;
 
 import java.util.ArrayList;
 
-public class settingsActivity extends AppCompatActivity/* implements View.OnClickListener*/{
+public class settingsActivity extends AppCompatActivity implements View.OnClickListener{
 
     int DIALOG_DATE = 1;
     int myYear = 2019;
@@ -77,10 +77,10 @@ public class settingsActivity extends AppCompatActivity/* implements View.OnClic
         errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
         tvDate = (TextView)findViewById(R.id.dateOfStart);
         typeOfWork = (TextView)findViewById(R.id.typeOfWork);
-        kilometrs = (TextView)findViewById(R.id.kilometrs);
+        kilometrs = (TextView)findViewById(R.id.kilometrs);/*
         typeOfWork.setOnFocusChangeListener((View.OnFocusChangeListener)this);
         kilometrs.setOnFocusChangeListener((View.OnFocusChangeListener)this);
-        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);
+        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);*/
 
         listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
@@ -94,16 +94,22 @@ public class settingsActivity extends AppCompatActivity/* implements View.OnClic
         if(typeOfWork.getText().toString().isEmpty()){
             errorOfWork.setErrorEnabled(true);
             errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
+            errorOfKilometrs.setError("");
+            errorOfDate.setError("");
         }
         else
             if (kilometrs.getText().toString().isEmpty()){
                 errorOfKilometrs.setErrorEnabled(true);
                 errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
+                errorOfWork.setError("");
+                errorOfDate.setError("");
             }
             else
                 if(tvDate.getText().toString().isEmpty()){
                     errorOfDate.setErrorEnabled(true);
                     errorOfDate.setError(getResources().getString(R.string.tvDate));
+                    errorOfKilometrs.setError("");
+                    errorOfWork.setError("");
                 }
                 else{
                     String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
@@ -112,6 +118,9 @@ public class settingsActivity extends AppCompatActivity/* implements View.OnClic
                     typeOfWork.setText("");
                     kilometrs.setText("");
                     tvDate.setText("");
+                    errorOfWork.setError("");
+                    errorOfKilometrs.setError("");
+                    errorOfDate.setError("");
                 }
     }
 
