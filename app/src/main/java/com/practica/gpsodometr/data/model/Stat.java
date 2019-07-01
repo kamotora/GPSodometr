@@ -15,7 +15,9 @@ import io.realm.annotations.Required;
 //Статистика пройденных км за день
 public class Stat extends RealmObject {
     @Required
+    //Дата без времени
     private Date date;
+    //Кол-во километров
     private Double kilometers;
 
     public Stat() {
@@ -28,6 +30,7 @@ public class Stat extends RealmObject {
     }
 
     public Stat(int year, int month, int day, Double kilometers) {
+        //Месяц начинается с нуля
         GregorianCalendar calendar = new GregorianCalendar(year, month - 1, day);
         setDate(calendar.getTime());
         setKilometers(kilometers);
@@ -61,6 +64,7 @@ public class Stat extends RealmObject {
     }
 
 
+    //обьекты равны, если равны их даты
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

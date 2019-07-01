@@ -44,11 +44,20 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
     ArrayAdapter<String> adapter;
     final ArrayList<String> tasks = new ArrayList<>();
 
-
+    SharedPreferences mSettings = null;
+    //Название файла с настройками
+    static final String SETTING_FILENAME = "settings";
+    //Название сохраняемой настройки в файле
+    static final String SETTING_MINSPEED_NAME = "minSpeed";
+    //в км/ч
+    static final Integer DEFAULT_MIN_SPEED = 20;
+    //Формат даты
+    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -77,20 +86,107 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
         tvDate = (TextView)findViewById(R.id.dateOfStart);
         typeOfWork = (TextView)findViewById(R.id.typeOfWork);
-        kilometrs = (TextView)findViewById(R.id.kilometrs);/*
+        kilometrs = (TextView)findViewById(R.id.kilometrs);
         typeOfWork.setOnFocusChangeListener((View.OnFocusChangeListener)this);
         kilometrs.setOnFocusChangeListener((View.OnFocusChangeListener)this);
-        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);*/
+        tvDate.setOnFocusChangeListener((View.OnFocusChangeListener)this);
 
         listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
 
         listWork.setAdapter(adapter);
+
+        mSettings  = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
+
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Загружаем ранее сохранённые настройки
+        //Загружаем мин.скорость
+        Object edit = findViewById(R.id.minSpeed);
+        if(edit instanceof EditText) {
+            ((EditText) edit).setText(String.format(Locale.getDefault(),"%d",mSettings.getInt(SETTING_MINSPEED_NAME, DEFAULT_MIN_SPEED)));
+        }
+        else{
+            Msg.showMsg("поле minSpeed почему то не EditText!");
+        }
+
+        //Вывод существующих событий
+        //TODO: учитывать также текущее значение, ещё не добавленное в базу
+        List<Pair<Action,Double>> list = ActionRep.countForEveryKilometersLeft();
+        if(list != null) {
+            for (Pair<Action, Double> pair : list) {
+                tasks.add(pair.first.toString() + String.format(" Осталось: %1$,.2f км" ,pair.second));
+                if (pair.second <= 0)
+                    //TODO: push уведомление
+                    Msg.showMsg("Произошло событие: " + pair.first.getName());
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //Сохраняем настройки
+        //Сохраняем мин скорость
+        SharedPreferences.Editor settingEditor = mSettings.edit();
+        final String str = ((TextView) findViewById(R.id.minSpeed)).getText().toString();
+        if(!str.trim().isEmpty())
+            settingEditor.putInt(SETTING_MINSPEED_NAME, Integer.parseInt(str));
+        Msg.showMsg(str);
+        settingEditor.apply();
+        tasks.clear();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
 
 
     //Для кнопки "Добавить"
     public void onClick(View v){
+        switch(v.getId()){
+            case R.id.addWork:
+
+                //Проверка на допустимость
+                String name = typeOfWork.getText().toString();
+                Double kilometers = 0.0;
+                Date date = null;
+                //Если строка пустая или только из пробелов, ошибка
+                if(name.trim().isEmpty()){
+                    Msg.showMsg("Тип работы не может быть пустой строкой");
+                    return;
+                }
+
+                //Если не удалось спарсить данные, ошибка
+                try{
+                    kilometers = Double.parseDouble(kilometrs.getText().toString());
+                    date = DATE_FORMAT.parse(tvDate.getText().toString());
+                    System.out.println(date);
+
+                }catch (NumberFormatException parseDoubExcept){
+                    Msg.showMsg("Кол-во километров содержит недопустимое число");
+                    return;
+                }catch (ParseException parseDateExcept){
+                    Msg.showMsg("Дата должна быть в формате дд/мм/гггг");
+                    return;
+                }
+                //Сохранение события, если всё норм
+                ActionRep.add(new Action(name,date,kilometers));
+
+
+                String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
+                tasks.add(0,str);
+                adapter.notifyDataSetChanged();
+                typeOfWork.setText("");
+                kilometrs.setText("");
+                tvDate.setText("");
+        }
+
         if(typeOfWork.getText().toString().isEmpty()){
             errorOfWork.setErrorEnabled(true);
             errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
@@ -98,30 +194,30 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
             errorOfDate.setError("");
         }
         else
-            if (kilometrs.getText().toString().isEmpty()){
-                errorOfKilometrs.setErrorEnabled(true);
-                errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
-                errorOfWork.setError("");
-                errorOfDate.setError("");
-            }
-            else
-                if(tvDate.getText().toString().isEmpty()){
-                    errorOfDate.setErrorEnabled(true);
-                    errorOfDate.setError(getResources().getString(R.string.tvDate));
-                    errorOfKilometrs.setError("");
-                    errorOfWork.setError("");
-                }
-                else{
-                    String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
-                    tasks.add(0,str);
-                    adapter.notifyDataSetChanged();
-                    typeOfWork.setText("");
-                    kilometrs.setText("");
-                    tvDate.setText("");
-                    errorOfWork.setError("");
-                    errorOfKilometrs.setError("");
-                    errorOfDate.setError("");
-                }
+        if (kilometrs.getText().toString().isEmpty()){
+            errorOfKilometrs.setErrorEnabled(true);
+            errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
+            errorOfWork.setError("");
+            errorOfDate.setError("");
+        }
+        else
+        if(tvDate.getText().toString().isEmpty()){
+            errorOfDate.setErrorEnabled(true);
+            errorOfDate.setError(getResources().getString(R.string.tvDate));
+            errorOfKilometrs.setError("");
+            errorOfWork.setError("");
+        }
+        else{
+            String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
+            tasks.add(0,str);
+            adapter.notifyDataSetChanged();
+            typeOfWork.setText("");
+            kilometrs.setText("");
+            tvDate.setText("");
+            errorOfWork.setError("");
+            errorOfKilometrs.setError("");
+            errorOfDate.setError("");
+        }
     }
 
     //Для выпадающего календарика
@@ -143,7 +239,15 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
             myYear = year;
             myMonth = month;
             myDay = day;
-            tvDate.setText(myDay + "/" + myMonth + "/" + myYear);
+            if(myDay < 10 && myMonth < 10)
+                tvDate.setText("0"+myDay + "0" + myMonth + "" + myYear);
+            else if (myDay < 10)
+                tvDate.setText("0"+myDay + "" + myMonth + "" + myYear);
+            else if(myMonth < 10)
+                tvDate.setText(myDay + "0" + myMonth + "" + myYear);
+            else
+                tvDate.setText(myDay + "" + myMonth + "" + myYear);
         }
     };
+
 }

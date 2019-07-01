@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.HandlerThread;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -32,9 +32,6 @@ import io.realm.Realm;
 
 
 public class MainActivity extends AppCompatActivity{
-
-    //Пройденное за сегодня расстояние
-    private double kilometers = 0.0;
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
@@ -78,51 +75,40 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         }).build();
+
+        //Инициализация бд
         Realm.init(this);
         realm = Realm.getDefaultInstance();
-        // Приложение запущено впервые или восстановлено из памяти?
-        /*
-        if (savedInstanceState == null)   // приложение запущено впервые
-        {
-            //kilometers = 0.0;    // инициализация суммы счета нулем
-            // другой код
-        } else // приложение восстановлено из памяти
-        {
-            // инициализация суммы счета сохраненной в памяти суммой
-            //kilometers = savedInstanceState.getDouble("kilometers");
-        }
-        */
+
+        //Работа с гпс
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new MyLocationListener();
+        locationListener = new MyLocationListener(this);
+
         //Вывод всех записей из бд
         for (Stat stat : realm.where(Stat.class).findAll())
             System.out.println(stat);
         Msg.initial(this);
+
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        //outState.putDouble("kilometers", kilometers);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         registerProviders();
-        //Если расстояние за сегодня = 0
         //Проверяем, вдруг есть что-то сохранённое
-        if (kilometers < 0.0001) {
-            if (todayStat == null) {
-                todayStat = StatRep.findByDate(new Date());
-            }
-            if (todayStat != null) {
-                kilometers = todayStat.getKilometers();
-            }
+        if (todayStat == null) {
+            todayStat = StatRep.findByDate(new Date());
         }
-        watchKilometers();
-    }
+        if (todayStat != null) {
+            locationListener.setKilometers(todayStat.getKilometers());
+            showDistance(todayStat.getKilometers());
+        }
+}
 
 
     @Override
@@ -138,10 +124,12 @@ public class MainActivity extends AppCompatActivity{
         //Если ещё нет записи на сегодня, создаём
         //Сохраняем пройденное расстояние
         if (todayStat == null) {
-            todayStat = new Stat(kilometers);
-            StatRep.add(todayStat);
+            if(locationListener.getKilometers() > 0) {
+                todayStat = new Stat(locationListener.getKilometers());
+                StatRep.add(todayStat);
+            }
         } else
-            StatRep.updateKm(todayStat, kilometers);
+            StatRep.updateKm(todayStat, locationListener.getKilometers());
     }
 
 
@@ -154,7 +142,7 @@ public class MainActivity extends AppCompatActivity{
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Права есть
                     registerProviders();
-                    watchKilometers();
+                    //showDistance();
                 } else {
                     //Пользователь запретил доступ к GPS
                     Msg.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
@@ -175,12 +163,12 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
 
-        //TODO: Looper
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             Msg.showMsg("Включите GPS");
 
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
+        HandlerThread t = new HandlerThread("locationListener");
+        t.start();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5.0f,locationListener, t.getLooper());
     }
 
     private void clearProviders(){
@@ -188,23 +176,10 @@ public class MainActivity extends AppCompatActivity{
     }
 
     //Обновление данных на экране
-    private void watchKilometers() {
+    public void showDistance(double kilometers) {
         final TextView distanceText = findViewById(R.id.distance);
-        final Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                //Сколько прошли с прошлого запроса
-                double newKm = locationListener.updateDistance();
-                //Добавляем к общему расстоянию
-                kilometers += newKm;
-                String distanceStr = String.format("%1$,.2f км", kilometers);
-                distanceText.setText(distanceStr);
-
-                //TODO: сделать обновление показаний при смене позиции, а не по таймеру
-                handler.postDelayed(this, 5000);
-            }
-        });
+        String distanceStr = String.format("%1$,.2f км", kilometers);
+        distanceText.setText(distanceStr);
     }
 
     public static Realm getRealm() {

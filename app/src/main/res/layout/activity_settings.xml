@@ -74,6 +74,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
     </com.google.android.material.textfield.TextInputLayout>
+    <EditText
+        android:id="@+id/kilometrs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Кол-во километров"
+        android:inputType="number"
+        android:text="Количество километров"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeOfWork" />
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dateOfStartlogin"
@@ -85,44 +99,61 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kilometrslogin">
-
-        <EditText
-            android:id="@+id/dateOfStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginBottom="39dp"
-            android:ems="10"
-            android:hint="Дата начала"
-            android:inputType="date"
-            android:onClick="inClick"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/addWork"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
+    <br.com.sapereaude.maskedEditText.MaskedEditText
+        android:id="@+id/dateOfStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:inputType="date"
+        android:maxLength="10"
+        android:onClick="inClick"
+        android:textColor="#FFFFFF"
+        app:keep_hint="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kilometrs"
+        mask:allowed_chars="1234567890"
+        mask:mask="##/##/####" />
     </com.google.android.material.textfield.TextInputLayout>
-
     <Button
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:background="#60000000"
         android:onClick="onClick"
         android:text="Добавить"
         app:layout_constraintBottom_toTopOf="@+id/listWork"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <ListView
         android:id="@+id/listWork"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         style = "@style/CustomListView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addWork" />
+
+    <EditText
+        android:id="@+id/minSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:ems="10"
+        android:hint="Минимальная скорость"
+        android:inputType="numberDecimal"
+        android:maxLength="3"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kilometrs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
