@@ -3,13 +3,20 @@ package com.practica.gpsodometr.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.text.Layout;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +37,12 @@ import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
+import org.w3c.dom.Text;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +50,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.realm.Realm;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    LinearLayout layout;
+
+    ListView listOfDate;
+    ListView listOfWork;
+    ListView listOfKilo;
+
+    ArrayAdapter<String> adapterOfDate;
+    ArrayAdapter<String> adapterOfWork;
+    ArrayAdapter<String> adapterOfKilo;
+
+    final ArrayList<String> tasksDate = new ArrayList<>();
+    final ArrayList<String> tasksWork = new ArrayList<>();
+    final ArrayList<String> tasksKilo = new ArrayList<>();
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
@@ -56,12 +83,27 @@ public class MainActivity extends AppCompatActivity{
 
     //String [] spin_array = getResources().getStringArray(R.array.interval);
 
-
+    int wrapContent = LinearLayout.LayoutParams.WRAP_CONTENT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        layout = (LinearLayout)findViewById(R.id.listResults);
+
+        listOfDate = (ListView)findViewById(R.id.date);
+        listOfWork = (ListView)findViewById(R.id.typeOfWork);
+        listOfKilo = (ListView)findViewById(R.id.kilometrs);
+
+        adapterOfDate = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksDate);
+        listOfDate.setAdapter(adapterOfDate);
+        adapterOfWork = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksWork);
+        listOfWork.setAdapter(adapterOfWork);
+        adapterOfKilo = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksKilo);
+        listOfKilo.setAdapter(adapterOfKilo);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -110,6 +152,27 @@ public class MainActivity extends AppCompatActivity{
         //Получаем список всех отслеживаемых действий и сколько осталось км
         //TODO:возможно, стоит сделать в отдельном потоке
         actionsAndKm = ActionRep.countForEveryKilometersLeft();
+    }
+
+    @Override
+    public void onClick(View v){
+        //Для дат
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+        Calendar c = Calendar.getInstance();
+        String str = dateFormat.format(c.getTime());
+        tasksDate.add(0,str);
+        adapterOfDate.notifyDataSetChanged();
+
+        //Для вида работы
+        String strWork = "Что то";
+        tasksWork.add(0,strWork);
+        adapterOfWork.notifyDataSetChanged();
+
+        //Для километров
+        String strKilo = "2345";
+        tasksKilo.add(0,strKilo);
+        adapterOfKilo.notifyDataSetChanged();
+
     }
 
     @Override
@@ -225,8 +288,7 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-
-    public static ConcurrentHashMap<Action, Double> getActionsAndKm() {
-        return actionsAndKm;
+    public static Realm getRealm() {
+        return realm;
     }
 }
