@@ -3,28 +3,19 @@ package com.practica.gpsodometr.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.HandlerThread;
-import android.text.Layout;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,23 +29,21 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.ParseDate;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
-import org.w3c.dom.Text;
-
-import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
+import io.realm.Sort;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -120,58 +109,37 @@ public class MainActivity extends AppCompatActivity{
         spinDay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                cleanTable(table);
                 if(position == 0){
-                    cleanTable(table);
-                    TableRow tr = (TableRow)inflaer.inflate(R.layout.table_row,null);
-                    TextView tv = (TextView) tr.findViewById(R.id.col1);
-                    kol = kol + 1;
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
-                    Calendar c = Calendar.getInstance();
-                    tv.setText(dateFormat.format(c.getTime()));
-                    tv = (TextView) tr.findViewById(R.id.col2);
-                    tv.setText("123456");
-                    table.addView(tr);
+                    addRow(new Date(), kilometers);
                 }
                 if(position == 1){
-                    cleanTable(table);
-                    int kolvo = 7;
-                    Calendar c = Calendar.getInstance();
-
-                    while(kolvo > 0) {
-                        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
-                        TextView tv = (TextView) tr.findViewById(R.id.col1);
-                        kol = kol + 1;
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                        tv.setText(dateFormat.format(c.getTime()));
-                        c.add(Calendar.DAY_OF_MONTH, -1);
-                        tv = (TextView) tr.findViewById(R.id.col2);
-                        tv.setText("123456");
-                        table.addView(tr);
-                        kolvo -= 1;
+                    Calendar cal = GregorianCalendar.getInstance();
+                    cal.add(Calendar.DAY_OF_MONTH, -7);
+                    //new Date(new Date().getTime() - 604800000);
+                    for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
+                        if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
+                            addRow(new Date(), kilometers);
+                        else
+                            addRow(stat.getDate(), stat.getKilometers());
                     }
+
                 }
                 if(position == 2){
-                    cleanTable(table);
-                    Calendar c = Calendar.getInstance();
-                    int kolvo = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    while(kolvo > 0) {
-                        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
-                        TextView tv = (TextView) tr.findViewById(R.id.col1);
-                        kol = kol + 1;
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                        tv.setText(dateFormat.format(c.getTime()));
-                        c.add(Calendar.DAY_OF_MONTH, -1);
-                        tv = (TextView) tr.findViewById(R.id.col2);
-                        tv.setText("123456");
-                        table.addView(tr);
-                        kolvo -= 1;
+                    Calendar cal = GregorianCalendar.getInstance();
+                    cal.add(Calendar.MONTH, -1);
+                    //new Date(new Date().getTime() - 2628000000);
+                    for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
+                        if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
+                            addRow(new Date(), kilometers);
+                        else
+                            addRow(stat.getDate(), stat.getKilometers());
                     }
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
         //Инициализация бд
@@ -183,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener(this);
 
-        //Вывод всех записей из бд
+        //Вывод всех записей из бд(отладка)
         //for (Stat stat : realm.where(Stat.class).findAll())
         //    System.out.println(stat);
         Msg.initial(this);
@@ -199,6 +167,10 @@ public class MainActivity extends AppCompatActivity{
         //Получаем список всех отслеживаемых действий и сколько осталось км
         //TODO:возможно, стоит сделать в отдельном потоке
         actionsAndKm = ActionRep.countForEveryKilometersLeft();
+
+        //Добавить запись(отладка)
+        //StatRep.add(new Stat(2019,6,24,10.0));
+        //Конец метода onCreate()
     }
 
     public void cleanTable(TableLayout table){
@@ -224,8 +196,8 @@ public class MainActivity extends AppCompatActivity{
         }
         if (todayStat != null) {
             kilometers = todayStat.getKilometers();
-            showDistance(0);
         }
+        addRow(new Date(), kilometers);
     }
 
 
@@ -297,14 +269,32 @@ public class MainActivity extends AppCompatActivity{
     }
 
     /**
+     * Добавить строку в таблицу
+     */
+    public void addRow(Date date, double km) {
+        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+        TextView dateView = tr.findViewById(R.id.col1);
+        TextView kmView = tr.findViewById(R.id.col2);
+        dateView.setText(ParseDate.getDateStringInNeedFormat(date));
+        kmView.setText(kmToString(km));
+        table.addView(tr);
+        kol += 1;
+    }
+
+    /**
      * Обновление данных на экране
      * Обновление оставшихся км
      */
     public void showDistance(double newKm) {
         kilometers += newKm;
-        final TextView distanceText = findViewById(R.id.distance);
-        String distanceStr = String.format(Locale.getDefault(), "%1$,.2f км", kilometers);
-        distanceText.setText(distanceStr);
+        //final TextView distanceText = findViewById(R.id.distance);
+        //distanceText.setText(distanceStr);
+        //TODO:!!!
+        //Берём первую строку(нулевая строка - заголовок)
+        TableRow tr = (TableRow) table.getChildAt(1);
+        TextView kmView = (TextView) tr.getVirtualChildAt(1);
+        //TextView kmView = (TextView) tr.findViewById(R.id.col2);
+        kmView.setText(kmToString(kilometers));
 
         // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
         //TODO: возможно, нужно в отдельный поток
@@ -321,7 +311,11 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    public static Realm getRealm() {
-        return realm;
+    public static String kmToString(double kilometers) {
+        return String.format(Locale.getDefault(), "%1$,.2f", kilometers);
+    }
+
+    public static ConcurrentHashMap<Action, Double> getActionsAndKm() {
+        return actionsAndKm;
     }
 }
