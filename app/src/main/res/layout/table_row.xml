@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:id="@+id/col1"
+        android:layout_margin="1dip"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="" />
+    <TextView android:id="@+id/col2"
+        android:layout_margin="1dip"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="" />
+    <TextView android:id="@+id/col3"
+        android:layout_margin="1dip"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="" />
+</TableRow>
