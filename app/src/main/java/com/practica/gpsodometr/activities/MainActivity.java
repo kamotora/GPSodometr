@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.text.Layout;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,6 +18,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,20 +55,6 @@ import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    LinearLayout layout;
-
-    ListView listOfDate;
-    ListView listOfWork;
-    ListView listOfKilo;
-
-    ArrayAdapter<String> adapterOfDate;
-    ArrayAdapter<String> adapterOfWork;
-    ArrayAdapter<String> adapterOfKilo;
-
-    final ArrayList<String> tasksDate = new ArrayList<>();
-    final ArrayList<String> tasksWork = new ArrayList<>();
-    final ArrayList<String> tasksKilo = new ArrayList<>();
-
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
     private static double kilometers = 0;
@@ -89,19 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        layout = (LinearLayout)findViewById(R.id.listResults);
-
-        listOfDate = (ListView)findViewById(R.id.date);
-        listOfWork = (ListView)findViewById(R.id.typeOfWork);
-        listOfKilo = (ListView)findViewById(R.id.kilometrs);
-
-        adapterOfDate = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksDate);
-        listOfDate.setAdapter(adapterOfDate);
-        adapterOfWork = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksWork);
-        listOfWork.setAdapter(adapterOfWork);
-        adapterOfKilo = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasksKilo);
-        listOfKilo.setAdapter(adapterOfKilo);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -156,23 +132,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
-        //Для дат
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-        Calendar c = Calendar.getInstance();
-        String str = dateFormat.format(c.getTime());
-        tasksDate.add(0,str);
-        adapterOfDate.notifyDataSetChanged();
-
-        //Для вида работы
-        String strWork = "Что то";
-        tasksWork.add(0,strWork);
-        adapterOfWork.notifyDataSetChanged();
-
-        //Для километров
-        String strKilo = "2345";
-        tasksKilo.add(0,strKilo);
-        adapterOfKilo.notifyDataSetChanged();
-
+        TableLayout table = (TableLayout)findViewById(R.id.tableresult);
+        LayoutInflater inflaer = LayoutInflater.from(this);
+        TableRow tr = (TableRow)inflaer.inflate(R.layout.table_row,null);
+        TextView tv = (TextView) tr.findViewById(R.id.col1);
+        tv.setText("25.05.05");
+        tv = (TextView) tr.findViewById(R.id.col3);
+        tv.setText("Что то");
+        tv = (TextView) tr.findViewById(R.id.col2);
+        tv.setText("123456");
+        table.addView(tr);
     }
 
     @Override

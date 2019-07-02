@@ -11,13 +11,13 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="298dp"
+        android:layout_marginBottom="287dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        app:layout_constraintBottom_toTopOf="@+id/listResults"
+        app:layout_constraintBottom_toTopOf="@+id/tableresult"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -84,37 +84,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/listResults"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-        <ListView
-            android:id = "@+id/date"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-        <ListView
-            android:id = "@+id/typeOfWork"
-            android:layout_weight="1"
-            android:layout_width = "match_parent"
-            android:layout_height="wrap_content"
-            />
-        <ListView
-            android:id = "@+id/kilometrs"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_width = "match_parent"
-        />
-    </LinearLayout>
-
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
@@ -125,6 +94,51 @@
         android:text="Button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headlineDate" />
+
+    <TableLayout
+        android:id="@+id/tableresult"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbarSize="4dp"
+        android:scrollbars="horizontal"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_margin="1dip"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Дата"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/kilo"
+                android:layout_margin="1dip"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Километры"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/work"
+                android:layout_margin="1dip"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Вид работы"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+
+    </TableLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
