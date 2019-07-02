@@ -9,15 +9,13 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="287dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        app:layout_constraintBottom_toTopOf="@+id/tableresult"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,118 +25,128 @@
         android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        android:layout_marginEnd="19dp"
+        android:layout_marginTop="84dp"
+        android:layout_marginEnd="55dp"
         android:text="0.00"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/textRes"
-        app:layout_constraintTop_toBottomOf="@+id/textRes" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
 
     <TextView
         android:id="@+id/textMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
         android:text="Выберите период"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/action_bar_spinner"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintBottom_toTopOf="@+id/action_bar_spinner"
+        app:layout_constraintEnd_toEndOf="@+id/action_bar_spinner" />
 
     <Spinner
         android:id="@+id/action_bar_spinner"
         style="@android:style/Widget.Material.Spinner.Underlined"
         android:layout_width="197dp"
         android:layout_height="96dp"
-        android:layout_marginTop="49dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="74dp"
         android:entries="@array/interval"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/textRes"
+        app:layout_constraintBottom_toTopOf="@+id/headlineDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textMain" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <TextView
         android:id="@+id/headlineDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="95dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="11dp"
         android:text="Дата"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
+        app:layout_constraintBottom_toTopOf="@+id/textRes"
+        app:layout_constraintEnd_toEndOf="@+id/textRes" />
 
     <TextView
         android:id="@+id/textRes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="252dp"
-        android:layout_marginEnd="78dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="333dp"
         android:text="Результат"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="29dp"
         android:onClick="onClick"
         android:text="Button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headlineDate" />
+        app:layout_constraintStart_toStartOf="@+id/scrollView4"
+        app:layout_constraintTop_toBottomOf="@+id/textRes" />
 
-    <TableLayout
-        android:id="@+id/tableresult"
+    <ScrollView
+        android:id="@+id/scrollView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:scrollbarSize="4dp"
+        android:layout_weight="1"
         android:scrollbars="horizontal"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/button">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            <TableLayout
+                android:id="@+id/tableresult"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="8dp"
+                android:scrollbarSize="4dp"
+                android:scrollbars="horizontal"
 
-            <TextView
-                android:id="@+id/date"
-                android:layout_margin="1dip"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="Дата"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-            <TextView
-                android:id="@+id/kilo"
-                android:layout_margin="1dip"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="Километры"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/work"
-                android:layout_margin="1dip"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="Вид работы"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_margin="1dip"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="Дата"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        </TableRow>
+                    <TextView
+                        android:id="@+id/kilo"
+                        android:layout_margin="1dip"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="Километры"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </TableLayout>
+                    <TextView
+                        android:id="@+id/work"
+                        android:layout_margin="1dip"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="Вид работы"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
+                </TableRow>
+
+            </TableLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

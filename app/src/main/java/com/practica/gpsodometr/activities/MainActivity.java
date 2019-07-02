@@ -14,13 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import io.realm.Realm;
 
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
-
+    static int kol;
     //Обработчик событий от gps
     private MyLocationListener locationListener = null;
     private static Realm realm = null;
@@ -60,11 +65,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     int wrapContent = LinearLayout.LayoutParams.WRAP_CONTENT;
 
+    TableLayout table;
+    Spinner spinDay;
+    LayoutInflater inflaer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        table = (TableLayout)findViewById(R.id.tableresult);
+        spinDay = (Spinner)findViewById(R.id.action_bar_spinner);
+
+        inflaer = LayoutInflater.from(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,10 +102,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }).build();
+
+        spinDay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                if(position == 0){
+                    cleanTable(table);
+                    TableRow tr = (TableRow)inflaer.inflate(R.layout.table_row,null);
+                    TextView tv = (TextView) tr.findViewById(R.id.col1);
+                    kol = kol + 1;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
+                    Calendar c = Calendar.getInstance();
+                    tv.setText(dateFormat.format(c.getTime()));
+                    tv = (TextView) tr.findViewById(R.id.col3);
+                    tv.setText("Что то");
+                    tv = (TextView) tr.findViewById(R.id.col2);
+                    tv.setText("123456");
+                    table.addView(tr);
+                }
+                if(position == 1){
+                    cleanTable(table);
+                    int kolvo = 7;
+                    Calendar c = Calendar.getInstance();
+
+                    while(kolvo > 0) {
+                        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+                        TextView tv = (TextView) tr.findViewById(R.id.col1);
+                        kol = kol + 1;
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                        tv.setText(dateFormat.format(c.getTime()));
+                        c.add(Calendar.DAY_OF_MONTH, -1);
+                        tv = (TextView) tr.findViewById(R.id.col3);
+                        tv.setText("Что то");
+                        tv = (TextView) tr.findViewById(R.id.col2);
+                        tv.setText("123456");
+                        table.addView(tr);
+                        kolvo -= 1;
+                    }
+                }
+                if(position == 2){
+                    cleanTable(table);
+                    Calendar c = Calendar.getInstance();
+                    int kolvo = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    while(kolvo > 0) {
+                        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+                        TextView tv = (TextView) tr.findViewById(R.id.col1);
+                        kol = kol + 1;
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                        tv.setText(dateFormat.format(c.getTime()));
+                        c.add(Calendar.DAY_OF_MONTH, -1);
+                        tv = (TextView) tr.findViewById(R.id.col3);
+                        tv.setText("Что то");
+                        tv = (TextView) tr.findViewById(R.id.col2);
+                        tv.setText("123456");
+                        table.addView(tr);
+                        kolvo -= 1;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         //Инициализация бд
         Realm.init(this);
         realm = Realm.getDefaultInstance();
-
+        kol = 0;
         //Работа с гпс
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener(this);
@@ -104,18 +182,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void cleanTable(TableLayout table){
+        int childCount = table.getChildCount();
+        if(childCount > 1){
+            table.removeViews(1, childCount - 1);
+        }
+    }
+
     @Override
     public void onClick(View v){
-        TableLayout table = (TableLayout)findViewById(R.id.tableresult);
+
         LayoutInflater inflaer = LayoutInflater.from(this);
         TableRow tr = (TableRow)inflaer.inflate(R.layout.table_row,null);
         TextView tv = (TextView) tr.findViewById(R.id.col1);
-        tv.setText("25.05.05");
+        kol = kol + 1;
+        tv.setText(Integer.toString(kol));
         tv = (TextView) tr.findViewById(R.id.col3);
         tv.setText("Что то");
         tv = (TextView) tr.findViewById(R.id.col2);
         tv.setText("123456");
         table.addView(tr);
+
+
     }
 
     @Override
