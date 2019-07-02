@@ -95,16 +95,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginTop="12dp"
+            android:contentDescription="Дата начала отсчёта"
             android:ems="10"
+            android:hint="ддммгггг"
             android:inputType="date"
-            android:maxLength="10"
             android:onClick="inClick"
             android:textColor="#FFFFFF"
-            app:keep_hint="true"
+            app:keep_hint="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/kilometrs"
             mask:allowed_chars="1234567890"
-            mask:mask="##/##/####" />
+            mask:mask="##/##/####"
+            tools:text="@tools:sample/date/ddmmyy" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button

@@ -1,5 +1,7 @@
 package com.practica.gpsodometr.data.model;
 
+import androidx.annotation.NonNull;
+
 import com.practica.gpsodometr.data.ParseDate;
 
 import java.text.SimpleDateFormat;
@@ -45,7 +47,7 @@ public class Stat extends RealmObject {
         this.date = ParseDate.parse(date);
     }
 
-
+    @NonNull
     public Double getKilometers() {
         return kilometers;
     }

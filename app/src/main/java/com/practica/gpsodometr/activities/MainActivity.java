@@ -3,6 +3,7 @@ package com.practica.gpsodometr.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -21,12 +22,17 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Msg;
+import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.Stat;
+import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
 
@@ -35,11 +41,15 @@ public class MainActivity extends AppCompatActivity{
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
-
+    private static double kilometers = 0;
     //Обработчик событий от gps
     private MyLocationListener locationListener = null;
     private static Realm realm = null;
     private static Stat todayStat = null;
+
+    //Action - действие, Double - оставшееся кол-во км.
+    private static ConcurrentHashMap<Action, Double> actionsAndKm = null;
+    private MyNotification myNotification = null;
 
     //Spinner spinner = (Spinner)findViewById(R.id.action_bar_spinner);
     //String selected = spinner.getSelectedItem().toString();
@@ -80,15 +90,26 @@ public class MainActivity extends AppCompatActivity{
         Realm.init(this);
         realm = Realm.getDefaultInstance();
 
-        //Работа с гпс
+        //Работа с GPS
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyLocationListener(this);
 
         //Вывод всех записей из бд
-        for (Stat stat : realm.where(Stat.class).findAll())
-            System.out.println(stat);
+        //for (Stat stat : realm.where(Stat.class).findAll())
+        //    System.out.println(stat);
         Msg.initial(this);
+        myNotification = new MyNotification(this);
 
+        //Если есть сохранённая минимальная скорость
+        //Сообщаем это MyLocationListener
+        SharedPreferences mSettings = getSharedPreferences(settingsActivity.SETTING_FILENAME, Context.MODE_PRIVATE);
+        if (mSettings.contains(settingsActivity.SETTING_MINSPEED_NAME)) {
+            MyLocationListener.setMinSpeed(mSettings.getInt(settingsActivity.SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED));
+        }
+
+        //Получаем список всех отслеживаемых действий и сколько осталось км
+        //TODO:возможно, стоит сделать в отдельном потоке
+        actionsAndKm = ActionRep.countForEveryKilometersLeft();
     }
 
     @Override
@@ -100,13 +121,14 @@ public class MainActivity extends AppCompatActivity{
     protected void onStart() {
         super.onStart();
         registerProviders();
-        //Проверяем, вдруг есть что-то сохранённое
+
+        //Проверяем, вдруг есть сохранённая информация на сегодня
         if (todayStat == null) {
             todayStat = StatRep.findByDate(new Date());
         }
         if (todayStat != null) {
-            locationListener.setKilometers(todayStat.getKilometers());
-            showDistance(todayStat.getKilometers());
+            kilometers = todayStat.getKilometers();
+            showDistance(0);
         }
     }
 
@@ -124,17 +146,19 @@ public class MainActivity extends AppCompatActivity{
         //Если ещё нет записи на сегодня, создаём
         //Сохраняем пройденное расстояние
         if (todayStat == null) {
-            if (locationListener.getKilometers() > 0) {
-                todayStat = new Stat(locationListener.getKilometers());
+            if (kilometers > 0) {
+                todayStat = new Stat(kilometers);
                 StatRep.add(todayStat);
             }
         } else
-            StatRep.updateKm(todayStat, locationListener.getKilometers());
+            StatRep.updateKm(todayStat, kilometers);
     }
 
 
+    /**
+     * Просмотр ответа пользователя на запрос доступа к геолокации (доступ дан или нет)
+     */
     @Override
-    //Ответ пользователя на запрос прак
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_PERMISSION_GPS:
@@ -166,6 +190,7 @@ public class MainActivity extends AppCompatActivity{
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             Msg.showMsg("Включите GPS");
 
+        //Обрабатываем события от GPS в отдельном потоке
         HandlerThread t = new HandlerThread("locationListener");
         t.start();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5.0f, locationListener, t.getLooper());
@@ -175,14 +200,33 @@ public class MainActivity extends AppCompatActivity{
         locationManager.removeUpdates(locationListener);
     }
 
-    //Обновление данных на экране
-    public void showDistance(double kilometers) {
+    /**
+     * Обновление данных на экране
+     * Обновление оставшихся км
+     */
+    public void showDistance(double newKm) {
+        kilometers += newKm;
         final TextView distanceText = findViewById(R.id.distance);
-        String distanceStr = String.format("%1$,.2f км", kilometers);
+        String distanceStr = String.format(Locale.getDefault(), "%1$,.2f км", kilometers);
         distanceText.setText(distanceStr);
+
+        // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
+        //TODO: возможно, нужно в отдельный поток
+
+        for (Action key : actionsAndKm.keySet()) {
+            Double newValue = actionsAndKm.get(key) + newKm;
+            actionsAndKm.put(key, newValue);
+            if (newValue <= 0) {
+                myNotification.show(key);
+                //Перестаём отслеживать, т.к. уже проехали столько, сколько нужно
+                actionsAndKm.remove(key);
+            }
+        }
+
     }
 
-    public static Realm getRealm() {
-        return realm;
+
+    public static ConcurrentHashMap<Action, Double> getActionsAndKm() {
+        return actionsAndKm;
     }
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,13 +26,14 @@ import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
+import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class settingsActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -56,8 +56,6 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
     static final String SETTING_FILENAME = "settings";
     //Название сохраняемой настройки в файле
     static final String SETTING_MINSPEED_NAME = "minSpeed";
-    //в км/ч
-    static final Integer DEFAULT_MIN_SPEED = 20;
     //Формат даты
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
     @Override
@@ -111,21 +109,17 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         //Загружаем мин.скорость
         Object edit = findViewById(R.id.minSpeed);
         if(edit instanceof EditText) {
-            ((EditText) edit).setText(String.format(Locale.getDefault(),"%d",mSettings.getInt(SETTING_MINSPEED_NAME, DEFAULT_MIN_SPEED)));
-        }
-        else{
-            Msg.showMsg("поле minSpeed почему то не EditText!");
+            ((EditText) edit).setText(String.format(Locale.getDefault(), "%d", mSettings.getInt(SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED)));
         }
 
-        //Вывод существующих событий
+
+        //Вывод существующих действий
         //TODO: учитывать также текущее значение, ещё не добавленное в базу
-        List<Pair<Action,Double>> list = ActionRep.countForEveryKilometersLeft();
+        ConcurrentHashMap<Action, Double> list = MainActivity.getActionsAndKm();
         if(list != null) {
-            for (Pair<Action, Double> pair : list) {
-                tasks.add(pair.first.toString() + String.format(" Осталось: %1$,.2f км" ,pair.second));
-                if (pair.second <= 0)
-                    //TODO: push уведомление
-                    Msg.showMsg("Произошло событие: " + pair.first.getName());
+            for (Action action : list.keySet()) {
+                Double km = list.get(action);
+                tasks.add(action.toString() + String.format(" Осталось: %1$,.2f км", km));
             }
         }
     }
@@ -137,9 +131,15 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         //Сохраняем мин скорость
         SharedPreferences.Editor settingEditor = mSettings.edit();
         final String str = ((TextView) findViewById(R.id.minSpeed)).getText().toString();
-        if(!str.trim().isEmpty())
-            settingEditor.putInt(SETTING_MINSPEED_NAME, Integer.parseInt(str));
-        Msg.showMsg(str);
+        if (!str.trim().isEmpty()) {
+            //Если введеная мин скорость отличается
+            //Сохраняем и изменяем в расчётах
+            int newMinSpeed = Integer.parseInt(str);
+            if (newMinSpeed != MyLocationListener.getMinSpeed()) {
+                settingEditor.putInt(SETTING_MINSPEED_NAME, newMinSpeed);
+                MyLocationListener.setMinSpeed(newMinSpeed);
+            }
+        }
         settingEditor.apply();
         tasks.clear();
     }
@@ -191,9 +191,14 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                     errorOfWork.setError("");
                     return;
                 }
-                //Сохранение события, если всё норм
-                ActionRep.add(new Action(name,date,kilometers));
-
+                //Сохранение действия, если всё норм
+                //И сразу посчитаем, сколько осталось км
+                //Добавим в список для отслеживания, если надо
+                Action action = new Action(name, date, kilometers);
+                ActionRep.add(action);
+                Double km = ActionRep.countForOneAction(action);
+                if (km != null)
+                    MainActivity.getActionsAndKm().put(action, km);
 
                 String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
                 tasks.add(0,str);
@@ -224,13 +229,13 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
             myMonth = month;
             myDay = day;
             if(myDay < 10 && myMonth < 10)
-                tvDate.setText("0"+myDay + "0" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "0%d0%d%d", myDay, myMonth, myYear));
             else if (myDay < 10)
-                tvDate.setText("0"+myDay + "" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "0%d%d%d", myDay, myMonth, myYear));
             else if(myMonth < 10)
-                tvDate.setText(myDay + "0" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "%d0%d%d", myDay, myMonth, myYear));
             else
-                tvDate.setText(myDay + "" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "%d%d%d", myDay, myMonth, myYear));
         }
     };
 

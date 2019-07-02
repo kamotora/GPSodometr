@@ -10,19 +10,24 @@ import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.activities.MainActivity;
 
 public class MyLocationListener implements LocationListener {
-    private double kilometers = 0;
     private static Location lastLocation = null;
     //Минимальная скорость в м/с
-    //TODO : сделать подгрузку из настроек.Найстройки могут меняться. Активити может быть дейстройд. Получить дефолтную или из файла есть есть запись
-    private final double minSpeed = 20.0;
+
+    private static int minSpeed = 0;
+    public static final int DEFAULT_MIN_SPEED = 20;
     private static final double MILISECONDS_TO_HOURS = 3.6e+6;
     private static final double METERS_TO_KILOMETERS = 1000;
 
-    private MainActivity mainActivity = null;
+    private MainActivity mainActivity;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public MyLocationListener(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+
+        //Если скорость не задана ранее, пусть будет по-умолчанию
+        if (minSpeed == 0.01) {
+            minSpeed = DEFAULT_MIN_SPEED;
+        }
     }
 
     @Override
@@ -31,18 +36,19 @@ public class MyLocationListener implements LocationListener {
             lastLocation = location;
         }
 
+        //Считаем скорость
         double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
         final double deltaDistance = location.distanceTo(lastLocation) / METERS_TO_KILOMETERS;
 
-        System.out.println(String.format("Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; Расстояние = %f км; Время = %f ч; Общеее расстояние = %f"
-                , deltaDistance / deltaTime, location.getSpeed(), deltaDistance, deltaTime, kilometers));
+        System.out.println(String.format("Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
+                , deltaDistance / deltaTime, location.getSpeed(), minSpeed, deltaDistance, deltaTime));
 
+        //Если скорость больше, прибавляем пройденное расстояние
         if (deltaDistance / deltaTime > minSpeed) {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    kilometers += deltaDistance;
-                    mainActivity.showDistance(kilometers);
+                    mainActivity.showDistance(deltaDistance);
                 }
             });
         }
@@ -64,11 +70,12 @@ public class MyLocationListener implements LocationListener {
         Msg.showMsg(provider + " отключён");
     }
 
-    public void setKilometers(double kilometers) {
-        this.kilometers = kilometers;
+
+    public static void setMinSpeed(int minSpeed) {
+        MyLocationListener.minSpeed = minSpeed;
     }
 
-    public double getKilometers() {
-        return kilometers;
+    public static int getMinSpeed() {
+        return minSpeed;
     }
 }

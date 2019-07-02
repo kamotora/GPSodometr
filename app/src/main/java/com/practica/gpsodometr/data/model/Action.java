@@ -1,5 +1,7 @@
 package com.practica.gpsodometr.data.model;
 
+import androidx.annotation.NonNull;
+
 import com.practica.gpsodometr.data.ParseDate;
 
 import java.text.SimpleDateFormat;
@@ -10,10 +12,10 @@ import io.realm.BuildConfig;
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
-/*
-    Собыитие
-    Если начиная с даты dateStart проехали больше, чем kilometers
-    Событие произошло, пользователя нужно оповестить(Нужно заменить масло и т.п.)
+/**
+ *    Действие
+ *    Если начиная с даты dateStart проехали больше, чем kilometers
+ *    Пользователя нужно оповестить, что нужно выполнить действие(Нужно заменить масло и т.п.)
 */
 public class Action extends RealmObject {
     @Required
@@ -48,6 +50,7 @@ public class Action extends RealmObject {
         this.name = name;
     }
 
+    @NonNull
     public Date getDateStart() {
         return dateStart;
     }
@@ -72,4 +75,5 @@ public class Action extends RealmObject {
         String date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(this.dateStart);
         return name + " " + date + " " + kilometers;
     }
+
 }
