@@ -95,10 +95,10 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         typeOfWork = (TextView)findViewById(R.id.typeOfWork);
         kilometrs = (TextView)findViewById(R.id.kilometrs);
 
-        listWork = (ListView)findViewById(R.id.listWork);
+        //listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
 
-        listWork.setAdapter(adapter);
+//        listWork.setAdapter(adapter);
 
         mSettings  = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 

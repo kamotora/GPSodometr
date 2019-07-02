@@ -81,10 +81,9 @@
         android:id="@+id/dateOfStartlogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="19dp"
         android:hint="Дата начала"
         app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/minSpeed"
+        app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kilometrslogin">
@@ -111,37 +110,93 @@
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="36dp"
         android:background="#60000000"
         android:onClick="onClick"
         android:text="Добавить"
-        app:layout_constraintBottom_toTopOf="@+id/listWork"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
+        app:layout_constraintStart_toEndOf="@+id/minSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
 
-    <ListView
-        android:id="@+id/listWork"
-        style="@style/CustomListView"
+    <ScrollView
+        android:id="@+id/scrollView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="1dp"
+        android:layout_weight="1"
+        android:scrollbars="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addWork" />
+        app:layout_constraintTop_toBottomOf="@+id/addWork">
+
+        <TableLayout
+            android:id="@+id/tableresult"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="8dp"
+            android:scrollbarSize="4dp"
+            android:scrollbars="horizontal"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/typeWork"
+                    android:layout_margin="1dip"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Вид работы"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/dateStart"
+                    android:layout_margin="1dip"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Дата начала"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/kilo"
+                    android:layout_margin="1dip"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Кол-во километров"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/lastKilo"
+                    android:layout_margin="1dip"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Осталось"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </TableRow>
+
+        </TableLayout>
+
+    </ScrollView>
 
     <EditText
         android:id="@+id/minSpeed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="110dp"
         android:ems="10"
         android:hint="Минимальная скорость"
         android:inputType="numberDecimal"
         android:maxLength="3"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/addWork"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addWork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
 

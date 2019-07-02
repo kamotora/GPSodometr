@@ -53,7 +53,7 @@ import java.util.Locale;
 import io.realm.Realm;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity{
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
@@ -114,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
                     Calendar c = Calendar.getInstance();
                     tv.setText(dateFormat.format(c.getTime()));
-                    tv = (TextView) tr.findViewById(R.id.col3);
-                    tv.setText("Что то");
                     tv = (TextView) tr.findViewById(R.id.col2);
                     tv.setText("123456");
                     table.addView(tr);
@@ -132,8 +130,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
                         tv.setText(dateFormat.format(c.getTime()));
                         c.add(Calendar.DAY_OF_MONTH, -1);
-                        tv = (TextView) tr.findViewById(R.id.col3);
-                        tv.setText("Что то");
                         tv = (TextView) tr.findViewById(R.id.col2);
                         tv.setText("123456");
                         table.addView(tr);
@@ -151,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
                         tv.setText(dateFormat.format(c.getTime()));
                         c.add(Calendar.DAY_OF_MONTH, -1);
-                        tv = (TextView) tr.findViewById(R.id.col3);
-                        tv.setText("Что то");
                         tv = (TextView) tr.findViewById(R.id.col2);
                         tv.setText("123456");
                         table.addView(tr);
@@ -187,23 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(childCount > 1){
             table.removeViews(1, childCount - 1);
         }
-    }
-
-    @Override
-    public void onClick(View v){
-
-        LayoutInflater inflaer = LayoutInflater.from(this);
-        TableRow tr = (TableRow)inflaer.inflate(R.layout.table_row,null);
-        TextView tv = (TextView) tr.findViewById(R.id.col1);
-        kol = kol + 1;
-        tv.setText(Integer.toString(kol));
-        tv = (TextView) tr.findViewById(R.id.col3);
-        tv.setText("Что то");
-        tv = (TextView) tr.findViewById(R.id.col2);
-        tv.setText("123456");
-        table.addView(tr);
-
-
     }
 
     @Override
