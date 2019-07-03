@@ -234,7 +234,7 @@ public class settingsActivity extends AppCompatActivity{
     /**
      * Добавить новую строку в таблицу
      **/
-    public void addRow(Action action, Double leftKm) {
+    public void addRow(final Action action, Double leftKm) {
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.tableforsettings, null);
         final TextView tvName = (TextView) tr.findViewById(R.id.col1);
         final TextView tvDate = (TextView) tr.findViewById(R.id.col2);
@@ -256,14 +256,16 @@ public class settingsActivity extends AppCompatActivity{
                                         //Ищем запись в базе на основе строки
                                         Action actionForDelete = ActionRep.findAction(
                                                 new Action(tvName.getText().toString(),
-                                                        Helper.getDateFromString(tvDate.getText().toString()),
-                                                        Helper.stringToKm(tvKm.getText().toString())));
+                                                        Helper.getDateFromString(tvDate.getText().toString()), Helper.stringToKm(tvKm.getText().toString())
+                                                ));
                                         //Если запись не найдена, возможно, удалена с помощью уведомления
                                         //Или что-то пошло не так
                                         if (actionForDelete == null) {
                                             System.out.println("ERROR при удалении работы из таблицы");
-                                        } else
+                                        } else {
+                                            MainActivity.getActionsAndKm().remove(actionForDelete);
                                             ActionRep.delete(actionForDelete);
+                                        }
                                         table.removeView(tr);
                                         dialog.cancel();
                                     }

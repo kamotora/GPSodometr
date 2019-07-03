@@ -1,7 +1,5 @@
 package com.practica.gpsodometr.data;
 
-import com.practica.gpsodometr.Msg;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -14,7 +12,7 @@ public class Helper {
         try {
             return dateFormat.parse(dateFormat.format(date));
         } catch (java.text.ParseException exp) {
-            Msg.showMsg("Ошибка при получении текущей даты");
+            System.out.println("Ошибка при получении текущей даты");
         }
         return null;
     }
@@ -23,7 +21,7 @@ public class Helper {
         try {
             return dateFormat.parse(strDate);
         } catch (java.text.ParseException exp) {
-            Msg.showMsg("Ошибка при получении даты из строки. Строка = " + strDate);
+            System.out.println("Ошибка при получении даты из строки. Строка = " + strDate);
         }
         return null;
     }
@@ -47,9 +45,10 @@ public class Helper {
 
     public static Double stringToKm(String strKm) {
         try {
-            return Double.parseDouble(strKm.replace(",", "."));
+            strKm = strKm.replaceAll("\\s", "").replace(',', '.');
+            return Double.parseDouble(strKm);
         } catch (NumberFormatException exp) {
-            Msg.showMsg("Ошибка в stringToKm. Строка = " + strKm + "\nexp = " + exp);
+            System.out.println("Ошибка в stringToKm. Строка = " + strKm + "\nexp = " + exp);
         }
         return null;
     }
