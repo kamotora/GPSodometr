@@ -3,16 +3,19 @@
     <TextView android:id="@+id/col1"
         android:layout_margin="1dip"
         android:layout_weight="1"
+        android:layout_width="0dp"
         android:gravity="center_horizontal"
         android:text="" />
     <TextView android:id="@+id/col2"
         android:layout_margin="1dip"
         android:layout_weight="1"
+        android:layout_width="0dp"
         android:gravity="center_horizontal"
         android:text="" />
     <TextView android:id="@+id/col3"
         android:layout_margin="1dip"
         android:layout_weight="1"
+        android:layout_width="0dp"
         android:gravity="center_horizontal"
         android:text="" />
 
@@ -20,6 +23,7 @@
         android:id="@+id/col4"
         android:layout_margin="1dip"
         android:layout_weight="1"
+        android:layout_width="0dp"
         android:gravity="center_horizontal"
         android:text="" />
 </TableRow>

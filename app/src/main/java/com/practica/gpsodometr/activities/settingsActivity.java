@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
@@ -39,10 +41,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.realm.RealmResults;
 
 public class settingsActivity extends AppCompatActivity{
-    Button btn;
+    Button btn, quest;
     TextView minSpeed;
     TableLayout table;
     LayoutInflater inflaer;
+
+    Typeface tf1;//Для Букв
+    Typeface tf2;//Для Цифр
 
     SharedPreferences mSettings = null;
     //Название файла с настройками
@@ -54,13 +59,24 @@ public class settingsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
+        tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
+
         table = (TableLayout)findViewById(R.id.tableresult);
         inflaer = LayoutInflater.from(this);
         btn = (Button)findViewById(R.id.addWork);
+        btn.setTypeface(tf1);
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 showDialog(settingsActivity.this);
+            }
+        });
+        quest = (Button)findViewById(R.id.question);
+        quest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAsk(settingsActivity.this);
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -80,10 +96,12 @@ public class settingsActivity extends AppCompatActivity{
                     case 1:
                         intent = new Intent(settingsActivity.this, profileActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     case 3:
                         intent = new Intent(settingsActivity.this, MainActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     default:
                         break;
@@ -244,6 +262,11 @@ public class settingsActivity extends AppCompatActivity{
         final TextView tvDate = (TextView) tr.findViewById(R.id.col2);
         final TextView tvKm = (TextView) tr.findViewById(R.id.col3);
         final TextView tvLeftKm = (TextView) tr.findViewById(R.id.col4);
+
+        tvName.setTypeface(tf1);
+        tvDate.setTypeface(tf2);
+        tvKm.setTypeface(tf2);
+        tvLeftKm.setTypeface(tf2);
         /**
          * Обработка удаления с таблицы
          */
@@ -301,6 +324,21 @@ public class settingsActivity extends AppCompatActivity{
             tvLeftKm.setText(Helper.kmToString(action.getKilometers()));
         table.addView(tr);
     }
+
+    @Override
+    public void finish(){
+        super.finish();
+        overridePendingTransition(R.anim.left_in,R.anim.right_out);
+    }
+
+    public void showAsk(settingsActivity activity){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+        dialog.setMessage("Чтобы удалить работу, необходимо долговременное нажатие");
+
+        AlertDialog alert = dialog.create();
+        alert.show();
+    }
+
 /*
     //Для выпадающего календарика
     public void inClick(View view){

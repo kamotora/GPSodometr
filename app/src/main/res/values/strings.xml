@@ -6,7 +6,8 @@
         <item>Месяц</item>
     </string-array>
     <string name = "typeOfWorkError">Введите тип работы</string>
-    <string name = "kilometrsError">Введите количество километров</string>
+    <string
+        name = "kilometrsError">Введите количество километров</string>
     <string name = "tvDate">Выберите дату начала</string>
 
 </resources>

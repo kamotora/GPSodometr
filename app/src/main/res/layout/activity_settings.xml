@@ -28,11 +28,12 @@
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="17dp"
         android:layout_marginBottom="28dp"
         android:background="#60000000"
         android:text=" Добавить работу"
         app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintEnd_toStartOf="@+id/question"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
 
@@ -53,9 +54,11 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginBottom="8dp"
+            android:divider="?android:dividerHorizontal"
             android:scrollbarSize="4dp"
             android:scrollbars="horizontal"
-
+            android:showDividers="middle"
+            android:stretchColumns="*"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,6 +70,7 @@
 
                 <TextView
                     android:id="@+id/typeWork"
+                    android:layout_width="0dp"
                     android:layout_margin="1dip"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
@@ -75,7 +79,9 @@
 
                 <TextView
                     android:id="@+id/dateStart"
+                    android:layout_width="0dp"
                     android:layout_margin="1dip"
+
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Дата начала"
@@ -83,7 +89,9 @@
 
                 <TextView
                     android:id="@+id/kilo"
+                    android:layout_width="0dp"
                     android:layout_margin="1dip"
+
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="Кол-во километров"
@@ -91,9 +99,11 @@
 
                 <TextView
                     android:id="@+id/leftKilo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Осталось  км" />
+                    android:layout_weight="1"
+                    android:text="Осталось (км)"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
             </TableRow>
 
@@ -117,5 +127,18 @@
         app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <Button
+        android:id="@+id/question"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="233dp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/question"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/addWork"
+        app:layout_constraintTop_toTopOf="@+id/addWork" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

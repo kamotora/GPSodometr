@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.HandlerThread;
@@ -57,6 +58,10 @@ public class MainActivity extends AppCompatActivity{
     private MyLocationListener locationListener = null;
     private static Stat todayStat = null;
 
+
+    Typeface tf1;//Для Букв
+    Typeface tf2;//Для Цифр
+
     //Action - действие, Double - оставшееся кол-во км.
     private static ConcurrentHashMap<Action, Double> actionsAndKm = null;
 
@@ -73,6 +78,9 @@ public class MainActivity extends AppCompatActivity{
         spinDay = (Spinner)findViewById(R.id.action_bar_spinner);
 
         inflaer = LayoutInflater.from(this);
+
+        tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
+        tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -91,10 +99,12 @@ public class MainActivity extends AppCompatActivity{
                     case 1:
                         intent = new Intent(MainActivity.this, profileActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     case 2:
                         intent = new Intent(MainActivity.this, settingsActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     default:
                         break;
@@ -281,6 +291,9 @@ public class MainActivity extends AppCompatActivity{
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
         final TextView dateView = tr.findViewById(R.id.col1);
         final TextView kmView = tr.findViewById(R.id.col2);
+
+        dateView.setTypeface(tf2);
+        kmView.setTypeface(tf2);
         /**
          * Обработка удаления из таблицы
          */
@@ -371,4 +384,11 @@ public class MainActivity extends AppCompatActivity{
             actionsAndKm = new ConcurrentHashMap<>();
         return actionsAndKm;
     }
+
+    @Override
+    public void finish(){
+        super.finish();
+        overridePendingTransition(R.anim.left_in,R.anim.right_out);
+    }
+
 }
