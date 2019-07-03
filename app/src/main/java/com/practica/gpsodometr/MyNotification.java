@@ -13,6 +13,7 @@ import android.util.SparseArray;
 
 import androidx.core.app.NotificationCompat;
 
+import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
 
@@ -100,7 +101,7 @@ public class MyNotification {
                 builder.setContentTitle(action.getName())
                         .setContentText("Вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Начиная с даты " + action.getDateStart() + " вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
+                                .bigText("Начиная с даты " + Helper.getDateStringInNeedFormat(action.getDateStart()) + " вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
                                         "Нажмите на это уведомление, чтобы перестать отслеживать \"" + action.getName() + "\""))
                         .setContentIntent(action1PendingIntent)
                         .build();
@@ -126,7 +127,11 @@ public class MyNotification {
                     new Handler(context.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            ActionRep.delete(act);
+                            try {
+                                ActionRep.delete(act);
+                            } catch (Exception exp) {
+                                Msg.showMsg("Ошибка. Возможно, вы уже удалили эту работу");
+                            }
                             actionHashMap.remove(key);
                             System.out.println("Удалено");
                         }

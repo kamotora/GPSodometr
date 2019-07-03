@@ -12,7 +12,6 @@ import android.os.HandlerThread;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -61,13 +60,6 @@ public class MainActivity extends AppCompatActivity{
     //Action - действие, Double - оставшееся кол-во км.
     private static ConcurrentHashMap<Action, Double> actionsAndKm = null;
 
-    //Spinner spinner = (Spinner)findViewById(R.id.action_bar_spinner);
-    //String selected = spinner.getSelectedItem().toString();
-
-    //String [] spin_array = getResources().getStringArray(R.array.interval);
-
-    int wrapContent = LinearLayout.LayoutParams.WRAP_CONTENT;
-
     TableLayout table;
     Spinner spinDay;
     LayoutInflater inflaer;
@@ -111,16 +103,22 @@ public class MainActivity extends AppCompatActivity{
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 //TODO: можно добавить строку : всего пройдено за неделю,месяц км =
                 cleanTable(table);
+                //За сегодня
                 if(position == 0){
                     addRow(new Date(), kilometers);
                 }
+                //За неделю
                 if(position == 1){
+                    //Получаем дату - 1 неделя и выводим все данные, начиная с той даты
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
                     //new Date(new Date().getTime() - 604800000);
+
+                    //Если в базе на сегодня нет, но в программе есть же
                     if (todayStat == null)
                         addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
+                        //Для даты на сегодня берём более актуальное значение
                         if ((Helper.getDateWithothTime(new Date()).compareTo(stat.getDate())) == 0)
                             addRow(new Date(), kilometers);
                         else
@@ -128,6 +126,7 @@ public class MainActivity extends AppCompatActivity{
                     }
 
                 }
+                //Аналогично за месяц
                 if(position == 2){
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
@@ -276,16 +275,37 @@ public class MainActivity extends AppCompatActivity{
      */
     public void addRow(Date date, double km) {
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+        final TextView dateView = tr.findViewById(R.id.col1);
+        final TextView kmView = tr.findViewById(R.id.col2);
+        /**
+         * Обработка удаления из таблицы
+         */
         tr.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
                 tr.setBackgroundResource(R.color.colorAccent);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Удалить данную работу?")
+                builder.setTitle("Удалить пробег за этот день?")
                         .setCancelable(false)
                         .setPositiveButton("Да",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
+                                        Date dateForDelete = Helper.getDateFromString(dateView.getText().toString());
+                                        Stat statForDelete = StatRep.findByDate(dateForDelete);
+                                        //Если нужно удалить данные за сегодня и запись в бд есть
+                                        if (statForDelete != null && statForDelete == todayStat) {
+                                            StatRep.delete(todayStat);
+                                            todayStat = null;
+                                            kilometers = 0;
+                                        } else if (statForDelete != null) {
+                                            StatRep.delete(statForDelete);
+                                        }
+                                        //Если нужно удалить данные за сегодня и записи в бд нет
+                                        else if (dateForDelete.compareTo(Helper.getDateWithothTime(new Date())) == 0) {
+                                            kilometers = 0;
+                                        } else {
+                                            System.out.println("ERROR !!! При удалении статистики");
+                                        }
                                         table.removeView(tr);
                                         dialog.cancel();
                                     }
@@ -302,8 +322,8 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             }
         });
-        TextView dateView = tr.findViewById(R.id.col1);
-        TextView kmView = tr.findViewById(R.id.col2);
+
+        //Добавление
         dateView.setText(Helper.getDateStringInNeedFormat(date));
         kmView.setText(Helper.kmToString(km));
         table.addView(tr);
@@ -330,7 +350,7 @@ public class MainActivity extends AppCompatActivity{
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;
         for (Action key : actionsAndKm.keySet()) {
-            Double newValue = actionsAndKm.get(key) + newKm;
+            Double newValue = actionsAndKm.get(key) - newKm;
             actionsAndKm.put(key, newValue);
             if (newValue <= 0) {
                 MyNotification.getInstance(this).show(key);

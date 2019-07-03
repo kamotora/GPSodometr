@@ -19,6 +19,14 @@ public class Helper {
         return null;
     }
 
+    public static Date getDateFromString(final String strDate) {
+        try {
+            return dateFormat.parse(strDate);
+        } catch (java.text.ParseException exp) {
+            Msg.showMsg("Ошибка при получении даты из строки. Строка = " + strDate);
+        }
+        return null;
+    }
     /**
      * @return формат даты,использующийся в приложении
      */
@@ -35,5 +43,14 @@ public class Helper {
      **/
     public static String kmToString(double kilometers) {
         return String.format(Locale.getDefault(), "%1$,.2f", kilometers);
+    }
+
+    public static Double stringToKm(String strKm) {
+        try {
+            return Double.parseDouble(strKm.replace(",", "."));
+        } catch (NumberFormatException exp) {
+            Msg.showMsg("Ошибка в stringToKm. Строка = " + strKm + "\nexp = " + exp);
+        }
+        return null;
     }
 }

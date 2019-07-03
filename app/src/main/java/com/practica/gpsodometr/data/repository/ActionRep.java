@@ -80,4 +80,8 @@ public class ActionRep {
         }
         return action.getKilometers() - sum;
     }
+
+    public static RealmResults<Action> getAll() {
+        return Realm.getDefaultInstance().where(Action.class).findAll();
+    }
 }
