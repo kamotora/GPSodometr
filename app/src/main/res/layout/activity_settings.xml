@@ -35,7 +35,7 @@
         android:text=" Добавить работу"
         app:layout_constraintBottom_toTopOf="@+id/scrollView4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/setMinSpeed" />
+        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
 
     <ScrollView
         android:id="@+id/scrollView4"
@@ -101,29 +101,16 @@
         android:layout_width="213dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="12dp"
-        android:contextClickable="false"
-        android:cursorVisible="false"
+        android:layout_marginBottom="93dp"
+        android:contextClickable="true"
+        android:cursorVisible="true"
         android:ems="10"
         android:hint="Минимальная скорость"
         android:inputType="numberDecimal"
         android:maxLength="3"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/setMinSpeed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <Button
-        android:id="@+id/setMinSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="33dp"
-        android:background="#0000"
-        android:onClick="onClick"
-        android:text="Установить"
         app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

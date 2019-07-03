@@ -162,7 +162,7 @@ public class settingsActivity extends AppCompatActivity{
     }
 
 
-
+/*
     //Для кнопки "Установить"
     public void onClick(View v){
         final EditText text1 = new EditText(this);
@@ -187,7 +187,7 @@ public class settingsActivity extends AppCompatActivity{
         AlertDialog alert = builder.create();
         alert.show();
     }
-
+*/
     public void showDialog(settingsActivity activity){
         final Dialog dialog = new Dialog(activity);
 

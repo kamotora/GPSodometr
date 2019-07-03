@@ -24,19 +24,6 @@
         app:title="Результат" />
 
     <TextView
-        android:id="@+id/distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="35dp"
-        android:text="удалить"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
-
-    <TextView
         android:id="@+id/textMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,14 +38,14 @@
     <Spinner
         android:id="@+id/action_bar_spinner"
         style="@android:style/Widget.Material.Spinner.Underlined"
-        android:layout_width="193dp"
-        android:layout_height="59dp"
-        android:layout_marginBottom="35dp"
+        android:layout_width="187dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="103dp"
         android:entries="@array/interval"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/distance"
-        app:layout_constraintEnd_toEndOf="@+id/textMain"
-        app:layout_constraintStart_toStartOf="@+id/textMain"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMain" />
 
     <ScrollView
@@ -70,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/distance">
+        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner">
 
         <TableLayout
             android:id="@+id/tableresult"
