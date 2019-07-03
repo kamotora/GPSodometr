@@ -12,123 +12,39 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="32dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        app:layout_constraintBottom_toTopOf="@+id/typeOfWorklogin"
+        app:layout_constraintBottom_toTopOf="@+id/minSpeed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Настройки" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/typeOfWorklogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/kilometrslogin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-        <EditText
-            android:id="@+id/typeOfWork"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="96dp"
-            android:ems="10"
-            android:hint="Вид работы"
-            android:inputType="textCapCharacters"
-            android:textColor="#FFFFFF"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/kilometrslogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="22dp"
-        app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/dateOfStartlogin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/typeOfWorklogin">
-
-        <EditText
-            android:id="@+id/kilometrs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginBottom="19dp"
-            android:ems="10"
-            android:hint="Кол-во километров"
-            android:inputType="number"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/dateOfStart"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dateOfStartlogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Дата начала"
-        app:errorEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/addWork"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kilometrslogin">
-
-        <br.com.sapereaude.maskedEditText.MaskedEditText
-            android:id="@+id/dateOfStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="12dp"
-            android:contentDescription="Дата начала отсчёта"
-            android:ems="10"
-            android:hint="ддммгггг"
-            android:inputType="date"
-            android:onClick="inClick"
-            android:textColor="#FFFFFF"
-            app:keep_hint="false"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/kilometrs"
-            mask:allowed_chars="1234567890"
-            mask:mask="##/##/####"
-            tools:text="@tools:sample/date/ddmmyy" />
-    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="28dp"
         android:background="#60000000"
-        android:onClick="onClick"
-        android:text="Добавить"
+        android:text=" Добавить работу"
         app:layout_constraintBottom_toTopOf="@+id/scrollView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/minSpeed"
-        app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/setMinSpeed" />
 
     <ScrollView
         android:id="@+id/scrollView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="40dp"
         android:layout_weight="1"
         android:scrollbars="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/DeleteWork"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addWork">
@@ -174,14 +90,6 @@
                     android:text="Кол-во километров"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:id="@+id/lastKilo"
-                    android:layout_margin="1dip"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Осталось"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
             </TableRow>
 
         </TableLayout>
@@ -192,14 +100,44 @@
         android:id="@+id/minSpeed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="110dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:contextClickable="false"
+        android:cursorVisible="false"
         android:ems="10"
         android:hint="Минимальная скорость"
         android:inputType="numberDecimal"
         android:maxLength="3"
         android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toStartOf="@+id/addWork"
+        app:layout_constraintBottom_toTopOf="@+id/setMinSpeed"
+        app:layout_constraintEnd_toEndOf="@+id/DeleteWork"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateOfStartlogin" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <Button
+        android:id="@+id/setMinSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="33dp"
+        android:background="#0000"
+        android:onClick="onClick"
+        android:text="Установить"
+        app:layout_constraintBottom_toTopOf="@+id/addWork"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
+
+    <Button
+        android:id="@+id/DeleteWork"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="59dp"
+        android:background="#65000000"
+        android:text="Удалить выделенную работу"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

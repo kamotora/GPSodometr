@@ -3,19 +3,29 @@ package com.practica.gpsodometr.activities;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.iconics.typeface.FontAwesome;
@@ -32,30 +42,31 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class settingsActivity extends AppCompatActivity implements View.OnClickListener{
+public class settingsActivity extends AppCompatActivity{
 
     int DIALOG_DATE = 1;
     int myYear = 2019;
     int myMonth = 06;
     int myDay = 30;
-    TextInputLayout errorOfWork;
-    TextInputLayout errorOfKilometrs;
-    TextInputLayout errorOfDate;
-    TextView typeOfWork;
-    TextView kilometrs;
-    TextView tvDate;
-    ListView listWork;
+
     ArrayAdapter<String> adapter;
     final ArrayList<String> tasks = new ArrayList<>();
+    Button btn;
+    TextView minSpeed;
+    TableLayout table;
+    LayoutInflater inflaer;
 
     SharedPreferences mSettings = null;
     //Название файла с настройками
     static final String SETTING_FILENAME = "settings";
     //Название сохраняемой настройки в файле
     static final String SETTING_MINSPEED_NAME = "minSpeed";
+    //в км/ч
+    static final Integer DEFAULT_MIN_SPEED = 20;
     //Формат даты
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
     @Override
@@ -63,6 +74,15 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        table = (TableLayout)findViewById(R.id.tableresult);
+        inflaer = LayoutInflater.from(this);
+        btn = (Button)findViewById(R.id.addWork);
+        btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                showDialog(settingsActivity.this);
+            }
+        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,13 +106,8 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }).build();
-        errorOfWork = (TextInputLayout) findViewById(R.id.typeOfWorklogin);
-        errorOfKilometrs = (TextInputLayout) findViewById(R.id.kilometrslogin);
-        errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
-        tvDate = (TextView)findViewById(R.id.dateOfStart);
-        typeOfWork = (TextView)findViewById(R.id.typeOfWork);
-        kilometrs = (TextView)findViewById(R.id.kilometrs);
 
+        minSpeed = (TextView)findViewById(R.id.minSpeed);
         //listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
 
@@ -131,15 +146,9 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
         //Сохраняем мин скорость
         SharedPreferences.Editor settingEditor = mSettings.edit();
         final String str = ((TextView) findViewById(R.id.minSpeed)).getText().toString();
-        if (!str.trim().isEmpty()) {
-            //Если введеная мин скорость отличается
-            //Сохраняем и изменяем в расчётах
-            int newMinSpeed = Integer.parseInt(str);
-            if (newMinSpeed != MyLocationListener.getMinSpeed()) {
-                settingEditor.putInt(SETTING_MINSPEED_NAME, newMinSpeed);
-                MyLocationListener.setMinSpeed(newMinSpeed);
-            }
-        }
+        if(!str.trim().isEmpty())
+            settingEditor.putInt(SETTING_MINSPEED_NAME, Integer.parseInt(str));
+        Msg.showMsg(str);
         settingEditor.apply();
         tasks.clear();
     }
@@ -153,9 +162,56 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
 
     //Для кнопки "Добавить"
     public void onClick(View v){
+        /*CustomDialogFragment dialog = new CustomDialogFragment();
+        dialog.show(getSupportFragmentManager(), "custom");
+*/
+        final EditText text1 = new EditText(this);
+        text1.setHint("Минимальная скорость");
+        AlertDialog.Builder builder = new AlertDialog.Builder(settingsActivity.this);
+        builder.setTitle("Минимальная скорость")
+                .setCancelable(false)
+                .setView(text1)
+                .setPositiveButton("ОК",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                minSpeed.setText(text1.getText().toString());
+                                dialog.cancel();
+                            }
+                        })
+                .setNegativeButton("Назад",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
         switch(v.getId()){
             case R.id.addWork:
 
+
+        }
+    }
+
+    public void showDialog(settingsActivity activity){
+        final Dialog dialog = new Dialog(activity);
+
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.custom_dialog);
+
+        final TextInputLayout errorOfWork = dialog.findViewById(R.id.typeOfWorklogin);
+        final TextInputLayout errorOfKilometrs = dialog.findViewById(R.id.typeOfKilo);
+        final TextInputLayout errorOfDate = dialog.findViewById(R.id.typeOfDateStart);
+        final TextView typeOfWork = dialog.findViewById(R.id.typeOfWork);
+        final TextView kilometrs = dialog.findViewById(R.id.kilometrs);
+        final TextView tvDate = dialog.findViewById(R.id.dataOfStart);
+
+
+
+        Button btnOk = (Button)dialog.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
                 //Проверка на допустимость
                 String name = typeOfWork.getText().toString();
                 Double kilometers = 0.0;
@@ -191,24 +247,45 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
                     errorOfWork.setError("");
                     return;
                 }
-                //Сохранение действия, если всё норм
-                //И сразу посчитаем, сколько осталось км
-                //Добавим в список для отслеживания, если надо
-                Action action = new Action(name, date, kilometers);
-                ActionRep.add(action);
-                Double km = ActionRep.countForOneAction(action);
-                if (km != null)
-                    MainActivity.getActionsAndKm().put(action, km);
+                //Сохранение события, если всё норм
+                ActionRep.add(new Action(name,date,kilometers));
+
 
                 String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
+                TableRow tr = (TableRow)inflaer.inflate(R.layout.tableforsettings,null);
+                TextView tv = (TextView) tr.findViewById(R.id.col1);
+                tv.setText(typeOfWork.getText().toString());
+                tv = (TextView) tr.findViewById(R.id.col2);
+                tv.setText(kilometrs.getText().toString());
+                tv = (TextView) tr.findViewById(R.id.col3);
+                tv.setText(tvDate.getText().toString());
+
+                table.addView(tr);
+
                 tasks.add(0,str);
                 adapter.notifyDataSetChanged();
                 typeOfWork.setText("");
                 kilometrs.setText("");
                 tvDate.setText("");
-        }
-    }
 
+                dialog.dismiss();
+            }
+        });
+
+        Button btnCanc = (Button)dialog.findViewById(R.id.btnClose);
+        btnCanc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dialog.dismiss();
+            }
+        });
+
+
+
+        dialog.show();
+    }
+/*
     //Для выпадающего календарика
     public void inClick(View view){
         showDialog(DIALOG_DATE);
@@ -229,14 +306,14 @@ public class settingsActivity extends AppCompatActivity implements View.OnClickL
             myMonth = month;
             myDay = day;
             if(myDay < 10 && myMonth < 10)
-                tvDate.setText(String.format(Locale.getDefault(), "0%d0%d%d", myDay, myMonth, myYear));
+                tvDate.setText("0"+myDay + "0" + myMonth + "" + myYear);
             else if (myDay < 10)
-                tvDate.setText(String.format(Locale.getDefault(), "0%d%d%d", myDay, myMonth, myYear));
+                tvDate.setText("0"+myDay + "" + myMonth + "" + myYear);
             else if(myMonth < 10)
-                tvDate.setText(String.format(Locale.getDefault(), "%d0%d%d", myDay, myMonth, myYear));
+                tvDate.setText(myDay + "0" + myMonth + "" + myYear);
             else
-                tvDate.setText(String.format(Locale.getDefault(), "%d%d%d", myDay, myMonth, myYear));
+                tvDate.setText(myDay + "" + myMonth + "" + myYear);
         }
     };
-
+*/
 }
