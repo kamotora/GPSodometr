@@ -2,6 +2,7 @@ package com.practica.gpsodometr.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -273,7 +275,33 @@ public class MainActivity extends AppCompatActivity{
      * Добавить строку в таблицу
      */
     public void addRow(Date date, double km) {
-        TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+        final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
+        tr.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view) {
+                tr.setBackgroundResource(R.color.colorAccent);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Удалить данную работу?")
+                        .setCancelable(false)
+                        .setPositiveButton("Да",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        table.removeView(tr);
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setNegativeButton("Отмена",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        tr.setBackgroundResource(R.color.back);
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
+            }
+        });
         TextView dateView = tr.findViewById(R.id.col1);
         TextView kmView = tr.findViewById(R.id.col2);
         dateView.setText(Helper.getDateStringInNeedFormat(date));

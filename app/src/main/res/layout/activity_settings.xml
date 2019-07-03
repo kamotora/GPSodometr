@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mask="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -40,10 +41,10 @@
         android:id="@+id/scrollView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="5dp"
         android:layout_weight="1"
         android:scrollbars="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/DeleteWork"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addWork">
@@ -89,12 +90,6 @@
                     android:text="Кол-во километров"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:id="@+id/leftKm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Осталось км" />
-
             </TableRow>
 
         </TableLayout>
@@ -103,10 +98,9 @@
 
     <EditText
         android:id="@+id/minSpeed"
-        android:layout_width="0dp"
+        android:layout_width="213dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="12dp"
         android:contextClickable="false"
         android:cursorVisible="false"
@@ -116,7 +110,6 @@
         android:maxLength="3"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/setMinSpeed"
-        app:layout_constraintEnd_toEndOf="@+id/DeleteWork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -132,27 +125,5 @@
         app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
-
-    <Button
-        android:id="@+id/DeleteWork"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="59dp"
-        android:background="#65000000"
-        android:text="Удалить выделенную работу"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView4" />
-
-    <TextView
-        android:id="@+id/minSpeedLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="50dp"
-        android:text="км/ч"
-        app:layout_constraintStart_toEndOf="@+id/minSpeed"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
