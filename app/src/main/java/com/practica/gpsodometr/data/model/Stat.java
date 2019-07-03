@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.practica.gpsodometr.data.ParseDate;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Objects;
@@ -38,6 +37,7 @@ public class Stat extends RealmObject {
         setKilometers(kilometers);
     }
 
+    @NonNull
     public Date getDate() {
         return date;
     }
@@ -61,8 +61,7 @@ public class Stat extends RealmObject {
 
     @Override
     public String toString() {
-        String date = new SimpleDateFormat("dd.MM.yyyy").format(this.date);
-        return "Дата: " + date + ", километры = " + kilometers;
+        return "Дата: " + ParseDate.getDateStringInNeedFormat(this.date) + ", километры = " + kilometers;
     }
 
 

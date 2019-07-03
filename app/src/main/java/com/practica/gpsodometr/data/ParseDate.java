@@ -8,12 +8,11 @@ import java.util.Locale;
 
 public class ParseDate {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     //Из date отбрасываем время, оставляем только дату
     public static Date parse(final Date date) {
         try {
-            Date res = dateFormat.parse(dateFormat.format(date));
-            return res;
+            return dateFormat.parse(dateFormat.format(date));
         } catch (java.text.ParseException exp) {
             Msg.showMsg("Ошибка при получении текущей даты");
         }

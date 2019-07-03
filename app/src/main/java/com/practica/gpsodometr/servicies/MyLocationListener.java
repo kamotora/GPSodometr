@@ -9,6 +9,8 @@ import android.os.Looper;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.activities.MainActivity;
 
+import java.util.Locale;
+
 public class MyLocationListener implements LocationListener {
     private static Location lastLocation = null;
     //Минимальная скорость в м/с
@@ -40,7 +42,7 @@ public class MyLocationListener implements LocationListener {
         double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
         final double deltaDistance = location.distanceTo(lastLocation) / METERS_TO_KILOMETERS;
 
-        System.out.println(String.format("Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
+        System.out.println(String.format(Locale.getDefault(), "Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
                 , deltaDistance / deltaTime, location.getSpeed(), minSpeed, deltaDistance, deltaTime));
 
         //Если скорость больше, прибавляем пройденное расстояние

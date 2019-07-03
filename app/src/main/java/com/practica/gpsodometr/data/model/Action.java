@@ -39,12 +39,13 @@ public class Action extends RealmObject {
         setKilometers(kilometers);
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        if (BuildConfig.DEBUG && !(name.trim().isEmpty())) {
+        if (BuildConfig.DEBUG && !(name == null || name.trim().isEmpty())) {
             throw new AssertionError();
         }
         this.name = name;
@@ -59,6 +60,7 @@ public class Action extends RealmObject {
         this.dateStart = ParseDate.parse(dateStart);
     }
 
+    @NonNull
     public Double getKilometers() {
         return kilometers;
     }

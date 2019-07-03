@@ -9,13 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
+import android.util.SparseArray;
 
 import androidx.core.app.NotificationCompat;
 
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
 
-import java.util.HashMap;
 import java.util.Random;
 
 //TODO: обработать нажатие
@@ -30,7 +30,7 @@ public class MyNotification {
     private NotificationCompat.Builder builder;
     private static NotificationManager notificationManager = null;
     private static Context context;
-    private static HashMap<Integer, Action> actionHashMap = null;
+    private static SparseArray<Action> actionHashMap = null;
 
     public MyNotification(Context context) {
         MyNotification.context = context;
@@ -54,7 +54,7 @@ public class MyNotification {
             builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
             builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         }
-        actionHashMap = new HashMap<>();
+        actionHashMap = new SparseArray<Action>();
     }
 
     public int show(Action action) {
@@ -91,7 +91,7 @@ public class MyNotification {
         protected void onHandleIntent(Intent intent) {
             String action = intent.getAction();
             if (ACTION_1.equals(action)) {
-                final Integer key = intent.getIntExtra(EXTRA_NAME, 0);
+                final int key = intent.getIntExtra(EXTRA_NAME, 0);
                 final Action act = actionHashMap.get(key);
                 if (act != null) {
                     //TODO:ошибка, если приложение не запущено

@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GPS odometr</string>
+    <string name="app_name">GPS одометр</string>
+    <string-array name="interval">
+        <item>Сегодня</item>
+        <item>Неделя</item>
+        <item>Месяц</item>
+    </string-array>
+    <string name="typeOfWorkError">Введите тип работы</string>
+    <string name="kilometrsError">Введите количество километров</string>
+    <string name="tvDate">Выберите дату начала</string>
 </resources>

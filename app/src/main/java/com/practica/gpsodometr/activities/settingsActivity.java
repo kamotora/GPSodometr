@@ -34,12 +34,12 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.ParseDate;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,10 +65,6 @@ public class settingsActivity extends AppCompatActivity{
     static final String SETTING_FILENAME = "settings";
     //Название сохраняемой настройки в файле
     static final String SETTING_MINSPEED_NAME = "minSpeed";
-    //в км/ч
-    static final Integer DEFAULT_MIN_SPEED = 20;
-    //Формат даты
-    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +102,14 @@ public class settingsActivity extends AppCompatActivity{
                 }
             }
         }).build();
-
+        /*
+        errorOfWork = (TextInputLayout) findViewById(R.id.typeOfWorklogin);
+        errorOfKilometrs = (TextInputLayout) findViewById(R.id.kilometrslogin);
+        errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
+        tvDate = (TextView)findViewById(R.id.dateOfStart);
+        typeOfWork = (TextView)findViewById(R.id.typeOfWork);
+        kilometrs = (TextView)findViewById(R.id.kilometrs);
+*/
         minSpeed = (TextView)findViewById(R.id.minSpeed);
         //listWork = (ListView)findViewById(R.id.listWork);
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
@@ -134,7 +137,9 @@ public class settingsActivity extends AppCompatActivity{
         if(list != null) {
             for (Action action : list.keySet()) {
                 Double km = list.get(action);
-                tasks.add(action.toString() + String.format(" Осталось: %1$,.2f км", km));
+                tasks.add(action.toString() + String.format(Locale.getDefault(), " Осталось: %1$,.2f км", km));
+                //вывод(отладка)
+                System.out.println(action + " " + km);
             }
         }
     }
@@ -146,9 +151,15 @@ public class settingsActivity extends AppCompatActivity{
         //Сохраняем мин скорость
         SharedPreferences.Editor settingEditor = mSettings.edit();
         final String str = ((TextView) findViewById(R.id.minSpeed)).getText().toString();
-        if(!str.trim().isEmpty())
-            settingEditor.putInt(SETTING_MINSPEED_NAME, Integer.parseInt(str));
-        Msg.showMsg(str);
+        if (!str.trim().isEmpty()) {
+            //Если введеная мин скорость отличается
+            //Сохраняем и изменяем в расчётах
+            int newMinSpeed = Integer.parseInt(str);
+            if (newMinSpeed != MyLocationListener.getMinSpeed()) {
+                settingEditor.putInt(SETTING_MINSPEED_NAME, newMinSpeed);
+                MyLocationListener.setMinSpeed(newMinSpeed);
+            }
+        }
         settingEditor.apply();
         tasks.clear();
     }
@@ -229,8 +240,7 @@ public class settingsActivity extends AppCompatActivity{
                 //Если не удалось спарсить данные, ошибка
                 try{
                     kilometers = Double.parseDouble(kilometrs.getText().toString());
-                    date = DATE_FORMAT.parse(tvDate.getText().toString());
-                    System.out.println(date);
+                    date = ParseDate.getDateFormat().parse(tvDate.getText().toString());
 
                 }catch (NumberFormatException parseDoubExcept){
                     Msg.showMsg("Кол-во километров содержит недопустимое число");
@@ -247,9 +257,14 @@ public class settingsActivity extends AppCompatActivity{
                     errorOfWork.setError("");
                     return;
                 }
-                //Сохранение события, если всё норм
-                ActionRep.add(new Action(name,date,kilometers));
-
+                //Сохранение действия, если всё норм
+                //И сразу посчитаем, сколько осталось км
+                //Добавим в список для отслеживания, если надо
+                Action action = new Action(name, date, kilometers);
+                ActionRep.add(action);
+                Double km = ActionRep.countForOneAction(action);
+                if (km != null)
+                    MainActivity.getActionsAndKm().put(action, km);
 
                 String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
                 TableRow tr = (TableRow)inflaer.inflate(R.layout.tableforsettings,null);
@@ -306,14 +321,14 @@ public class settingsActivity extends AppCompatActivity{
             myMonth = month;
             myDay = day;
             if(myDay < 10 && myMonth < 10)
-                tvDate.setText("0"+myDay + "0" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "0%d0%d%d", myDay, myMonth, myYear));
             else if (myDay < 10)
-                tvDate.setText("0"+myDay + "" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "0%d%d%d", myDay, myMonth, myYear));
             else if(myMonth < 10)
-                tvDate.setText(myDay + "0" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "%d0%d%d", myDay, myMonth, myYear));
             else
-                tvDate.setText(myDay + "" + myMonth + "" + myYear);
+                tvDate.setText(String.format(Locale.getDefault(), "%d%d%d", myDay, myMonth, myYear));
         }
     };
-*/
+
 }

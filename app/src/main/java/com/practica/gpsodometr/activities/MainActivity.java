@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity{
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
     private static LocationManager locationManager = null;
+    //Кол-во километров на сегодня
     private static double kilometers = 0;
     static int kol;
     //Обработчик событий от gps
     private MyLocationListener locationListener = null;
-    private static Realm realm = null;
     private static Stat todayStat = null;
 
     //Action - действие, Double - оставшееся кол-во км.
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity{
         spinDay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                //TODO: можно добавить строку : всего пройдено за неделю,месяц км =
                 cleanTable(table);
                 if(position == 0){
                     addRow(new Date(), kilometers);
@@ -117,6 +118,8 @@ public class MainActivity extends AppCompatActivity{
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
                     //new Date(new Date().getTime() - 604800000);
+                    if (todayStat == null)
+                        addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
                         if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
                             addRow(new Date(), kilometers);
@@ -129,6 +132,8 @@ public class MainActivity extends AppCompatActivity{
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
                     //new Date(new Date().getTime() - 2628000000);
+                    if (todayStat == null)
+                        addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
                         if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
                             addRow(new Date(), kilometers);
@@ -144,7 +149,6 @@ public class MainActivity extends AppCompatActivity{
         });
         //Инициализация бд
         Realm.init(this);
-        realm = Realm.getDefaultInstance();
 
         kol = 0;
         //Работа с гпс
@@ -170,6 +174,16 @@ public class MainActivity extends AppCompatActivity{
 
         //Добавить запись(отладка)
         //StatRep.add(new Stat(2019,6,24,10.0));
+
+        //Проверяем, вдруг есть сохранённая информация на сегодня
+        if (todayStat == null) {
+            todayStat = StatRep.findByDate(new Date());
+        }
+        if (todayStat != null) {
+            kilometers = todayStat.getKilometers();
+        }
+        addRow(new Date(), kilometers);
+
         //Конец метода onCreate()
     }
 
@@ -189,16 +203,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onStart() {
         super.onStart();
         registerProviders();
-
-        //Проверяем, вдруг есть сохранённая информация на сегодня
-        if (todayStat == null) {
-            todayStat = StatRep.findByDate(new Date());
-        }
-        if (todayStat != null) {
-            kilometers = todayStat.getKilometers();
-        }
-        addRow(new Date(), kilometers);
     }
+
 
 
     @Override
@@ -298,7 +304,8 @@ public class MainActivity extends AppCompatActivity{
 
         // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
         //TODO: возможно, нужно в отдельный поток
-
+        if (actionsAndKm == null || actionsAndKm.isEmpty())
+            return;
         for (Action key : actionsAndKm.keySet()) {
             Double newValue = actionsAndKm.get(key) + newKm;
             actionsAndKm.put(key, newValue);

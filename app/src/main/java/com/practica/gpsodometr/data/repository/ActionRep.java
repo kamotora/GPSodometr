@@ -68,7 +68,10 @@ public class ActionRep {
             return null;
 
         Double sum = 0.0;
-        for (Stat stat : StatRep.getDays(action.getDateStart())) {
+        RealmResults<Stat> stats = StatRep.getDays(action.getDateStart());
+        if (stats == null)
+            return null;
+        for (Stat stat : stats) {
             sum += stat.getKilometers();
         }
         return sum;
