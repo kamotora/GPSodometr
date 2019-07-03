@@ -74,6 +74,8 @@ public class settingsActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem){
                 Intent intent;
+                if (drawerItem == null)
+                    return;
                 switch(drawerItem.getIdentifier()){
                     case 1:
                         intent = new Intent(settingsActivity.this, profileActivity.class);
@@ -82,6 +84,8 @@ public class settingsActivity extends AppCompatActivity{
                     case 3:
                         intent = new Intent(settingsActivity.this, MainActivity.class);
                         startActivity(intent);
+                        break;
+                    default:
                         break;
                 }
             }

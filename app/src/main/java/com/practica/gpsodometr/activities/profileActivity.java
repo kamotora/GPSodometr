@@ -4,18 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.R;
 
@@ -37,6 +32,8 @@ public class profileActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem){
                 Intent intent;
+                if (drawerItem == null)
+                    return;
                 switch(drawerItem.getIdentifier()){
                     case 2:
                         intent = new Intent(profileActivity.this, settingsActivity.class);
@@ -45,6 +42,8 @@ public class profileActivity extends AppCompatActivity {
                     case 3:
                         intent = new Intent(profileActivity.this, MainActivity.class);
                         startActivity(intent);
+                        break;
+                    default:
                         break;
                 }
             }

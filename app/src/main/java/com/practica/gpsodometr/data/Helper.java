@@ -40,12 +40,13 @@ public class Helper {
      * @return километры в виде строки в нужном формате
      **/
     public static String kmToString(double kilometers) {
-        return String.format(Locale.getDefault(), "%1$,.2f", kilometers);
+        return String.format(Locale.US, "%1$,.2f", kilometers);
     }
 
     public static Double stringToKm(String strKm) {
         try {
-            strKm = strKm.replaceAll("\\s", "").replace(',', '.');
+            //Удаляем всё кроме цифр и точки
+            strKm = strKm.replaceAll("[^.0-9]", "");
             return Double.parseDouble(strKm);
         } catch (NumberFormatException exp) {
             System.out.println("Ошибка в stringToKm. Строка = " + strKm + "\nexp = " + exp);
