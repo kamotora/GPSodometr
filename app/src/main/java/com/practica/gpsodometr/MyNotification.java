@@ -18,9 +18,12 @@ import com.practica.gpsodometr.data.repository.ActionRep;
 
 import java.util.Random;
 
-//TODO: обработать нажатие
+/**
+ * Показ уведомлений
+ **/
 
 public class MyNotification {
+    //Дейстие по удалению Action из базы при нажатии на уведомление
     private final static String ACTION_1 = "DeleteActionRealm";
     private final static String CHANNEL_ID = "Actions";
     private final static String EXTRA_NAME = "ID";
@@ -29,10 +32,13 @@ public class MyNotification {
 
     private NotificationCompat.Builder builder;
     private static NotificationManager notificationManager = null;
-    private static Context context;
+    //здесь для каждого ID уведомления Action, для которого он вызван
     private static SparseArray<Action> actionHashMap = null;
+    //TODO:убрать static
+    private static Context context;
+    private static MyNotification init = null;
 
-    public MyNotification(Context context) {
+    private MyNotification(Context context) {
         MyNotification.context = context;
         notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -41,6 +47,8 @@ public class MyNotification {
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setAutoCancel(true);
 
+        //Если версия позволяем, создаём канал
+        //Иначе без него
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, NOTIFICATION_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
@@ -54,12 +62,33 @@ public class MyNotification {
             builder.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000});
             builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         }
-        actionHashMap = new SparseArray<Action>();
+        actionHashMap = new SparseArray<>();
     }
 
-    public int show(Action action) {
+    public static MyNotification getInstance(Context context) {
+        if (init == null)
+            init = new MyNotification(context);
+        return init;
+    }
 
-        int notificationID = new Random().nextInt(100000);
+    /**
+     * Показать уведомление
+     *
+     * @return id уведомления
+     */
+    public int show(Action action) {
+        //Если уже показали уведомление по этому action
+        //Не надо ещё раз
+        if (actionHashMap.indexOfValue(action) >= 0) {
+            System.out.println("Такое уведомление уже есть");
+            return 0;
+        }
+        Random random = new Random();
+        int notificationID = random.nextInt(100000);
+        //Вдруг уведомление с таким id уже есть
+        while (actionHashMap.get(notificationID) != null) {
+            notificationID = random.nextInt(100000);
+        }
         actionHashMap.put(notificationID, action);
         Intent action1Intent = new Intent(context, NotificationActionService.class)
                 .setAction(ACTION_1)
@@ -67,8 +96,6 @@ public class MyNotification {
 
         PendingIntent action1PendingIntent = PendingIntent.getService(context, 0,
                 action1Intent, PendingIntent.FLAG_ONE_SHOT);
-        //addAction(new NotificationCompat.Action(R.drawable.ic_launcher,
-        //                        "Action 1", action1PendingIntent))
         Notification notification =
                 builder.setContentTitle(action.getName())
                         .setContentText("Вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"")
@@ -87,6 +114,7 @@ public class MyNotification {
             super(NotificationActionService.class.getSimpleName());
         }
 
+        //Обработка нажатия на уведомление
         @Override
         protected void onHandleIntent(Intent intent) {
             String action = intent.getAction();
@@ -94,7 +122,7 @@ public class MyNotification {
                 final int key = intent.getIntExtra(EXTRA_NAME, 0);
                 final Action act = actionHashMap.get(key);
                 if (act != null) {
-                    //TODO:ошибка, если приложение не запущено
+                    //TODO:ошибка, если приложение не запущено(ui потока нету)
                     new Handler(context.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {

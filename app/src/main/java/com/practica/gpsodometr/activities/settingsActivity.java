@@ -1,22 +1,16 @@
 package com.practica.gpsodometr.activities;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -24,37 +18,25 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Msg;
+import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
-import com.practica.gpsodometr.data.ParseDate;
+import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class settingsActivity extends AppCompatActivity{
-
-    int DIALOG_DATE = 1;
-    int myYear = 2019;
-    int myMonth = 06;
-    int myDay = 30;
-
-    ArrayAdapter<String> adapter;
-    final ArrayList<String> tasks = new ArrayList<>();
     Button btn;
     TextView minSpeed;
     TableLayout table;
@@ -102,21 +84,19 @@ public class settingsActivity extends AppCompatActivity{
                 }
             }
         }).build();
-        /*
-        errorOfWork = (TextInputLayout) findViewById(R.id.typeOfWorklogin);
-        errorOfKilometrs = (TextInputLayout) findViewById(R.id.kilometrslogin);
-        errorOfDate = (TextInputLayout) findViewById(R.id.dateOfStartlogin);
-        tvDate = (TextView)findViewById(R.id.dateOfStart);
-        typeOfWork = (TextView)findViewById(R.id.typeOfWork);
-        kilometrs = (TextView)findViewById(R.id.kilometrs);
-*/
-        minSpeed = (TextView)findViewById(R.id.minSpeed);
-        //listWork = (ListView)findViewById(R.id.listWork);
-        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tasks);
 
-//        listWork.setAdapter(adapter);
+        minSpeed = (TextView)findViewById(R.id.minSpeed);
 
         mSettings  = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
+
+        //Вывод существующих действий(работ, событий ... )
+        ConcurrentHashMap<Action, Double> list = MainActivity.getActionsAndKm();
+        if (list != null) {
+            for (Action action : list.keySet()) {
+                Double km = list.get(action);
+                addRow(action, km);
+            }
+        }
 
     }
 
@@ -128,19 +108,6 @@ public class settingsActivity extends AppCompatActivity{
         Object edit = findViewById(R.id.minSpeed);
         if(edit instanceof EditText) {
             ((EditText) edit).setText(String.format(Locale.getDefault(), "%d", mSettings.getInt(SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED)));
-        }
-
-
-        //Вывод существующих действий
-        //TODO: учитывать также текущее значение, ещё не добавленное в базу
-        ConcurrentHashMap<Action, Double> list = MainActivity.getActionsAndKm();
-        if(list != null) {
-            for (Action action : list.keySet()) {
-                Double km = list.get(action);
-                tasks.add(action.toString() + String.format(Locale.getDefault(), " Осталось: %1$,.2f км", km));
-                //вывод(отладка)
-                System.out.println(action + " " + km);
-            }
         }
     }
 
@@ -161,7 +128,7 @@ public class settingsActivity extends AppCompatActivity{
             }
         }
         settingEditor.apply();
-        tasks.clear();
+        //tasks.clear();
     }
 
     @Override
@@ -229,7 +196,6 @@ public class settingsActivity extends AppCompatActivity{
                 Date date = null;
                 //Если строка пустая или только из пробелов, ошибка
                 if(name.trim().isEmpty()){
-                    Msg.showMsg("Тип работы не может быть пустой строкой");
                     errorOfWork.setErrorEnabled(true);
                     errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
                     errorOfKilometrs.setError("");
@@ -240,17 +206,15 @@ public class settingsActivity extends AppCompatActivity{
                 //Если не удалось спарсить данные, ошибка
                 try{
                     kilometers = Double.parseDouble(kilometrs.getText().toString());
-                    date = ParseDate.getDateFormat().parse(tvDate.getText().toString());
+                    date = Helper.getDateFormat().parse(tvDate.getText().toString());
 
                 }catch (NumberFormatException parseDoubExcept){
-                    Msg.showMsg("Кол-во километров содержит недопустимое число");
                     errorOfKilometrs.setErrorEnabled(true);
                     errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
                     errorOfWork.setError("");
                     errorOfDate.setError("");
                     return;
                 }catch (ParseException parseDateExcept){
-                    Msg.showMsg("Дата должна быть в формате дд/мм/гггг");
                     errorOfDate.setErrorEnabled(true);
                     errorOfDate.setError(getResources().getString(R.string.tvDate));
                     errorOfKilometrs.setError("");
@@ -261,24 +225,16 @@ public class settingsActivity extends AppCompatActivity{
                 //И сразу посчитаем, сколько осталось км
                 //Добавим в список для отслеживания, если надо
                 Action action = new Action(name, date, kilometers);
-                ActionRep.add(action);
                 Double km = ActionRep.countForOneAction(action);
+                ActionRep.add(action);
                 if (km != null)
                     MainActivity.getActionsAndKm().put(action, km);
+                addRow(action, km);
+                //String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
 
-                String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
-                TableRow tr = (TableRow)inflaer.inflate(R.layout.tableforsettings,null);
-                TextView tv = (TextView) tr.findViewById(R.id.col1);
-                tv.setText(typeOfWork.getText().toString());
-                tv = (TextView) tr.findViewById(R.id.col2);
-                tv.setText(kilometrs.getText().toString());
-                tv = (TextView) tr.findViewById(R.id.col3);
-                tv.setText(tvDate.getText().toString());
 
-                table.addView(tr);
-
-                tasks.add(0,str);
-                adapter.notifyDataSetChanged();
+                //tasks.add(0,str);
+                //adapter.notifyDataSetChanged();
                 typeOfWork.setText("");
                 kilometrs.setText("");
                 tvDate.setText("");
@@ -299,6 +255,29 @@ public class settingsActivity extends AppCompatActivity{
 
 
         dialog.show();
+    }
+
+    /**
+     * Добавить новую строку в таблицу
+     **/
+    public void addRow(Action action, Double leftKm) {
+        TableRow tr = (TableRow) inflaer.inflate(R.layout.tableforsettings, null);
+        TextView tv = (TextView) tr.findViewById(R.id.col1);
+        tv.setText(action.getName());
+        tv = (TextView) tr.findViewById(R.id.col2);
+        tv.setText(Helper.getDateStringInNeedFormat(action.getDateStart()));
+        tv = (TextView) tr.findViewById(R.id.col3);
+        tv.setText(Helper.kmToString(action.getKilometers()));
+        tv = (TextView) tr.findViewById(R.id.col4);
+        if (leftKm != null) {
+            tv.setText(Helper.kmToString(leftKm));
+            //вдруг
+            Action managedObject = ActionRep.findAction(action);
+            if (leftKm <= 0 && managedObject != null)
+                MyNotification.getInstance(this).show(managedObject);
+        } else
+            tv.setText(Helper.kmToString(action.getKilometers()));
+        table.addView(tr);
     }
 /*
     //Для выпадающего календарика
@@ -330,5 +309,5 @@ public class settingsActivity extends AppCompatActivity{
                 tvDate.setText(String.format(Locale.getDefault(), "%d%d%d", myDay, myMonth, myYear));
         }
     };
-
+*/
 }

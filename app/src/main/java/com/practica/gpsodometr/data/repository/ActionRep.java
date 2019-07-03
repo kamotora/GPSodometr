@@ -26,6 +26,10 @@ public class ActionRep {
         realm.commitTransaction();
     }
 
+    public static Action findAction(Action action) {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.where(Action.class).equalTo("dateStart", action.getDateStart()).and().equalTo("kilometers", action.getKilometers()).and().equalTo("name", action.getName()).findFirst();
+    }
     /**
      * Для каждого действия Action посчитать кол-во километров, которое осталось для его наступления
      * Если действие будет отслеживаться в будущем(позже, чем сегодня), добавлять в res не будем
@@ -74,6 +78,6 @@ public class ActionRep {
         for (Stat stat : stats) {
             sum += stat.getKilometers();
         }
-        return sum;
+        return action.getKilometers() - sum;
     }
 }

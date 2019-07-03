@@ -2,7 +2,7 @@ package com.practica.gpsodometr.data.model;
 
 import androidx.annotation.NonNull;
 
-import com.practica.gpsodometr.data.ParseDate;
+import com.practica.gpsodometr.data.Helper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,7 +57,7 @@ public class Action extends RealmObject {
     }
 
     public void setDateStart(Date dateStart) {
-        this.dateStart = ParseDate.parse(dateStart);
+        this.dateStart = Helper.getDateWithothTime(dateStart);
     }
 
     @NonNull

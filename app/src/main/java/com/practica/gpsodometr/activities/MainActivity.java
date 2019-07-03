@@ -29,7 +29,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
-import com.practica.gpsodometr.data.ParseDate;
+import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.ActionRep;
@@ -39,7 +39,6 @@ import com.practica.gpsodometr.servicies.MyLocationListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity{
 
     //Action - действие, Double - оставшееся кол-во км.
     private static ConcurrentHashMap<Action, Double> actionsAndKm = null;
-    private MyNotification myNotification = null;
 
     //Spinner spinner = (Spinner)findViewById(R.id.action_bar_spinner);
     //String selected = spinner.getSelectedItem().toString();
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity{
                     if (todayStat == null)
                         addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
+                        if ((Helper.getDateWithothTime(new Date()).compareTo(stat.getDate())) == 0)
                             addRow(new Date(), kilometers);
                         else
                             addRow(stat.getDate(), stat.getKilometers());
@@ -135,7 +133,7 @@ public class MainActivity extends AppCompatActivity{
                     if (todayStat == null)
                         addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        if ((ParseDate.parse(new Date()).compareTo(stat.getDate())) == 0)
+                        if ((Helper.getDateWithothTime(new Date()).compareTo(stat.getDate())) == 0)
                             addRow(new Date(), kilometers);
                         else
                             addRow(stat.getDate(), stat.getKilometers());
@@ -149,7 +147,6 @@ public class MainActivity extends AppCompatActivity{
         });
         //Инициализация бд
         Realm.init(this);
-
         kol = 0;
         //Работа с гпс
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -159,7 +156,6 @@ public class MainActivity extends AppCompatActivity{
         //for (Stat stat : realm.where(Stat.class).findAll())
         //    System.out.println(stat);
         Msg.initial(this);
-        myNotification = new MyNotification(this);
 
         //Если есть сохранённая минимальная скорость
         //Сообщаем это MyLocationListener
@@ -169,7 +165,6 @@ public class MainActivity extends AppCompatActivity{
         }
 
         //Получаем список всех отслеживаемых действий и сколько осталось км
-        //TODO:возможно, стоит сделать в отдельном потоке
         actionsAndKm = ActionRep.countForEveryKilometersLeft();
 
         //Добавить запись(отладка)
@@ -281,8 +276,8 @@ public class MainActivity extends AppCompatActivity{
         TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
         TextView dateView = tr.findViewById(R.id.col1);
         TextView kmView = tr.findViewById(R.id.col2);
-        dateView.setText(ParseDate.getDateStringInNeedFormat(date));
-        kmView.setText(kmToString(km));
+        dateView.setText(Helper.getDateStringInNeedFormat(date));
+        kmView.setText(Helper.kmToString(km));
         table.addView(tr);
         kol += 1;
     }
@@ -300,7 +295,7 @@ public class MainActivity extends AppCompatActivity{
         TableRow tr = (TableRow) table.getChildAt(1);
         TextView kmView = (TextView) tr.getVirtualChildAt(1);
         //TextView kmView = (TextView) tr.findViewById(R.id.col2);
-        kmView.setText(kmToString(kilometers));
+        kmView.setText(Helper.kmToString(kilometers));
 
         // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
         //TODO: возможно, нужно в отдельный поток
@@ -310,7 +305,7 @@ public class MainActivity extends AppCompatActivity{
             Double newValue = actionsAndKm.get(key) + newKm;
             actionsAndKm.put(key, newValue);
             if (newValue <= 0) {
-                myNotification.show(key);
+                MyNotification.getInstance(this).show(key);
                 //Перестаём отслеживать, т.к. уже проехали столько, сколько нужно
                 actionsAndKm.remove(key);
             }
@@ -318,11 +313,10 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    public static String kmToString(double kilometers) {
-        return String.format(Locale.getDefault(), "%1$,.2f", kilometers);
-    }
 
     public static ConcurrentHashMap<Action, Double> getActionsAndKm() {
+        if (actionsAndKm == null)
+            actionsAndKm = new ConcurrentHashMap<>();
         return actionsAndKm;
     }
 }

@@ -6,11 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class ParseDate {
+public class Helper {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     //Из date отбрасываем время, оставляем только дату
-    public static Date parse(final Date date) {
+    public static Date getDateWithothTime(final Date date) {
         try {
             return dateFormat.parse(dateFormat.format(date));
         } catch (java.text.ParseException exp) {
@@ -28,5 +28,12 @@ public class ParseDate {
 
     public static String getDateStringInNeedFormat(Date date) {
         return dateFormat.format(date);
+    }
+
+    /**
+     * @return километры в виде строки в нужном формате
+     **/
+    public static String kmToString(double kilometers) {
+        return String.format(Locale.getDefault(), "%1$,.2f", kilometers);
     }
 }

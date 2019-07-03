@@ -2,7 +2,7 @@ package com.practica.gpsodometr.data.model;
 
 import androidx.annotation.NonNull;
 
-import com.practica.gpsodometr.data.ParseDate;
+import com.practica.gpsodometr.data.Helper;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -44,7 +44,7 @@ public class Stat extends RealmObject {
 
 
     public void setDate(Date date) {
-        this.date = ParseDate.parse(date);
+        this.date = Helper.getDateWithothTime(date);
     }
 
     @NonNull
@@ -61,7 +61,7 @@ public class Stat extends RealmObject {
 
     @Override
     public String toString() {
-        return "Дата: " + ParseDate.getDateStringInNeedFormat(this.date) + ", километры = " + kilometers;
+        return "Дата: " + Helper.getDateStringInNeedFormat(this.date) + ", километры = " + kilometers;
     }
 
 

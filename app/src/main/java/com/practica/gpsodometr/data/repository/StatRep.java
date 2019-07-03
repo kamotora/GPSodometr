@@ -1,6 +1,6 @@
 package com.practica.gpsodometr.data.repository;
 
-import com.practica.gpsodometr.data.ParseDate;
+import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Stat;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ public class StatRep {
      */
     public static Stat findByDate(Date date) {
         Realm realm = Realm.getDefaultInstance();
-        date = ParseDate.parse(date);
+        date = Helper.getDateWithothTime(date);
         return realm.where(Stat.class).equalTo("date", date)
                 .findFirst();
     }
@@ -52,7 +52,7 @@ public class StatRep {
     public static RealmResults<Stat> getDays(Date date) {
         Realm realm = Realm.getDefaultInstance();
 
-        date = ParseDate.parse(date);
+        date = Helper.getDateWithothTime(date);
         if (date == null)
             return null;
         RealmQuery<Stat> query = realm.where(Stat.class).greaterThanOrEqualTo("date", date);

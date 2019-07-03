@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mask="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -56,14 +57,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/typeOfKilo">
 
-        <EditText
+        <br.com.sapereaude.maskedEditText.MaskedEditText
             android:id="@+id/dataOfStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Дата начала"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="12dp"
+            android:contentDescription="Дата начала отсчёта"
+            android:ems="10"
+            android:hint="ддммгггг"
             android:inputType="date"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="165dp" />
+            android:onClick="inClick"
+            android:textColor="#FFFFFF"
+            app:keep_hint="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/kilometrs"
+            mask:allowed_chars="1234567890"
+            mask:mask="##/##/####"
+            tools:text="@tools:sample/date/ddmmyy" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
