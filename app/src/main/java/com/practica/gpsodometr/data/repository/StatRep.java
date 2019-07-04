@@ -1,5 +1,7 @@
 package com.practica.gpsodometr.data.repository;
 
+import androidx.annotation.NonNull;
+
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Stat;
 
@@ -10,11 +12,14 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class StatRep {
-    public static void add(Stat stat) {
+    public static void add(@NonNull final Stat stat) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.insert(stat);
-        realm.commitTransaction();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.insert(stat);
+            }
+        });
     }
 
     public static void updateKm(Stat stat, final double newKm) {

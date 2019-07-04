@@ -1,7 +1,5 @@
 package com.practica.gpsodometr.data.model;
 
-import androidx.annotation.NonNull;
-
 import com.practica.gpsodometr.data.Helper;
 
 import java.util.Date;
@@ -37,7 +35,6 @@ public class Stat extends RealmObject {
         setKilometers(kilometers);
     }
 
-    @NonNull
     public Date getDate() {
         return date;
     }
@@ -47,12 +44,15 @@ public class Stat extends RealmObject {
         this.date = Helper.getDateWithothTime(date);
     }
 
-    @NonNull
     public Double getKilometers() {
         return kilometers;
     }
 
     public void setKilometers(Double kilometers) {
+        if (kilometers == null) {
+            this.kilometers = 0.0;
+            return;
+        }
         if (BuildConfig.DEBUG && !(kilometers >= 0)) {
             throw new AssertionError();
         }

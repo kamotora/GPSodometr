@@ -39,7 +39,6 @@ public class Action extends RealmObject {
         setKilometers(kilometers);
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
@@ -51,7 +50,6 @@ public class Action extends RealmObject {
         this.name = name;
     }
 
-    @NonNull
     public Date getDateStart() {
         return dateStart;
     }

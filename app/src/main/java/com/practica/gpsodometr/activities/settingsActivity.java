@@ -25,7 +25,6 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Msg;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
@@ -34,7 +33,9 @@ import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -124,6 +125,7 @@ public class settingsActivity extends AppCompatActivity{
                     addRow(action, km);
                 else
                     //Если отслеживание начнётся в будущем
+                    //Осталось столько, сколько всего км
                     addRow(action, action.getKilometers());
             }
         }
@@ -201,8 +203,17 @@ public class settingsActivity extends AppCompatActivity{
 
                 //Если не удалось спарсить данные, ошибка
                 try{
-                    kilometers = Double.parseDouble(kilometrs.getText().toString());
-                    date = Helper.getDateFormat().parse(tvDate.getText().toString());
+                    kilometers = Helper.stringToKm(kilometrs.getText().toString());
+                    date = Helper.getDateFromString(tvDate.getText().toString());
+                    if (kilometers == null || kilometers > 1_000_000)
+                        throw new NumberFormatException("Многовато");
+                    if (date == null)
+                        throw new ParseException("Неверный формат даты", 0);
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.setTime(date);
+                    if (calendar.get(Calendar.YEAR) < 2019 || calendar.get(Calendar.YEAR) > 2100)
+                        throw new ParseException("Некорректная дата", 0);
+
 
                 }catch (NumberFormatException parseDoubExcept){
                     errorOfKilometrs.setErrorEnabled(true);
@@ -212,7 +223,7 @@ public class settingsActivity extends AppCompatActivity{
                     return;
                 }catch (ParseException parseDateExcept){
                     errorOfDate.setErrorEnabled(true);
-                    errorOfDate.setError(getResources().getString(R.string.tvDate));
+                    errorOfDate.setError(parseDateExcept.getMessage());
                     errorOfKilometrs.setError("");
                     errorOfWork.setError("");
                     return;
@@ -226,14 +237,6 @@ public class settingsActivity extends AppCompatActivity{
                 if (km != null)
                     MainActivity.getActionsAndKm().put(action, km);
                 addRow(action, km);
-                //String str = typeOfWork.getText().toString() + " " + kilometrs.getText().toString() + " "  + tvDate.getText().toString();
-
-
-                //tasks.add(0,str);
-                //adapter.notifyDataSetChanged();
-                typeOfWork.setText("");
-                kilometrs.setText("");
-                tvDate.setText("");
 
                 dialog.dismiss();
             }

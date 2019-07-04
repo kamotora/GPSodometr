@@ -92,7 +92,7 @@
 
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:text="Кол-во километров"
+                    android:text="Всего (км)"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView

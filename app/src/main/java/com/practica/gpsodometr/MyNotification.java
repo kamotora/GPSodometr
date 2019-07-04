@@ -90,6 +90,8 @@ public class MyNotification {
         while (actionHashMap.get(notificationID) != null) {
             notificationID = random.nextInt(100000);
         }
+
+        //Сохраняем для дальнейшей обработки удаления по нажатию
         actionHashMap.put(notificationID, action);
         Intent action1Intent = new Intent(context, NotificationActionService.class)
                 .setAction(ACTION_1)
@@ -101,7 +103,7 @@ public class MyNotification {
                 builder.setContentTitle(action.getName())
                         .setContentText("Вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Начиная с даты " + Helper.getDateStringInNeedFormat(action.getDateStart()) + " вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
+                                .bigText("Начиная с даты " + Helper.getDateStringInNeedFormat(action.getDateStart()) + " вы проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
                                         "Нажмите на это уведомление, чтобы перестать отслеживать \"" + action.getName() + "\""))
                         .setContentIntent(action1PendingIntent)
                         .build();
@@ -124,6 +126,7 @@ public class MyNotification {
                 final Action act = actionHashMap.get(key);
                 if (act != null) {
                     //TODO:ошибка, если приложение не запущено(ui потока нету)
+                    //TODO:обновлять таблицу в настройках
                     new Handler(context.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {

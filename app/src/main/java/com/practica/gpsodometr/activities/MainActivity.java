@@ -194,6 +194,8 @@ public class MainActivity extends AppCompatActivity{
         }
         addRow(new Date(), kilometers);
 
+        registerProviders();
+
         //Конец метода onCreate()
     }
 
@@ -212,7 +214,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        registerProviders();
     }
 
 
@@ -225,7 +226,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStop() {
         super.onStop();
-        clearProviders();
 
         //Если ещё нет записи на сегодня, создаём
         //Сохраняем пройденное расстояние
@@ -236,6 +236,12 @@ public class MainActivity extends AppCompatActivity{
             }
         } else
             StatRep.updateKm(todayStat, kilometers);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        clearProviders();
     }
 
 
@@ -294,8 +300,8 @@ public class MainActivity extends AppCompatActivity{
 
         dateView.setTypeface(tf2);
         kmView.setTypeface(tf2);
-        /**
-         * Обработка удаления из таблицы
+        /*
+          Обработка удаления из таблицы
          */
         tr.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
@@ -353,13 +359,9 @@ public class MainActivity extends AppCompatActivity{
      */
     public void showDistance(double newKm) {
         kilometers += newKm;
-        //final TextView distanceText = findViewById(R.id.distance);
-        //distanceText.setText(distanceStr);
-        //TODO:!!!
         //Берём первую строку(нулевая строка - заголовок)
         TableRow tr = (TableRow) table.getChildAt(1);
         TextView kmView = (TextView) tr.getVirtualChildAt(1);
-        //TextView kmView = (TextView) tr.findViewById(R.id.col2);
         kmView.setText(Helper.kmToString(kilometers));
 
         // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
@@ -367,7 +369,12 @@ public class MainActivity extends AppCompatActivity{
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;
         for (Action key : actionsAndKm.keySet()) {
-            Double newValue = actionsAndKm.get(key) - newKm;
+            Double newValue = actionsAndKm.get(key);
+            if (newValue == null) {
+                actionsAndKm.remove(key);
+                continue;
+            }
+            newValue -= newKm;
             actionsAndKm.put(key, newValue);
             if (newValue <= 0) {
                 MyNotification.getInstance(this).show(key);
