@@ -11,13 +11,12 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar"
-        app:layout_constraintBottom_toTopOf="@+id/minSpeed"
+        app:layout_constraintBottom_toTopOf="@+id/question"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,14 +27,13 @@
         android:id="@+id/addWork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="30dp"
         android:background="#60000000"
         android:text=" Добавить работу"
         app:layout_constraintBottom_toTopOf="@+id/scrollView4"
-        app:layout_constraintEnd_toStartOf="@+id/question"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/minSpeed" />
+        app:layout_constraintTop_toBottomOf="@+id/question" />
 
     <ScrollView
         android:id="@+id/scrollView4"
@@ -111,34 +109,43 @@
 
     </ScrollView>
 
-    <EditText
-        android:id="@+id/minSpeed"
-        android:layout_width="213dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/typeOfSpeed"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="93dp"
-        android:contextClickable="true"
-        android:cursorVisible="true"
-        android:ems="10"
-        android:hint="Минимальная скорость"
-        android:inputType="numberDecimal"
-        android:maxLength="3"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/addWork"
+        android:layout_marginEnd="143dp"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/question"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <EditText
+            android:id="@+id/minSpeed"
+            android:layout_width="213dp"
+            android:layout_height="wrap_content"
+            android:contextClickable="true"
+            android:cursorVisible="true"
+            android:ems="10"
+            android:hint="Минимальная скорость"
+            android:inputType="numberDecimal"
+            android:maxLength="3"
+            android:textColor="#FFFFFF"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="88dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/question"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="233dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="145dp"
         android:background="@drawable/question"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addWork"
-        app:layout_constraintTop_toTopOf="@+id/addWork" />
+        app:layout_constraintStart_toEndOf="@+id/typeOfSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
