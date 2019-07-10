@@ -28,7 +28,7 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Msg;
+import com.practica.gpsodometr.Message;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity{
                     return;
                 switch(drawerItem.getIdentifier()){
                     case 1:
-                        intent = new Intent(MainActivity.this, profileActivity.class);
+                        intent = new Intent(MainActivity.this, ProfileActivity.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     case 2:
-                        intent = new Intent(MainActivity.this, settingsActivity.class);
+                        intent = new Intent(MainActivity.this, SettingsActivity.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
@@ -170,13 +170,13 @@ public class MainActivity extends AppCompatActivity{
         //Вывод всех записей из бд(отладка)
         //for (Stat stat : realm.where(Stat.class).findAll())
         //    System.out.println(stat);
-        Msg.initial(this);
+        Message.initial(this);
 
         //Если есть сохранённая минимальная скорость
         //Сообщаем это MyLocationListener
-        SharedPreferences mSettings = getSharedPreferences(settingsActivity.SETTING_FILENAME, Context.MODE_PRIVATE);
-        if (mSettings.contains(settingsActivity.SETTING_MINSPEED_NAME)) {
-            MyLocationListener.setMinSpeed(mSettings.getInt(settingsActivity.SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED));
+        SharedPreferences mSettings = getSharedPreferences(SettingsActivity.SETTING_FILENAME, Context.MODE_PRIVATE);
+        if (mSettings.contains(SettingsActivity.SETTING_MINSPEED_NAME)) {
+            MyLocationListener.setMinSpeed(mSettings.getInt(SettingsActivity.SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED));
         }
 
         //Получаем список всех отслеживаемых действий и сколько осталось км
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity{
                     //showDistance();
                 } else {
                     //Пользователь запретил доступ к GPS
-                    Msg.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
+                    Message.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
                 }
                 break;
             default:
@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity{
         }
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            Msg.showMsg("Включите GPS");
+            Message.showMsg("Включите GPS");
 
         //Обрабатываем события от GPS в отдельном потоке
         HandlerThread t = new HandlerThread("locationListener");

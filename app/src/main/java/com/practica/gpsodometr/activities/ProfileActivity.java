@@ -4,22 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.R;
 
-public class profileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
 
     @Override
@@ -41,12 +36,12 @@ public class profileActivity extends AppCompatActivity {
                     return;
                 switch(drawerItem.getIdentifier()){
                     case 2:
-                        intent = new Intent(profileActivity.this, settingsActivity.class);
+                        intent = new Intent(ProfileActivity.this, SettingsActivity.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;
                     case 3:
-                        intent = new Intent(profileActivity.this, MainActivity.class);
+                        intent = new Intent(ProfileActivity.this, MainActivity.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.right_in,R.anim.left_out);
                         break;

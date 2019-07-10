@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.RealmResults;
 
-public class settingsActivity extends AppCompatActivity{
+public class SettingsActivity extends AppCompatActivity {
     Button btn, quest;
     TextView minSpeed;
     TableLayout table;
@@ -55,29 +55,30 @@ public class settingsActivity extends AppCompatActivity{
     static final String SETTING_FILENAME = "settings";
     //Название сохраняемой настройки в файле
     static final String SETTING_MINSPEED_NAME = "minSpeed";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
-        tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
+        tf1 = Typeface.createFromAsset(getAssets(), "Geometria-Bold.ttf");
+        tf2 = Typeface.createFromAsset(getAssets(), "PFAgoraSlabPro Bold.ttf");
 
-        table = (TableLayout)findViewById(R.id.tableresult);
+        table = (TableLayout) findViewById(R.id.tableresult);
         inflaer = LayoutInflater.from(this);
-        btn = (Button)findViewById(R.id.addWork);
+        btn = (Button) findViewById(R.id.addWork);
         btn.setTypeface(tf1);
-        btn.setOnClickListener(new View.OnClickListener(){
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                showDialog(settingsActivity.this);
+            public void onClick(View v) {
+                showDialog(SettingsActivity.this);
             }
         });
-        quest = (Button)findViewById(R.id.question);
+        quest = (Button) findViewById(R.id.question);
         quest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAsk(settingsActivity.this);
+                showAsk(SettingsActivity.this);
             }
         });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,22 +88,22 @@ public class settingsActivity extends AppCompatActivity{
                 new PrimaryDrawerItem().withName("Профиль").withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
                 new PrimaryDrawerItem().withName("Настройки").withIcon(FontAwesome.Icon.faw_gamepad).withIdentifier(2),
                 new PrimaryDrawerItem().withName("Результат").withIcon(FontAwesome.Icon.faw_eye).withIdentifier(3)
-        ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener(){
+        ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem){
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                 Intent intent;
                 if (drawerItem == null)
                     return;
-                switch(drawerItem.getIdentifier()){
+                switch (drawerItem.getIdentifier()) {
                     case 1:
-                        intent = new Intent(settingsActivity.this, profileActivity.class);
+                        intent = new Intent(SettingsActivity.this, ProfileActivity.class);
                         startActivity(intent);
-                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                        overridePendingTransition(R.anim.right_in, R.anim.left_out);
                         break;
                     case 3:
-                        intent = new Intent(settingsActivity.this, MainActivity.class);
+                        intent = new Intent(SettingsActivity.this, MainActivity.class);
                         startActivity(intent);
-                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                        overridePendingTransition(R.anim.right_in, R.anim.left_out);
                         break;
                     default:
                         break;
@@ -110,9 +111,9 @@ public class settingsActivity extends AppCompatActivity{
             }
         }).build();
 
-        minSpeed = (TextView)findViewById(R.id.minSpeed);
+        minSpeed = (TextView) findViewById(R.id.minSpeed);
 
-        mSettings  = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
+        mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 
         //Отслеживаемые работы
         ConcurrentHashMap<Action, Double> list = MainActivity.getActionsAndKm();
@@ -138,7 +139,7 @@ public class settingsActivity extends AppCompatActivity{
         //Загружаем ранее сохранённые настройки
         //Загружаем мин.скорость
         Object edit = findViewById(R.id.minSpeed);
-        if(edit instanceof EditText) {
+        if (edit instanceof EditText) {
             ((EditText) edit).setText(String.format(Locale.getDefault(), "%d", mSettings.getInt(SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED)));
         }
     }
@@ -169,7 +170,7 @@ public class settingsActivity extends AppCompatActivity{
     }
 
 
-    public void showDialog(settingsActivity activity){
+    public void showDialog(SettingsActivity activity) {
         final Dialog dialog = new Dialog(activity);
 
         dialog.setCancelable(false);
@@ -183,17 +184,16 @@ public class settingsActivity extends AppCompatActivity{
         final TextView tvDate = dialog.findViewById(R.id.dataOfStart);
 
 
-
-        Button btnOk = (Button)dialog.findViewById(R.id.btnOk);
-        btnOk.setOnClickListener(new View.OnClickListener(){
+        Button btnOk = (Button) dialog.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Проверка на допустимость
                 String name = typeOfWork.getText().toString();
                 Double kilometers = 0.0;
                 Date date = null;
                 //Если строка пустая или только из пробелов, ошибка
-                if(name.trim().isEmpty()){
+                if (name.trim().isEmpty()) {
                     errorOfWork.setErrorEnabled(true);
                     errorOfWork.setError(getResources().getString(R.string.typeOfWorkError));
                     errorOfKilometrs.setError("");
@@ -202,7 +202,7 @@ public class settingsActivity extends AppCompatActivity{
                 }
 
                 //Если не удалось спарсить данные, ошибка
-                try{
+                try {
                     kilometers = Helper.stringToKm(kilometrs.getText().toString());
                     date = Helper.getDateFromString(tvDate.getText().toString());
                     if (kilometers == null || kilometers > 1_000_000)
@@ -215,13 +215,13 @@ public class settingsActivity extends AppCompatActivity{
                         throw new ParseException("Некорректная дата", 0);
 
 
-                }catch (NumberFormatException parseDoubExcept){
+                } catch (NumberFormatException parseDoubExcept) {
                     errorOfKilometrs.setErrorEnabled(true);
                     errorOfKilometrs.setError(getResources().getString(R.string.kilometrsError));
                     errorOfWork.setError("");
                     errorOfDate.setError("");
                     return;
-                }catch (ParseException parseDateExcept){
+                } catch (ParseException parseDateExcept) {
                     errorOfDate.setErrorEnabled(true);
                     errorOfDate.setError(parseDateExcept.getMessage());
                     errorOfKilometrs.setError("");
@@ -242,7 +242,7 @@ public class settingsActivity extends AppCompatActivity{
             }
         });
 
-        Button btnCanc = (Button)dialog.findViewById(R.id.btnClose);
+        Button btnCanc = (Button) dialog.findViewById(R.id.btnClose);
         btnCanc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -250,7 +250,6 @@ public class settingsActivity extends AppCompatActivity{
                 dialog.dismiss();
             }
         });
-
 
 
         dialog.show();
@@ -277,7 +276,7 @@ public class settingsActivity extends AppCompatActivity{
             @Override
             public boolean onLongClick(View view) {
                 tr.setBackgroundResource(R.color.colorAccent);
-                AlertDialog.Builder builder = new AlertDialog.Builder(settingsActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                 builder.setTitle("Удалить данную работу?")
                         .setCancelable(false)
                         .setPositiveButton("Да",
@@ -329,12 +328,12 @@ public class settingsActivity extends AppCompatActivity{
     }
 
     @Override
-    public void finish(){
+    public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.left_in,R.anim.right_out);
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 
-    public void showAsk(settingsActivity activity){
+    public void showAsk(SettingsActivity activity) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
         dialog.setMessage("Чтобы удалить работу, необходимо долговременное нажатие");
 

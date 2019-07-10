@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.practica.gpsodometr.Msg;
+import com.practica.gpsodometr.Message;
 import com.practica.gpsodometr.activities.MainActivity;
 
 import java.util.Locale;
@@ -64,12 +64,12 @@ public class MyLocationListener implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-        Msg.showMsg(provider + " включен");
+        Message.showMsg(provider + " включен");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Msg.showMsg(provider + " отключён");
+        Message.showMsg(provider + " отключён");
     }
 
 

@@ -6,14 +6,15 @@ import android.widget.Toast;
 
 import com.practica.gpsodometr.activities.MainActivity;
 
-public class Msg {
+public class Message {
     private static Context context = null;
-    private Msg(MainActivity activity){
+
+    private Message(MainActivity activity) {
         context = activity.getApplicationContext();
     }
     public static void initial(MainActivity activity){
         if(context == null && activity != null){
-            new Msg(activity);
+            new Message(activity);
         }
     }
     public static void showMsg(String text) {

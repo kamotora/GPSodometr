@@ -133,7 +133,7 @@ public class MyNotification {
                             try {
                                 ActionRep.delete(act);
                             } catch (Exception exp) {
-                                Msg.showMsg("Ошибка. Возможно, вы уже удалили эту работу");
+                                Message.showMsg("Ошибка. Возможно, вы уже удалили эту работу");
                             }
                             actionHashMap.remove(key);
                             System.out.println("Удалено");
@@ -142,5 +142,7 @@ public class MyNotification {
                 }
             }
         }
+
+
     }
 }
