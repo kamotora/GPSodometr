@@ -28,93 +28,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="66dp"
         android:background="#60000000"
         android:text=" Добавить работу"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintBottom_toTopOf="@+id/listWork"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/question" />
-
-    <ScrollView
-        android:id="@+id/scrollView4"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="5dp"
-        android:layout_weight="1"
-        android:scrollbars="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addWork">
-
-        <TableLayout
-            android:id="@+id/tableresult"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="8dp"
-            android:divider="?android:dividerHorizontal"
-            android:scrollbarSize="4dp"
-            android:scrollbars="horizontal"
-            android:showDividers="middle"
-            android:stretchColumns="*"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/typeWork"
-                    android:layout_width="0dp"
-                    android:layout_margin="1dip"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Вид работы"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/dateStart"
-                    android:layout_width="0dp"
-                    android:layout_margin="1dip"
-
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Дата начала"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/kilo"
-                    android:layout_width="0dp"
-                    android:layout_margin="1dip"
-
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Всего (км)"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/leftKilo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Осталось (км)"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            </TableRow>
-
-        </TableLayout>
-
-    </ScrollView>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/typeOfSpeed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="160dp"
         app:errorEnabled="true"
+        app:layout_constraintEnd_toStartOf="@+id/question"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
@@ -138,10 +66,19 @@
         android:id="@+id/question"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:layout_marginBottom="145dp"
+        android:layout_marginBottom="62dp"
         android:background="@drawable/question"
         app:layout_constraintBottom_toTopOf="@+id/addWork"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listWork"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addWork" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
