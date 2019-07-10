@@ -2,19 +2,14 @@ package com.practica.gpsodometr.activities;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -28,7 +23,6 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
@@ -37,17 +31,12 @@ import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity {
     Button btn, quest;
@@ -146,18 +135,18 @@ public class SettingsActivity extends AppCompatActivity {
             for (Action action : allActions.keySet()) {
                 Double km = allActions.get(action);
                 if (km != null)
-                    addRow(action, km);
+                    loadDate(action, km);
                 else
                     //Если отслеживание начнётся в будущем
                     //Осталось столько, сколько всего км
-                    addRow(action, action.getKilometers());
+                    loadDate(action, action.getKilometers());
             }
         }
-*/
+
     }
 
-    private void loadDate(Action action/*, Double leftKm*/){
-        listAdapter.setItems(action);
+    private void loadDate(Action action, Double leftKm) {
+        listAdapter.setItems(new MyAdapter.PairOfActionAndKm(action, leftKm));
     }
 
     @Override
@@ -257,14 +246,15 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 //Сохранение действия, если всё норм
                 //И сразу посчитаем, сколько осталось км
-                //Добавим в список для отслеживания, если надо
+                //Добавим в список для отслеживания
                 Action action = new Action(name, date, kilometers);
                 Double km = ActionRep.countForOneAction(action);
                 ActionRep.add(action);
-                if (km != null)
-                    myApplication.getActionsAndKm().put(action, km);
-                //addRow(action, km);
-                loadDate(action);
+                if (km < 0)
+                    MyNotification.getInstance(SettingsActivity.this).show(action);
+                myApplication.getActionsAndKm().put(action, km);
+
+                loadDate(action, km);
                 dialog.dismiss();
             }
         });

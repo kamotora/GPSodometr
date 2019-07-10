@@ -77,10 +77,9 @@ public class ActionRep {
 
     /**
      * Для 1 действия Action посчитать кол-во километров, которое осталось для наступления события
-     * Если событие будет отслеживаться в будущем(позже, чем сегодня), вернем null
      */
     public static Double countForOneAction(Action action) {
-        if (action == null || action.getDateStart().after(new Date()))
+        if (action == null)
             return null;
 
         Double sum = 0.0;

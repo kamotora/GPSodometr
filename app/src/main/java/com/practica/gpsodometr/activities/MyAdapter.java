@@ -13,7 +13,6 @@ import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -41,7 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private TextView dataStart;
     private TextView leftKilo;
 
-    private List<Action> listWork = new ArrayList<>();
+    private List<PairOfActionAndKm> listWork = new ArrayList<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -53,23 +52,34 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             leftKilo = itemView.findViewById(R.id.leftKilo);
         }
 
-        public void bind(Action work){
-            nameWork.setText(work.getName());
-            kilometrs.setText(Helper.kmToString(work.getKilometers()));
-            dataStart.setText(Helper.getDateStringInNeedFormat(work.getDateStart()));
-            //leftKilo.setText(work.getLeftKilo());
+        public void bind(PairOfActionAndKm pair) {
+            nameWork.setText(pair.action.getName());
+            kilometrs.setText(Helper.kmToString(pair.action.getKilometers()));
+            dataStart.setText(Helper.getDateStringInNeedFormat(pair.action.getDateStart()));
+            leftKilo.setText(Helper.kmToString(pair.leftKilometers));
         }
 
     }
 
-    public void setItems(Action work){
-        listWork.add(work);
+    public void setItems(PairOfActionAndKm pair) {
+        listWork.add(pair);
         notifyItemInserted(getItemCount());
     }
 
     public void clearItems(){
         listWork.clear();
         notifyDataSetChanged();
+    }
+
+
+    static class PairOfActionAndKm {
+        final Action action;
+        final Double leftKilometers;
+
+        PairOfActionAndKm(Action action, Double leftKilometers) {
+            this.action = action;
+            this.leftKilometers = leftKilometers;
+        }
     }
 
 }
