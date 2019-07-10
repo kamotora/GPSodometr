@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikepenz.iconics.typeface.FontAwesome;
@@ -34,21 +37,31 @@ import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.realm.RealmResults;
+
 public class SettingsActivity extends AppCompatActivity {
     Button btn, quest;
     TextView minSpeed;
-    TableLayout table;
-    LayoutInflater inflaer;
+    //TableLayout table;
+    //LayoutInflater inflaer;
+
 
     Typeface tf1;//Для Букв
     Typeface tf2;//Для Цифр
+
+    RecyclerView listWork;
+    private MyAdapter listAdapter;
+
 
     SharedPreferences mSettings = null;
     //Название файла с настройками
@@ -69,8 +82,15 @@ public class SettingsActivity extends AppCompatActivity {
         tf1 = Typeface.createFromAsset(getAssets(), "Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(), "PFAgoraSlabPro Bold.ttf");
 
-        table = (TableLayout) findViewById(R.id.tableresult);
-        inflaer = LayoutInflater.from(this);
+        listWork = (RecyclerView)findViewById(R.id.listWork);
+        listWork.setHasFixedSize(true);
+        listWork.setLayoutManager(new LinearLayoutManager(this));
+        listAdapter = new MyAdapter();
+        listWork.setAdapter(listAdapter);
+
+        //loadDate();
+        //table = (TableLayout) findViewById(R.id.tableresult);
+        //inflaer = LayoutInflater.from(this);
         btn = (Button) findViewById(R.id.addWork);
         btn.setTypeface(tf1);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +153,12 @@ public class SettingsActivity extends AppCompatActivity {
                     addRow(action, action.getKilometers());
             }
         }
+*/
+    }
 
+    private void loadDate(Action action/*, Double leftKm*/){
+        Work newWork = new Work(action.getName(),Helper.getDateStringInNeedFormat(action.getDateStart()),Helper.kmToString(action.getKilometers())/*,Helper.kmToString(leftKm)*/);
+        listAdapter.setItems(newWork);
     }
 
     @Override
@@ -164,6 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         settingEditor.apply();
+        //tasks.clear();
     }
 
     @Override
@@ -238,8 +264,8 @@ public class SettingsActivity extends AppCompatActivity {
                 ActionRep.add(action);
                 if (km != null)
                     myApplication.getActionsAndKm().put(action, km);
-                addRow(action, km);
-
+                //addRow(action, km);
+                loadDate(action);
                 dialog.dismiss();
             }
         });
@@ -260,7 +286,7 @@ public class SettingsActivity extends AppCompatActivity {
     /**
      * Добавить новую строку в таблицу
      **/
-    public void addRow(final Action action, Double leftKm) {
+    /*public void addRow(final Action action, Double leftKm) {
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.tableforsettings, null);
         final TextView tvName = (TextView) tr.findViewById(R.id.col1);
         final TextView tvDate = (TextView) tr.findViewById(R.id.col2);
@@ -274,7 +300,7 @@ public class SettingsActivity extends AppCompatActivity {
         /**
          * Обработка удаления с таблицы
          */
-        tr.setOnLongClickListener(new View.OnLongClickListener() {
+       /* tr.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 tr.setBackgroundResource(R.color.colorAccent);
@@ -313,9 +339,9 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             }
         });
-
+*/
         //Добавление в таблицу и бд
-        tvName.setText(action.getName());
+  /*      tvName.setText(action.getName());
         tvDate.setText(Helper.getDateStringInNeedFormat(action.getDateStart()));
         tvKm.setText(Helper.kmToString(action.getKilometers()));
         if (leftKm != null) {
@@ -328,7 +354,7 @@ public class SettingsActivity extends AppCompatActivity {
             tvLeftKm.setText(Helper.kmToString(action.getKilometers()));
         table.addView(tr);
     }
-
+*/
     @Override
     public void finish() {
         super.finish();
