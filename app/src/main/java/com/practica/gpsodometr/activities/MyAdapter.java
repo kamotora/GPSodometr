@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.Helper;
+import com.practica.gpsodometr.data.model.Action;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +41,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private TextView dataStart;
     private TextView leftKilo;
 
-    private List<Work> listWork = new ArrayList<>();
+    private List<Action> listWork = new ArrayList<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -51,16 +53,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             leftKilo = itemView.findViewById(R.id.leftKilo);
         }
 
-        public void bind(Work work){
-            nameWork.setText(work.getNameWork());
-            kilometrs.setText(work.getKilometrs());
-            dataStart.setText(work.getDataStart());
-            leftKilo.setText(work.getLeftKilo());
+        public void bind(Action work){
+            nameWork.setText(work.getName());
+            kilometrs.setText(Helper.kmToString(work.getKilometers()));
+            dataStart.setText(Helper.getDateStringInNeedFormat(work.getDateStart()));
+            //leftKilo.setText(work.getLeftKilo());
         }
 
     }
 
-    public void setItems(Work work){
+    public void setItems(Action work){
         listWork.add(work);
         notifyItemInserted(getItemCount());
     }

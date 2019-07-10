@@ -157,8 +157,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadDate(Action action/*, Double leftKm*/){
-        Work newWork = new Work(action.getName(),Helper.getDateStringInNeedFormat(action.getDateStart()),Helper.kmToString(action.getKilometers())/*,Helper.kmToString(leftKm)*/);
-        listAdapter.setItems(newWork);
+        listAdapter.setItems(action);
     }
 
     @Override
