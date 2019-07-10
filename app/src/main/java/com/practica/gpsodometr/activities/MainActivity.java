@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -26,7 +28,7 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Message;
+import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Stat;
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity{
 
         //Вывод всех записей из бд(отладка)
         //for (Stat stat : realm.where(Stat.class).findAll())
-        //    System.out.println(stat);
+        //    Log.v(stat);
 
         //Добавить запись(отладка)
         //StatRep.add(new Stat(2019,6,24,10.0));
@@ -212,8 +214,14 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            Message.showMsg("Включите GPS");
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast toast = Toast.makeText(this,
+                    "Включите GPS",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM, 0, 0);
+            toast.show();
+            //Message.showMsg("Включите GPS");
+        }
 
         //Обрабатываем события от GPS в отдельном потоке
         HandlerThread t = new HandlerThread("locationListener");
@@ -239,7 +247,12 @@ public class MainActivity extends AppCompatActivity{
                     //showDistance();
                 } else {
                     //Пользователь запретил доступ к GPS
-                    Message.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
+                    //Message.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
+                    Toast toast = Toast.makeText(this,
+                            "Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна",
+                            Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.BOTTOM, 0, 0);
+                    toast.show();
                 }
                 break;
             default:
@@ -280,7 +293,7 @@ public class MainActivity extends AppCompatActivity{
                                         } else if (statForDelete != null) {
                                             StatRep.delete(statForDelete);
                                         } else {
-                                            System.out.println("ERROR !!! При удалении статистики");
+                                            Log.v("ERROR !!! При удалении статистики");
                                         }
                                         table.removeView(tr);
                                         dialog.cancel();

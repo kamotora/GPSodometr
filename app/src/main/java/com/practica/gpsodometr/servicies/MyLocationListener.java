@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.practica.gpsodometr.Message;
+import com.practica.gpsodometr.Log;
 
 import java.util.Locale;
 
@@ -26,7 +26,7 @@ public class MyLocationListener implements LocationListener {
     public MyLocationListener(MyApplication context) {
         this.context = context;
         //Если скорость не задана ранее, пусть будет по-умолчанию
-        if (minSpeed == 0.01) {
+        if (minSpeed == 0) {
             minSpeed = DEFAULT_MIN_SPEED;
         }
     }
@@ -41,7 +41,7 @@ public class MyLocationListener implements LocationListener {
         double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
         final double deltaDistance = location.distanceTo(lastLocation) / METERS_TO_KILOMETERS;
 
-        System.out.println(String.format(Locale.getDefault(), "Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
+        Log.v(String.format(Locale.getDefault(), "Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
                 , deltaDistance / deltaTime, location.getSpeed(), minSpeed, deltaDistance, deltaTime));
 
         //Если скорость больше, прибавляем пройденное расстояние
@@ -63,12 +63,12 @@ public class MyLocationListener implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-        Message.showMsg(provider + " включен");
+        //Message.showMsg(provider + " включен");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Message.showMsg(provider + " отключён");
+        //Message.showMsg(provider + " отключён");
     }
 
 

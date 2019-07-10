@@ -25,6 +25,7 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
@@ -120,7 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
         mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 
         //Все работы и сколько км осталось для каждой
-        ConcurrentHashMap<Action, Double> allActions = ActionRep.countForEveryKilometersLeft();
+        ConcurrentHashMap<Action, Double> allActions = myApplication.getActionsAndKm();
         if (allActions != null) {
             for (Action action : allActions.keySet()) {
                 Double km = allActions.get(action);
@@ -291,7 +292,7 @@ public class SettingsActivity extends AppCompatActivity {
                                         //Если запись не найдена, возможно, удалена с помощью уведомления
                                         //Или что-то пошло не так
                                         if (actionForDelete == null) {
-                                            System.out.println("ERROR при удалении работы из таблицы");
+                                            Log.v("ERROR при удалении работы из таблицы");
                                         } else {
                                             myApplication.getActionsAndKm().remove(actionForDelete);
                                             ActionRep.delete(actionForDelete);

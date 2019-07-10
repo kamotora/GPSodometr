@@ -53,7 +53,7 @@ public class MyApplication extends Application {
 
 
         //Получаем список всех отслеживаемых действий и сколько осталось км
-        actionsAndKm = ActionRep.countForEveryKilometersLeft();
+        actionsAndKm = ActionRep.countForEveryHowMuchKilometersLeft();
         //Проверяем, вдруг есть сохранённая информация на сегодня
 
         if (todayStat == null) {
@@ -110,6 +110,9 @@ public class MyApplication extends Application {
                 actionsAndKm.remove(key);
                 continue;
             }
+            //Если действие нужно отслеживать в будущем
+            if (key.getDateStart().after(todayStat.getDate()))
+                continue;
             newValue -= deltaDistance;
             actionsAndKm.put(key, newValue);
 

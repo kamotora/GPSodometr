@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 
 import androidx.core.app.NotificationCompat;
@@ -90,7 +91,7 @@ public class MyNotification {
         //Если уже показали уведомление по этому action
         //Не надо ещё раз
         if (actionHashMap.indexOfValue(action) >= 0) {
-            System.out.println("Такое уведомление уже есть");
+            Log.v("Такое уведомление уже есть");
             return 0;
         }
         Random random = new Random();
@@ -113,7 +114,7 @@ public class MyNotification {
                         .setContentText("Вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"")
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText("Начиная с даты " + Helper.getDateStringInNeedFormat(action.getDateStart()) + " вы проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
-                                        "Нажмите на это уведомление, чтобы перестать отслеживать \"" + action.getName() + "\""))
+                                        "Нажмите на это уведомление, чтобы перестать отслеживать эту работу"))
                         .setContentIntent(action1PendingIntent)
                         .build();
         notificationManager.notify(notificationID, notification);
@@ -134,22 +135,26 @@ public class MyNotification {
                 final int key = intent.getIntExtra(EXTRA_NAME, 0);
                 final Action act = actionHashMap.get(key);
                 if (act != null) {
-                    //TODO:ошибка, если приложение не запущено
-                    new Handler(getApplicationContext().getMainLooper()).post(new Runnable() {
+                    Looper looper = getApplicationContext().getMainLooper();
+                    if (looper == null)
+                        return;
+                    new Handler(looper).post(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 ActionRep.delete(act);
                                 SettingsActivity activity = ((MyApplication) getApplicationContext()).getSettingsActivity();
 
-                                //TODO: Посмотреть
-                                if (activity.hasWindowFocus())
+                                //Если сейчас пользователь в настройках и тыкает на уведомление
+                                //Удалить из таблицы работу
+                                if (activity != null && activity.hasWindowFocus()) {
                                     activity.updateTable();
+                                }
                             } catch (Exception exp) {
-                                Message.showMsg("Ошибка. Возможно, вы уже удалили эту работу");
+                                Log.v("Ошибка. Возможно, вы уже удалили эту работу. Except = " + exp);
                             }
                             actionHashMap.remove(key);
-                            System.out.println("Удалено");
+                            Log.v("Удалено");
                         }
                     });
                 }
