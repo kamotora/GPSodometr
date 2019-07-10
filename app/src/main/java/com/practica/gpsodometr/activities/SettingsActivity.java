@@ -30,6 +30,7 @@ import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
+import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.text.ParseException;
@@ -38,8 +39,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity {
     Button btn, quest;
@@ -52,14 +51,19 @@ public class SettingsActivity extends AppCompatActivity {
 
     SharedPreferences mSettings = null;
     //Название файла с настройками
-    static final String SETTING_FILENAME = "settings";
+    public static final String SETTING_FILENAME = "settings";
     //Название сохраняемой настройки в файле
-    static final String SETTING_MINSPEED_NAME = "minSpeed";
+    public static final String SETTING_MINSPEED_NAME = "minSpeed";
 
+    private MyApplication myApplication = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        myApplication = (MyApplication) getApplicationContext();
+        myApplication.setSettingsActivity(this);
+
 
         tf1 = Typeface.createFromAsset(getAssets(), "Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(), "PFAgoraSlabPro Bold.ttf");
@@ -115,13 +119,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 
-        //Отслеживаемые работы
-        ConcurrentHashMap<Action, Double> list = MainActivity.getActionsAndKm();
-        //Все работы(list + которые будут отслеживаться в будущем)
-        RealmResults<Action> allActions = ActionRep.getAll();
+        //Все работы и сколько км осталось для каждой
+        ConcurrentHashMap<Action, Double> allActions = ActionRep.countForEveryKilometersLeft();
         if (allActions != null) {
-            for (Action action : allActions) {
-                Double km = list.get(action);
+            for (Action action : allActions.keySet()) {
+                Double km = allActions.get(action);
                 if (km != null)
                     addRow(action, km);
                 else
@@ -155,13 +157,12 @@ public class SettingsActivity extends AppCompatActivity {
             //Если введеная мин скорость отличается
             //Сохраняем и изменяем в расчётах
             int newMinSpeed = Integer.parseInt(str);
-            if (newMinSpeed != MyLocationListener.getMinSpeed()) {
+            if (newMinSpeed != myApplication.getLocationListener().getMinSpeed()) {
                 settingEditor.putInt(SETTING_MINSPEED_NAME, newMinSpeed);
-                MyLocationListener.setMinSpeed(newMinSpeed);
+                myApplication.getLocationListener().setMinSpeed(newMinSpeed);
             }
         }
         settingEditor.apply();
-        //tasks.clear();
     }
 
     @Override
@@ -235,7 +236,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Double km = ActionRep.countForOneAction(action);
                 ActionRep.add(action);
                 if (km != null)
-                    MainActivity.getActionsAndKm().put(action, km);
+                    myApplication.getActionsAndKm().put(action, km);
                 addRow(action, km);
 
                 dialog.dismiss();
@@ -292,7 +293,7 @@ public class SettingsActivity extends AppCompatActivity {
                                         if (actionForDelete == null) {
                                             System.out.println("ERROR при удалении работы из таблицы");
                                         } else {
-                                            MainActivity.getActionsAndKm().remove(actionForDelete);
+                                            myApplication.getActionsAndKm().remove(actionForDelete);
                                             ActionRep.delete(actionForDelete);
                                         }
                                         table.removeView(tr);
@@ -339,6 +340,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         AlertDialog alert = dialog.create();
         alert.show();
+    }
+
+    /**
+     * Обновление таблицы
+     */
+    public void updateTable() {
     }
 
 /*

@@ -4,19 +4,13 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.practica.gpsodometr.activities.MainActivity;
-
 public class Message {
     private static Context context = null;
 
-    private Message(MainActivity activity) {
-        context = activity.getApplicationContext();
+    public Message(Context context) {
+        Message.context = context;
     }
-    public static void initial(MainActivity activity){
-        if(context == null && activity != null){
-            new Message(activity);
-        }
-    }
+
     public static void showMsg(String text) {
         //создаём и отображаем текстовое уведомление
         if(context == null)

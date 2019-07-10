@@ -13,9 +13,11 @@ import android.util.SparseArray;
 
 import androidx.core.app.NotificationCompat;
 
+import com.practica.gpsodometr.activities.SettingsActivity;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.repository.ActionRep;
+import com.practica.gpsodometr.servicies.MyApplication;
 
 import java.util.Random;
 
@@ -33,14 +35,14 @@ public class MyNotification {
 
     private NotificationCompat.Builder builder;
     private static NotificationManager notificationManager = null;
-    //здесь для каждого ID уведомления Action, для которого он вызван
+    //здесь каждому ID уведомления соответствует Action, для которого он вызван
     private static SparseArray<Action> actionHashMap = null;
-    //TODO:убрать static
-    private static Context context;
-    private static MyNotification init = null;
+
+    private Context context;
+    private static volatile MyNotification instance = null;
 
     private MyNotification(Context context) {
-        MyNotification.context = context;
+        this.context = context;
         notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -67,9 +69,16 @@ public class MyNotification {
     }
 
     public static MyNotification getInstance(Context context) {
-        if (init == null)
-            init = new MyNotification(context);
-        return init;
+        MyNotification localInstance = instance;
+        if (localInstance == null) {
+            synchronized (MyNotification.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new MyNotification(context);
+                }
+            }
+        }
+        return localInstance;
     }
 
     /**
@@ -125,13 +134,17 @@ public class MyNotification {
                 final int key = intent.getIntExtra(EXTRA_NAME, 0);
                 final Action act = actionHashMap.get(key);
                 if (act != null) {
-                    //TODO:ошибка, если приложение не запущено(ui потока нету)
-                    //TODO:обновлять таблицу в настройках
-                    new Handler(context.getMainLooper()).post(new Runnable() {
+                    //TODO:ошибка, если приложение не запущено
+                    new Handler(getApplicationContext().getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 ActionRep.delete(act);
+                                SettingsActivity activity = ((MyApplication) getApplicationContext()).getSettingsActivity();
+
+                                //TODO: Посмотреть
+                                if (activity.hasWindowFocus())
+                                    activity.updateTable();
                             } catch (Exception exp) {
                                 Message.showMsg("Ошибка. Возможно, вы уже удалили эту работу");
                             }

@@ -1,10 +1,8 @@
 package com.practica.gpsodometr.activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.LocationManager;
@@ -29,41 +27,32 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Message;
-import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
-import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.Stat;
-import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.data.repository.StatRep;
+import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.ConcurrentHashMap;
 
-import io.realm.Realm;
 import io.realm.Sort;
 
 
 public class MainActivity extends AppCompatActivity{
 
     public final int REQUEST_CODE_PERMISSION_GPS = 1;
-    private static LocationManager locationManager = null;
-    //Кол-во километров на сегодня
-    private static double kilometers = 0;
+
     static int kol;
+
     //Обработчик событий от gps
     private MyLocationListener locationListener = null;
-    private static Stat todayStat = null;
-
-
+    private LocationManager locationManager = null;
+    private MyApplication myApplication = null;
     Typeface tf1;//Для Букв
     Typeface tf2;//Для Цифр
-
-    //Action - действие, Double - оставшееся кол-во км.
-    private static ConcurrentHashMap<Action, Double> actionsAndKm = null;
 
     TableLayout table;
     Spinner spinDay;
@@ -73,6 +62,10 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        myApplication = (MyApplication) getApplicationContext();
+
+        myApplication.setMainActivity(this);
 
         table = (TableLayout)findViewById(R.id.tableresult);
         spinDay = (Spinner)findViewById(R.id.action_bar_spinner);
@@ -119,7 +112,10 @@ public class MainActivity extends AppCompatActivity{
                 cleanTable(table);
                 //За сегодня
                 if(position == 0){
-                    addRow(new Date(), kilometers);
+                    if (myApplication.getTodayStat() == null)
+                        addRow(new Stat(0.0));
+                    else
+                        addRow(myApplication.getTodayStat());
                 }
                 //За неделю
                 if(position == 1){
@@ -128,15 +124,8 @@ public class MainActivity extends AppCompatActivity{
                     cal.add(Calendar.DAY_OF_MONTH, -7);
                     //new Date(new Date().getTime() - 604800000);
 
-                    //Если в базе на сегодня нет, но в программе есть же
-                    if (todayStat == null)
-                        addRow(new Date(), kilometers);
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        //Для даты на сегодня берём более актуальное значение
-                        if ((Helper.getDateWithothTime(new Date()).compareTo(stat.getDate())) == 0)
-                            addRow(new Date(), kilometers);
-                        else
-                            addRow(stat.getDate(), stat.getKilometers());
+                        addRow(stat);
                     }
 
                 }
@@ -145,13 +134,9 @@ public class MainActivity extends AppCompatActivity{
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
                     //new Date(new Date().getTime() - 2628000000);
-                    if (todayStat == null)
-                        addRow(new Date(), kilometers);
+
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        if ((Helper.getDateWithothTime(new Date()).compareTo(stat.getDate())) == 0)
-                            addRow(new Date(), kilometers);
-                        else
-                            addRow(stat.getDate(), stat.getKilometers());
+                        addRow(stat);
                     }
                 }
             }
@@ -160,42 +145,25 @@ public class MainActivity extends AppCompatActivity{
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-        //Инициализация бд
-        Realm.init(this);
+
         kol = 0;
-        //Работа с гпс
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new MyLocationListener(this);
 
         //Вывод всех записей из бд(отладка)
         //for (Stat stat : realm.where(Stat.class).findAll())
         //    System.out.println(stat);
-        Message.initial(this);
-
-        //Если есть сохранённая минимальная скорость
-        //Сообщаем это MyLocationListener
-        SharedPreferences mSettings = getSharedPreferences(SettingsActivity.SETTING_FILENAME, Context.MODE_PRIVATE);
-        if (mSettings.contains(SettingsActivity.SETTING_MINSPEED_NAME)) {
-            MyLocationListener.setMinSpeed(mSettings.getInt(SettingsActivity.SETTING_MINSPEED_NAME, MyLocationListener.DEFAULT_MIN_SPEED));
-        }
-
-        //Получаем список всех отслеживаемых действий и сколько осталось км
-        actionsAndKm = ActionRep.countForEveryKilometersLeft();
 
         //Добавить запись(отладка)
         //StatRep.add(new Stat(2019,6,24,10.0));
 
-        //Проверяем, вдруг есть сохранённая информация на сегодня
-        if (todayStat == null) {
-            todayStat = StatRep.findByDate(new Date());
-        }
-        if (todayStat != null) {
-            kilometers = todayStat.getKilometers();
-        }
-        addRow(new Date(), kilometers);
+        locationListener = myApplication.getLocationListener();
+        locationManager = myApplication.getLocationManager();
+
+        if (myApplication.getTodayStat() == null)
+            addRow(new Stat(0.0));
+        else
+            addRow(myApplication.getTodayStat());
 
         registerProviders();
-
         //Конец метода onCreate()
     }
 
@@ -226,16 +194,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStop() {
         super.onStop();
-
-        //Если ещё нет записи на сегодня, создаём
-        //Сохраняем пройденное расстояние
-        if (todayStat == null) {
-            if (kilometers > 0) {
-                todayStat = new Stat(kilometers);
-                StatRep.add(todayStat);
-            }
-        } else
-            StatRep.updateKm(todayStat, kilometers);
     }
 
     @Override
@@ -244,6 +202,28 @@ public class MainActivity extends AppCompatActivity{
         clearProviders();
     }
 
+    private void registerProviders() {
+        //Проверка прав
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Если прав нет, запросим
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_PERMISSION_GPS);
+            return;
+        }
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+            Message.showMsg("Включите GPS");
+
+        //Обрабатываем события от GPS в отдельном потоке
+        HandlerThread t = new HandlerThread("locationListener");
+        t.start();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 2.0f, locationListener, t.getLooper());
+    }
+
+    private void clearProviders() {
+        locationManager.removeUpdates(locationListener);
+    }
 
     /**
      * Просмотр ответа пользователя на запрос доступа к геолокации (доступ дан или нет)
@@ -267,33 +247,10 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void registerProviders() {
-        //Проверка прав
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //Если прав нет, запросим
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_CODE_PERMISSION_GPS);
-            return;
-        }
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            Message.showMsg("Включите GPS");
-
-        //Обрабатываем события от GPS в отдельном потоке
-        HandlerThread t = new HandlerThread("locationListener");
-        t.start();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5.0f, locationListener, t.getLooper());
-    }
-
-    private void clearProviders(){
-        locationManager.removeUpdates(locationListener);
-    }
-
     /**
      * Добавить строку в таблицу
      */
-    public void addRow(Date date, double km) {
+    public void addRow(Stat stat) {
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
         final TextView dateView = tr.findViewById(R.id.col1);
         final TextView kmView = tr.findViewById(R.id.col2);
@@ -315,17 +272,13 @@ public class MainActivity extends AppCompatActivity{
                                     public void onClick(DialogInterface dialog, int id) {
                                         Date dateForDelete = Helper.getDateFromString(dateView.getText().toString());
                                         Stat statForDelete = StatRep.findByDate(dateForDelete);
+                                        Stat todayStat = myApplication.getTodayStat();
                                         //Если нужно удалить данные за сегодня и запись в бд есть
                                         if (statForDelete != null && statForDelete == todayStat) {
                                             StatRep.delete(todayStat);
-                                            todayStat = null;
-                                            kilometers = 0;
+                                            myApplication.todayStatWasDeleted();
                                         } else if (statForDelete != null) {
                                             StatRep.delete(statForDelete);
-                                        }
-                                        //Если нужно удалить данные за сегодня и записи в бд нет
-                                        else if (dateForDelete.compareTo(Helper.getDateWithothTime(new Date())) == 0) {
-                                            kilometers = 0;
                                         } else {
                                             System.out.println("ERROR !!! При удалении статистики");
                                         }
@@ -347,50 +300,23 @@ public class MainActivity extends AppCompatActivity{
         });
 
         //Добавление
-        dateView.setText(Helper.getDateStringInNeedFormat(date));
-        kmView.setText(Helper.kmToString(km));
+        dateView.setText(Helper.getDateStringInNeedFormat(stat.getDate()));
+        kmView.setText(Helper.kmToString(stat.getKilometers()));
         table.addView(tr);
         kol += 1;
     }
 
     /**
      * Обновление данных на экране
-     * Обновление оставшихся км
      */
-    public void showDistance(double newKm) {
-        kilometers += newKm;
+    public void showDistance(double distance) {
         //Берём первую строку(нулевая строка - заголовок)
         TableRow tr = (TableRow) table.getChildAt(1);
         TextView kmView = (TextView) tr.getVirtualChildAt(1);
-        kmView.setText(Helper.kmToString(kilometers));
-
-        // Для наших действий учитываем недавно пройденное расстояние, которого ещё нет в базе
-        //TODO: возможно, нужно в отдельный поток
-        if (actionsAndKm == null || actionsAndKm.isEmpty())
-            return;
-        for (Action key : actionsAndKm.keySet()) {
-            Double newValue = actionsAndKm.get(key);
-            if (newValue == null) {
-                actionsAndKm.remove(key);
-                continue;
-            }
-            newValue -= newKm;
-            actionsAndKm.put(key, newValue);
-            if (newValue <= 0) {
-                MyNotification.getInstance(this).show(key);
-                //Перестаём отслеживать, т.к. уже проехали столько, сколько нужно
-                actionsAndKm.remove(key);
-            }
-        }
+        kmView.setText(Helper.kmToString(distance));
 
     }
 
-
-    public static ConcurrentHashMap<Action, Double> getActionsAndKm() {
-        if (actionsAndKm == null)
-            actionsAndKm = new ConcurrentHashMap<>();
-        return actionsAndKm;
-    }
 
     @Override
     public void finish(){

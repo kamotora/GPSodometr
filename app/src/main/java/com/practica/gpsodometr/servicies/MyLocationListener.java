@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.practica.gpsodometr.Message;
-import com.practica.gpsodometr.activities.MainActivity;
 
 import java.util.Locale;
 
@@ -15,17 +14,17 @@ public class MyLocationListener implements LocationListener {
     private static Location lastLocation = null;
     //Минимальная скорость в м/с
 
-    private static int minSpeed = 0;
+    private int minSpeed = 0;
     public static final int DEFAULT_MIN_SPEED = 20;
     private static final double MILISECONDS_TO_HOURS = 3.6e+6;
     private static final double METERS_TO_KILOMETERS = 1000;
 
-    private MainActivity mainActivity;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    public MyLocationListener(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    private MyApplication context;
 
+    public MyLocationListener(MyApplication context) {
+        this.context = context;
         //Если скорость не задана ранее, пусть будет по-умолчанию
         if (minSpeed == 0.01) {
             minSpeed = DEFAULT_MIN_SPEED;
@@ -50,7 +49,7 @@ public class MyLocationListener implements LocationListener {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mainActivity.showDistance(deltaDistance);
+                    context.addDistance(deltaDistance);
                 }
             });
         }
@@ -73,11 +72,11 @@ public class MyLocationListener implements LocationListener {
     }
 
 
-    public static void setMinSpeed(int minSpeed) {
-        MyLocationListener.minSpeed = minSpeed;
+    public void setMinSpeed(int minSpeed) {
+        this.minSpeed = minSpeed;
     }
 
-    public static int getMinSpeed() {
+    public int getMinSpeed() {
         return minSpeed;
     }
 }
