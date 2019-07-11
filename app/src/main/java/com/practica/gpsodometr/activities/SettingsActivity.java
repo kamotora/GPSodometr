@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     RecyclerView listWork;
     private MyAdapter listAdapter;
+    ItemTouchHelper.Callback callback;
 
 
     SharedPreferences mSettings = null;
@@ -76,6 +78,9 @@ public class SettingsActivity extends AppCompatActivity {
         listWork.setLayoutManager(new LinearLayoutManager(this));
         listAdapter = new MyAdapter();
         listWork.setAdapter(listAdapter);
+        callback = new SimpleItemTouchHelper(listAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(listWork);
 
         //loadDate();
         //table = (TableLayout) findViewById(R.id.tableresult);
@@ -329,7 +334,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 */
-        //Добавление в таблицу и бд
+    //Добавление в таблицу и бд
   /*      tvName.setText(action.getName());
         tvDate.setText(Helper.getDateStringInNeedFormat(action.getDateStart()));
         tvKm.setText(Helper.kmToString(action.getKilometers()));

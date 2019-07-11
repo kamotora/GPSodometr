@@ -15,7 +15,7 @@ import com.practica.gpsodometr.data.model.Action;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
 
     @NonNull
@@ -41,6 +41,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private TextView leftKilo;
 
     private List<PairOfActionAndKm> listWork = new ArrayList<>();
+
+    @Override
+    public void onItemDismiss(int position) {
+        listWork.remove(position);
+        notifyItemRemoved(position);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
