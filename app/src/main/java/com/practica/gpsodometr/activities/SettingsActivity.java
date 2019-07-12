@@ -94,7 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(listWork);
-
+        //Чисто ветку потестить
         //loadDate();
         //table = (TableLayout) findViewById(R.id.tableresult);
         //inflaer = LayoutInflater.from(this);
