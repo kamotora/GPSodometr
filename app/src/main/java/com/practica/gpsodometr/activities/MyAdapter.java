@@ -17,6 +17,7 @@ import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
+    private static ClickListener clickListener;
 
     @NonNull
     @Override
@@ -48,10 +49,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         notifyItemRemoved(position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             nameWork = itemView.findViewById(R.id.typeOfWork);
             kilometrs = itemView.findViewById(R.id.kilometrs);
             dataStart = itemView.findViewById(R.id.dataOfStart);
@@ -65,6 +68,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
             leftKilo.setText(Helper.kmToString(pair.leftKilometers));
         }
 
+        @Override
+        public void onClick(View view) {
+            clickListener.onItemClick(getAdapterPosition(), view);
+        }
+
     }
 
     public void setItems(PairOfActionAndKm pair) {
@@ -72,11 +80,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         notifyItemInserted(getItemCount());
     }
 
+    //Для обновления данных
+    public void updateInfo(int position, PairOfActionAndKm e){
+        listWork.set(position,e);
+        //notifyItemChanged(position);
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        MyAdapter.clickListener = clickListener;
+    }
+
     public void clearItems(){
         listWork.clear();
         notifyDataSetChanged();
     }
-
 
     static class PairOfActionAndKm {
         final Action action;
@@ -86,6 +103,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
             this.action = action;
             this.leftKilometers = leftKilometers;
         }
+    }
+
+    public interface ClickListener{
+        void onItemClick(int position, View v);
     }
 
 }

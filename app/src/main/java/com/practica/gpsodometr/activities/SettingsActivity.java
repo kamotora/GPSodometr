@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,8 +78,20 @@ public class SettingsActivity extends AppCompatActivity {
         listWork.setHasFixedSize(true);
         listWork.setLayoutManager(new LinearLayoutManager(this));
         listAdapter = new MyAdapter();
+
+        //Здесь должно быть обновление по клику на строку
+        listAdapter.setOnItemClickListener(new MyAdapter.ClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+
+                Action actionq = new Action("Работай *****!!!",Helper.getDateFromString("10/10/2019"),Helper.stringToKm("1234"));
+                listAdapter.updateInfo(position,new MyAdapter.PairOfActionAndKm(actionq,123.0));
+                listAdapter.notifyItemChanged(position);
+            }
+        });
         listWork.setAdapter(listAdapter);
         callback = new SimpleItemTouchHelper(listAdapter);
+
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(listWork);
 
@@ -190,6 +203,24 @@ public class SettingsActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+
+    public Action showDialogAlso(SettingsActivity activity){
+        /*final Dialog dialog = new Dialog(activity);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.custom_dialog);
+
+
+        final TextView typeOfWork = dialog.findViewById(R.id.typeOfWork);
+        final TextView kilometrs = dialog.findViewById(R.id.kilometrs);
+        final TextView tvDate = dialog.findViewById(R.id.dataOfStart);
+*/
+        Action action;
+        String name = "замена";
+        Double kilometers = 123.0;
+        Date date = Helper.getDateFromString("10/10/2019");
+
+        return action = new Action(name,date,kilometers);
+    }
 
     public void showDialog(SettingsActivity activity) {
         final Dialog dialog = new Dialog(activity);
@@ -367,6 +398,7 @@ public class SettingsActivity extends AppCompatActivity {
      * Обновление таблицы
      */
     public void updateTable() {
+
     }
 
 /*
