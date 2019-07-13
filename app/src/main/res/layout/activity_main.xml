@@ -11,7 +11,6 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
         android:background="#0000"
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
@@ -38,66 +37,24 @@
     <Spinner
         android:id="@+id/action_bar_spinner"
         style="@android:style/Widget.Material.Spinner.Underlined"
-        android:layout_width="187dp"
-        android:layout_height="62dp"
-        android:layout_marginBottom="103dp"
+        android:layout_width="194dp"
+        android:layout_height="90dp"
+        android:layout_marginBottom="48dp"
         android:entries="@array/interval"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintBottom_toTopOf="@+id/listResult"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMain" />
 
-    <ScrollView
-        android:id="@+id/scrollView4"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listResult"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="horizontal"
+        android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner">
-
-        <TableLayout
-            android:id="@+id/tableresult"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="4dp"
-            android:scrollbars="horizontal"
-            android:divider="?android:dividerHorizontal"
-            android:showDividers="middle"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/date"
-                    android:layout_margin="1dip"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Дата"
-                    android:textStyle = "bold|italic"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/kilo"
-                    android:layout_margin="1dip"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="Километры"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            </TableRow>
-
-        </TableLayout>
-    </ScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/action_bar_spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

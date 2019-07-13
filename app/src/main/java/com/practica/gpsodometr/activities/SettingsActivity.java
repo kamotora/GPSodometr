@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +28,7 @@ import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
@@ -83,10 +83,9 @@ public class SettingsActivity extends AppCompatActivity {
         listAdapter.setOnItemClickListener(new MyAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-
                 Action actionq = new Action("Работай *****!!!",Helper.getDateFromString("10/10/2019"),Helper.stringToKm("1234"));
                 listAdapter.updateInfo(position,new MyAdapter.PairOfActionAndKm(actionq,123.0));
-                listAdapter.notifyItemChanged(position);
+                //listAdapter.notifyItemChanged(position);
             }
         });
         listWork.setAdapter(listAdapter);
@@ -94,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(listWork);
-        //Чисто ветку потестить
+
         //loadDate();
         //table = (TableLayout) findViewById(R.id.tableresult);
         //inflaer = LayoutInflater.from(this);
@@ -201,25 +200,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-
-    public Action showDialogAlso(SettingsActivity activity){
-        /*final Dialog dialog = new Dialog(activity);
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.custom_dialog);
-
-
-        final TextView typeOfWork = dialog.findViewById(R.id.typeOfWork);
-        final TextView kilometrs = dialog.findViewById(R.id.kilometrs);
-        final TextView tvDate = dialog.findViewById(R.id.dataOfStart);
-*/
-        Action action;
-        String name = "замена";
-        Double kilometers = 123.0;
-        Date date = Helper.getDateFromString("10/10/2019");
-
-        return action = new Action(name,date,kilometers);
     }
 
     public void showDialog(SettingsActivity activity) {

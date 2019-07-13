@@ -1,4 +1,4 @@
-package com.practica.gpsodometr.activities;
+package com.practica.gpsodometr.data.model;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;

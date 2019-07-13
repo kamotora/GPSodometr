@@ -98,8 +98,8 @@ public class MyApplication extends Application {
         } else
             StatRep.updateKm(todayStat, kilometers);
 
-        if (mainActivity != null)
-            mainActivity.showDistance(kilometers);
+//        if (mainActivity != null)
+  //          mainActivity.showDistance(kilometers);
 
         // Пересчитаем, сколько осталось км
         if (actionsAndKm == null || actionsAndKm.isEmpty())

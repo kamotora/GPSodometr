@@ -23,6 +23,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
@@ -30,6 +32,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.adapters.AdapterForMain;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
@@ -56,7 +59,11 @@ public class MainActivity extends AppCompatActivity{
     Typeface tf1;//Для Букв
     Typeface tf2;//Для Цифр
 
-    TableLayout table;
+    RecyclerView listResult;
+    private AdapterForMain listAdapter;
+
+    /*
+    TableLayout table;*/
     Spinner spinDay;
     LayoutInflater inflaer;
 
@@ -69,10 +76,16 @@ public class MainActivity extends AppCompatActivity{
 
         myApplication.setMainActivity(this);
 
-        table = (TableLayout)findViewById(R.id.tableresult);
+       /* table = (TableLayout)findViewById(R.id.tableresult);*/
         spinDay = (Spinner)findViewById(R.id.action_bar_spinner);
 
         inflaer = LayoutInflater.from(this);
+
+        listResult = (RecyclerView)findViewById(R.id.listResult);
+        listResult.setHasFixedSize(true);
+        listResult.setLayoutManager(new LinearLayoutManager(this));
+        listAdapter = new AdapterForMain();
+        listResult.setAdapter(listAdapter);
 
         tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
@@ -111,13 +124,13 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 //TODO: можно добавить строку : всего пройдено за неделю,месяц км =
-                cleanTable(table);
+                listAdapter.clearItems();
                 //За сегодня
                 if(position == 0){
                     if (myApplication.getTodayStat() == null)
-                        addRow(new Stat(0.0));
+                        loadDate(new Stat(0.0));
                     else
-                        addRow(myApplication.getTodayStat());
+                        loadDate(myApplication.getTodayStat());
                 }
                 //За неделю
                 if(position == 1){
@@ -127,7 +140,7 @@ public class MainActivity extends AppCompatActivity{
                     //new Date(new Date().getTime() - 604800000);
 
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        addRow(stat);
+                        loadDate(stat);
                     }
 
                 }
@@ -138,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
                     //new Date(new Date().getTime() - 2628000000);
 
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        addRow(stat);
+                        loadDate(stat);
                     }
                 }
             }
@@ -161,12 +174,16 @@ public class MainActivity extends AppCompatActivity{
         locationManager = myApplication.getLocationManager();
 
         if (myApplication.getTodayStat() == null)
-            addRow(new Stat(0.0));
+            loadDate(new Stat(0.0));
         else
-            addRow(myApplication.getTodayStat());
+            loadDate(myApplication.getTodayStat());
 
         registerProviders();
-        //Конец метода onCreate()
+        //Конец метода onCreate()*/
+    }
+
+    private void loadDate(Stat pair){
+        listAdapter.setItems(pair);
     }
 
     public void cleanTable(TableLayout table){
@@ -263,7 +280,7 @@ public class MainActivity extends AppCompatActivity{
     /**
      * Добавить строку в таблицу
      */
-    public void addRow(Stat stat) {
+    /*public void addRow(Stat stat) {
         final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
         final TextView dateView = tr.findViewById(R.id.col1);
         final TextView kmView = tr.findViewById(R.id.col2);
@@ -273,7 +290,7 @@ public class MainActivity extends AppCompatActivity{
         /*
           Обработка удаления из таблицы
          */
-        tr.setOnLongClickListener(new View.OnLongClickListener(){
+      /*  tr.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
                 tr.setBackgroundResource(R.color.colorAccent);
@@ -317,11 +334,11 @@ public class MainActivity extends AppCompatActivity{
         kmView.setText(Helper.kmToString(stat.getKilometers()));
         table.addView(tr);
         kol += 1;
-    }
+    }*/
 
     /**
      * Обновление данных на экране
-     */
+     *//*
     public void showDistance(double distance) {
         //Берём первую строку(нулевая строка - заголовок)
         TableRow tr = (TableRow) table.getChildAt(1);
@@ -329,7 +346,7 @@ public class MainActivity extends AppCompatActivity{
         kmView.setText(Helper.kmToString(distance));
 
     }
-
+*/
 
     @Override
     public void finish(){

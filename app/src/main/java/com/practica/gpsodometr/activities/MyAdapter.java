@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     //Для обновления данных
     public void updateInfo(int position, PairOfActionAndKm e){
         listWork.set(position,e);
-        //notifyItemChanged(position);
+        notifyItemChanged(position);
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
