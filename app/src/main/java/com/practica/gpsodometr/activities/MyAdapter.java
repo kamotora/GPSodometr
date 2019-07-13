@@ -12,6 +12,7 @@ import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
+import com.practica.gpsodometr.data.repository.ActionRep;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     private List<PairOfActionAndKm> listWork = new ArrayList<>();
 
+    /**
+     * Удаление с таблицы и из бд
+     */
     @Override
     public void onItemDismiss(int position) {
+        Action action = listWork.get(position).action;
+        ActionRep.delete(action);
         listWork.remove(position);
         notifyItemRemoved(position);
     }
@@ -78,6 +84,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     public void setItems(PairOfActionAndKm pair) {
         listWork.add(pair);
+        notifyItemInserted(getItemCount());
+    }
+
+    public void setItems(Action action, Double leftKm) {
+        listWork.add(new PairOfActionAndKm(action, leftKm));
         notifyItemInserted(getItemCount());
     }
 

@@ -146,24 +146,33 @@ public class SettingsActivity extends AppCompatActivity {
 
         mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 
-        //Все работы и сколько км осталось для каждой
-        ConcurrentHashMap<Action, Double> allActions = myApplication.getActionsAndKm();
-        if (allActions != null) {
-            for (Action action : allActions.keySet()) {
-                Double km = allActions.get(action);
-                if (km != null)
-                    loadDate(action, km);
-                else
-                    //Если отслеживание начнётся в будущем
-                    //Осталось столько, сколько всего км
-                    loadDate(action, action.getKilometers());
-            }
-        }
+        printActions();
 
     }
 
-    private void loadDate(Action action, Double leftKm) {
-        listAdapter.setItems(new MyAdapter.PairOfActionAndKm(action, leftKm));
+
+    /**
+     * Вывод всех работ
+     **/
+    private void printActions() {
+        listAdapter.clearItems();
+        ConcurrentHashMap<Action, Double> allActions = myApplication.getActionsAndKm();
+        if (allActions != null) {
+            for (Action action : allActions.keySet()) {
+                if (!action.isValid()) {
+                    allActions.remove(action);
+                    continue;
+                }
+                Double km = allActions.get(action);
+                if (km != null)
+                    listAdapter.setItems(action, km);
+                else
+                    //Если отслеживание начнётся в будущем
+                    //Осталось столько, сколько всего км
+                    listAdapter.setItems(action, action.getKilometers());
+            }
+        }
+
     }
 
     @Override
@@ -270,7 +279,7 @@ public class SettingsActivity extends AppCompatActivity {
                     MyNotification.getInstance(SettingsActivity.this).show(action);
                 myApplication.getActionsAndKm().put(action, km);
 
-                loadDate(action, km);
+                listAdapter.setItems(action, km);
                 dialog.dismiss();
             }
         });

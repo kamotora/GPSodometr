@@ -8,6 +8,7 @@ import android.os.Looper;
 
 import com.practica.gpsodometr.Log;
 
+import java.util.Date;
 import java.util.Locale;
 
 public class MyLocationListener implements LocationListener {
@@ -38,14 +39,23 @@ public class MyLocationListener implements LocationListener {
         }
 
         //Считаем скорость
-        double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
+        final double deltaTime = (location.getTime() - lastLocation.getTime()) / MILISECONDS_TO_HOURS;
         final double deltaDistance = location.distanceTo(lastLocation) / METERS_TO_KILOMETERS;
+        final double curSpeed = deltaDistance / deltaTime;
+        if (Double.isNaN(curSpeed))
+            return;
+        Log.v(String.format(Locale.getDefault(), "Время : %s Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
+                , new Date(location.getTime()), curSpeed, location.getSpeed(), minSpeed, deltaDistance, deltaTime));
 
-        Log.v(String.format(Locale.getDefault(), "Скорость по рассчётам = %f км/ч; Скорость по gps = %f км/ч; мин скорость = %d км/ч; Расстояние = %f км; Время = %f ч"
-                , deltaDistance / deltaTime, location.getSpeed(), minSpeed, deltaDistance, deltaTime));
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                context.printCurSpeed(curSpeed);
+            }
+        });
 
         //Если скорость больше, прибавляем пройденное расстояние
-        if (deltaDistance / deltaTime > minSpeed) {
+        if (curSpeed > minSpeed) {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {

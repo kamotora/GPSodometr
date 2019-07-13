@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +14,8 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.data.Helper;
+import com.practica.gpsodometr.servicies.MyApplication;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -21,6 +24,9 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        MyApplication myApplication = (MyApplication) getApplicationContext();
+        myApplication.setProfileActivity(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -58,4 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.left_in,R.anim.right_out);
     }
 
+    public void printSpeed(double curSpeed) {
+        ((TextView) findViewById(R.id.NowSpeed)).setText(String.format("%s км/ч", Helper.kmToString(curSpeed)));
+    }
 }

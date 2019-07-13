@@ -7,6 +7,7 @@ import android.location.LocationManager;
 
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.activities.MainActivity;
+import com.practica.gpsodometr.activities.ProfileActivity;
 import com.practica.gpsodometr.activities.SettingsActivity;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.Stat;
@@ -34,6 +35,7 @@ public class MyApplication extends Application {
 
     private MainActivity mainActivity = null;
     private SettingsActivity settingsActivity = null;
+    private ProfileActivity profileActivity = null;
 
 
     @Override
@@ -78,6 +80,8 @@ public class MyApplication extends Application {
     }
 
     public ConcurrentHashMap<Action, Double> getActionsAndKm() {
+        if (actionsAndKm == null)
+            actionsAndKm = new ConcurrentHashMap<>();
         return actionsAndKm;
     }
 
@@ -105,6 +109,10 @@ public class MyApplication extends Application {
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;
         for (Action key : actionsAndKm.keySet()) {
+            if (!key.isValid()) {
+                actionsAndKm.remove(key);
+                continue;
+            }
             Double newValue = actionsAndKm.get(key);
             if (newValue == null) {
                 actionsAndKm.remove(key);
@@ -141,5 +149,15 @@ public class MyApplication extends Application {
 
     public void setSettingsActivity(SettingsActivity settingsActivity) {
         this.settingsActivity = settingsActivity;
+    }
+
+    public void printCurSpeed(double curSpeed) {
+        if (profileActivity == null)
+            return;
+        profileActivity.printSpeed(curSpeed);
+    }
+
+    public void setProfileActivity(ProfileActivity profileActivity) {
+        this.profileActivity = profileActivity;
     }
 }

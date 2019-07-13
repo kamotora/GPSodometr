@@ -23,6 +23,8 @@ public class ActionRep {
     public static void delete(Action action) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
+        if (!action.isManaged())
+            action = realm.copyToRealm(action);
         action.deleteFromRealm();
         realm.commitTransaction();
     }

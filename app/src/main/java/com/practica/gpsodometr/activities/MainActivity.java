@@ -1,7 +1,6 @@
 package com.practica.gpsodometr.activities;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -14,12 +13,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -31,10 +27,8 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.adapters.AdapterForMain;
-import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
@@ -42,7 +36,6 @@ import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import io.realm.Sort;
@@ -210,7 +203,13 @@ public class MainActivity extends AppCompatActivity{
         super.onStart();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Stat todayStat = myApplication.getTodayStat();
+        //if(todayStat != null)
+        //showDistance(todayStat.getKilometers());
+    }
 
     @Override
     protected void onPause() {
