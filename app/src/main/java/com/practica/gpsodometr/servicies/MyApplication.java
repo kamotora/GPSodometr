@@ -97,8 +97,9 @@ public class MyApplication extends Application {
      */
     public void addDistance(double deltaDistance) {
         kilometers += deltaDistance;
-        if (todayStat == null || !todayStat.isValid()) {
+        if (todayStat == null) {
             todayStat = new Stat(kilometers);
+            StatRep.add(todayStat);
             if (mainActivity != null)
                 mainActivity.loadDate(todayStat);
 

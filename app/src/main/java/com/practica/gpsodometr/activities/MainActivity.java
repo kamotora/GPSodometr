@@ -26,9 +26,9 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.adapters.AdapterForMain;
-import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
@@ -37,8 +37,8 @@ import com.practica.gpsodometr.servicies.MyLocationListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
+import io.realm.Realm;
 import io.realm.Sort;
 
 
@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity{
     TableLayout table;*/
     Spinner spinDay;
     LayoutInflater inflaer;
-
+    ArrayList<Stat> tests;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ArrayList<Stat> tests = new ArrayList<>();
+        tests = new ArrayList<>();
 
         myApplication = (MyApplication) getApplicationContext();
 
@@ -135,8 +135,8 @@ public class MainActivity extends AppCompatActivity{
                         //loadDate(new Stat(0.0));
                         tests.add(new Stat(0.0));
                     else
-                        //loadDate(myApplication.getTodayStat());
-                    tests.add(myApplication.getTodayStat());
+                        tests.add(myApplication.getTodayStat());
+                    listAdapter.notifyDataSetChanged();
                 }
                 //За неделю
                 if(position == 1){
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity{
                         //loadDate(stat);
                         tests.add(stat);
                     }
+                    listAdapter.notifyDataSetChanged();
 
                 }
                 //Аналогично за месяц
@@ -162,6 +163,9 @@ public class MainActivity extends AppCompatActivity{
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
                         //loadDate(stat);
                         tests.add(stat);
+
+                        listAdapter.notifyDataSetChanged();
+
                     }
                 }
             }
@@ -174,11 +178,12 @@ public class MainActivity extends AppCompatActivity{
         kol = 0;
 
         //Вывод всех записей из бд(отладка)
-        //for (Stat stat : realm.where(Stat.class).findAll())
-        //    Log.v(stat);
+        for (Stat stat : Realm.getDefaultInstance().where(Stat.class).findAll())
+            Log.v(stat.toString());
 
         //Добавить запись(отладка)
-        //StatRep.add(new Stat(2019,6,24,10.0));
+        //StatRep.add(new Stat(2019,7,12,4.0));
+
 
         locationListener = myApplication.getLocationListener();
         locationManager = myApplication.getLocationManager();
@@ -196,9 +201,9 @@ public class MainActivity extends AppCompatActivity{
         //Конец метода onCreate()*/
     }
 
-    public void loadDate(Stat pair) {
-        StatRep.add(pair);
-        listAdapter.setItems(pair);
+    public void loadDate(Stat stat) {
+        tests.set(0, stat);
+        listAdapter.notifyItemChanged(0, stat);
     }
 
 
@@ -293,7 +298,7 @@ public class MainActivity extends AppCompatActivity{
      * Обновление данных на экране
      */
     public void updateDistance(Stat todayStat) {
-        listAdapter.updateInfo(0, todayStat);
+        listAdapter.notifyItemChanged(0, todayStat);
     }
 
     @Override
