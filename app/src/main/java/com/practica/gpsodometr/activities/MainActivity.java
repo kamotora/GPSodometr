@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity{
 
         myApplication.setMainActivity(this);
 
-       /* table = (TableLayout)findViewById(R.id.tableresult);*/
         spinDay = (Spinner)findViewById(R.id.action_bar_spinner);
 
         inflaer = LayoutInflater.from(this);
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity{
         listResult = (RecyclerView)findViewById(R.id.listResult);
         listResult.setHasFixedSize(true);
         listResult.setLayoutManager(new LinearLayoutManager(this));
-        listAdapter = new AdapterForMain();
+        listAdapter = new AdapterForMain(myApplication);
         listResult.setAdapter(listAdapter);
 
         callback = new SimpleItemTouchHelper(listAdapter);
@@ -127,6 +125,7 @@ public class MainActivity extends AppCompatActivity{
                 listAdapter.clearItems();
                 //За сегодня
                 if(position == 0){
+                    listAdapter.clearItems();
                     if (myApplication.getTodayStat() == null)
                         loadDate(new Stat(0.0));
                     else
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity{
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
                     //new Date(new Date().getTime() - 604800000);
-
+                    listAdapter.clearItems();
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
                         loadDate(stat);
                     }
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity{
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
                     //new Date(new Date().getTime() - 2628000000);
-
+                    listAdapter.clearItems();
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
                         loadDate(stat);
                     }
@@ -182,16 +181,11 @@ public class MainActivity extends AppCompatActivity{
         //Конец метода onCreate()*/
     }
 
-    private void loadDate(Stat pair){
+    public void loadDate(Stat pair) {
+        StatRep.add(pair);
         listAdapter.setItems(pair);
     }
 
-    public void cleanTable(TableLayout table){
-        int childCount = table.getChildCount();
-        if(childCount > 1){
-            table.removeViews(1, childCount - 1);
-        }
-    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -206,9 +200,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        Stat todayStat = myApplication.getTodayStat();
-        //if(todayStat != null)
-        //showDistance(todayStat.getKilometers());
     }
 
     @Override
@@ -267,7 +258,7 @@ public class MainActivity extends AppCompatActivity{
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Права есть
                     registerProviders();
-                    //showDistance();
+                    //updateDistance();
                 } else {
                     //Пользователь запретил доступ к GPS
                     //Message.showMsg("Нет доступа к GPS.Разрешите доступ к вашему местоположению, иначе работа приложения невозможна");
@@ -284,75 +275,11 @@ public class MainActivity extends AppCompatActivity{
     }
 
     /**
-     * Добавить строку в таблицу
-     */
-    /*public void addRow(Stat stat) {
-        final TableRow tr = (TableRow) inflaer.inflate(R.layout.table_row, null);
-        final TextView dateView = tr.findViewById(R.id.col1);
-        final TextView kmView = tr.findViewById(R.id.col2);
-
-        dateView.setTypeface(tf2);
-        kmView.setTypeface(tf2);
-        /*
-          Обработка удаления из таблицы
-         */
-      /*  tr.setOnLongClickListener(new View.OnLongClickListener(){
-            @Override
-            public boolean onLongClick(View view) {
-                tr.setBackgroundResource(R.color.colorAccent);
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Удалить пробег за этот день?")
-                        .setCancelable(false)
-                        .setPositiveButton("Да",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Date dateForDelete = Helper.stringToDate(dateView.getText().toString());
-                                        Stat statForDelete = StatRep.findByDate(dateForDelete);
-                                        Stat todayStat = myApplication.getTodayStat();
-                                        //Если нужно удалить данные за сегодня и запись в бд есть
-                                        if (statForDelete != null && statForDelete == todayStat) {
-                                            StatRep.delete(todayStat);
-                                            myApplication.todayStatWasDeleted();
-                                        } else if (statForDelete != null) {
-                                            StatRep.delete(statForDelete);
-                                        } else {
-                                            Log.v("ERROR !!! При удалении статистики");
-                                        }
-                                        table.removeView(tr);
-                                        dialog.cancel();
-                                    }
-                                })
-                        .setNegativeButton("Отмена",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        tr.setBackgroundResource(R.color.back);
-                                        dialog.cancel();
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
-                return true;
-            }
-        });
-
-        //Добавление
-        dateView.setText(Helper.dateToString(stat.getDate()));
-        kmView.setText(Helper.kmToString(stat.getKilometers()));
-        table.addView(tr);
-        kol += 1;
-    }*/
-
-    /**
      * Обновление данных на экране
-     *//*
-    public void showDistance(double distance) {
-        //Берём первую строку(нулевая строка - заголовок)
-        TableRow tr = (TableRow) table.getChildAt(1);
-        TextView kmView = (TextView) tr.getVirtualChildAt(1);
-        kmView.setText(Helper.kmToString(distance));
-
+     */
+    public void updateDistance(Stat todayStat) {
+        listAdapter.updateInfo(0, todayStat);
     }
-*/
 
     @Override
     public void finish(){

@@ -97,15 +97,17 @@ public class MyApplication extends Application {
      */
     public void addDistance(double deltaDistance) {
         kilometers += deltaDistance;
-        if (todayStat == null) {
+        if (todayStat == null || !todayStat.isValid()) {
             todayStat = new Stat(kilometers);
-            StatRep.add(todayStat);
-        } else
+            if (mainActivity != null)
+                mainActivity.loadDate(todayStat);
+
+        } else {
             StatRep.updateKm(todayStat, kilometers);
+        }
 
-//        if (mainActivity != null)
-  //          mainActivity.showDistance(kilometers);
-
+        if (mainActivity != null)
+            mainActivity.updateDistance(todayStat);
         // Пересчитаем, сколько осталось км
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;

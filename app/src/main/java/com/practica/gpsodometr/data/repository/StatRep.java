@@ -2,6 +2,7 @@ package com.practica.gpsodometr.data.repository;
 
 import androidx.annotation.NonNull;
 
+import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Stat;
 
@@ -30,6 +31,12 @@ public class StatRep {
     }
 
     public static void delete(Stat stat) {
+        if (!stat.isManaged())
+            stat = findByDate(stat.getDate());
+        if (stat == null) {
+            Log.v("При удалении Stat ошибка: stat = null");
+            return;
+        }
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         stat.deleteFromRealm();

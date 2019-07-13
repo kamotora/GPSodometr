@@ -12,11 +12,18 @@ import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
+import com.practica.gpsodometr.data.repository.StatRep;
+import com.practica.gpsodometr.servicies.MyApplication;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder>implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
+    private final MyApplication context;
+
+    public AdapterForMain(MyApplication context) {
+        this.context = context;
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,9 +41,22 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
         return listRes.size();
     }
 
+
+    /**
+     * Добавить строку в таблицу
+     */
     public void setItems(Stat pair) {
         listRes.add(pair);
         notifyItemInserted(getItemCount());
+    }
+
+    //Для обновления данных
+    public void updateInfo(int position, Stat e) {
+        if (getItemCount() == 0)
+            listRes.add(new Stat(0.0));
+        else
+            listRes.set(position, e);
+        notifyItemChanged(position, e);
     }
 
     public void clearItems(){
@@ -51,7 +71,9 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
 
     @Override
     public void onItemDismiss(int position) {
+        StatRep.delete(listRes.get(position));
         listRes.remove(position);
+        context.todayStatWasDeleted();
         notifyItemRemoved(position);
     }
 

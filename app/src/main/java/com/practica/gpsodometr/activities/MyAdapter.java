@@ -118,7 +118,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     //Для обновления данных
     public void updateInfo(int position, PairActionAndKilometers e) {
         listWork.set(position,e);
-        notifyItemChanged(position);
+        notifyItemChanged(position, e);
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
