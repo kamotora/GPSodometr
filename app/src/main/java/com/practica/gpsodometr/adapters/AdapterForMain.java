@@ -15,14 +15,15 @@ import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder>implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
-    private final MyApplication context;
+    //private final MyApplication context;
 
-    public AdapterForMain(MyApplication context) {
-        this.context = context;
+    public AdapterForMain(ArrayList<Stat> tests) {
+        this.listRes = tests;
     }
     @NonNull
     @Override
@@ -47,7 +48,7 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
      */
     public void setItems(Stat pair) {
         listRes.add(pair);
-        notifyItemInserted(getItemCount());
+        notifyDataSetChanged();
     }
 
     //Для обновления данных
@@ -64,20 +65,21 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
         notifyDataSetChanged();
     }
 
-    private TextView dateOfStart;
-    private TextView kilometrs;
-
-    private List<Stat> listRes = new ArrayList<>();
+    ArrayList<Stat> listRes = new ArrayList<>();
 
     @Override
     public void onItemDismiss(int position) {
         StatRep.delete(listRes.get(position));
         listRes.remove(position);
-        context.todayStatWasDeleted();
+        //context.todayStatWasDeleted();
         notifyItemRemoved(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView dateOfStart;
+        private TextView kilometrs;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dateOfStart = itemView.findViewById(R.id.dateOfStart);

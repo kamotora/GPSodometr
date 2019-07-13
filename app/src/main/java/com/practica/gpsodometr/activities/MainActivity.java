@@ -34,8 +34,10 @@ import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import io.realm.Sort;
 
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final ArrayList<Stat> tests = new ArrayList<>();
+
         myApplication = (MyApplication) getApplicationContext();
 
         myApplication.setMainActivity(this);
@@ -78,12 +82,12 @@ public class MainActivity extends AppCompatActivity{
         listResult = (RecyclerView)findViewById(R.id.listResult);
         listResult.setHasFixedSize(true);
         listResult.setLayoutManager(new LinearLayoutManager(this));
-        listAdapter = new AdapterForMain(myApplication);
-        listResult.setAdapter(listAdapter);
+        //listAdapter = new AdapterForMain(myApplication);
+        //listResult.setAdapter(listAdapter);
 
-        callback = new SimpleItemTouchHelper(listAdapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(listResult);
+        //callback = new SimpleItemTouchHelper(listAdapter);
+        //ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        //touchHelper.attachToRecyclerView(listResult);
 
         tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
@@ -122,37 +126,46 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 //TODO: можно добавить строку : всего пройдено за неделю,месяц км =
-                listAdapter.clearItems();
+                //listAdapter.clearItems();
                 //За сегодня
                 if(position == 0){
-                    listAdapter.clearItems();
+                    //listAdapter.clearItems();
+                    tests.clear();
                     if (myApplication.getTodayStat() == null)
-                        loadDate(new Stat(0.0));
+                        //loadDate(new Stat(0.0));
+                        tests.add(new Stat(0.0));
                     else
-                        loadDate(myApplication.getTodayStat());
+                        //loadDate(myApplication.getTodayStat());
+                    tests.add(myApplication.getTodayStat());
                 }
                 //За неделю
                 if(position == 1){
+                    tests.clear();
                     //Получаем дату - 1 неделя и выводим все данные, начиная с той даты
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
                     //new Date(new Date().getTime() - 604800000);
-                    listAdapter.clearItems();
+                    //listAdapter.clearItems();
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        loadDate(stat);
+                        //loadDate(stat);
+                        tests.add(stat);
                     }
 
                 }
                 //Аналогично за месяц
                 if(position == 2){
+                    tests.clear();
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
                     //new Date(new Date().getTime() - 2628000000);
-                    listAdapter.clearItems();
+                    //listAdapter.clearItems();
                     for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        loadDate(stat);
+                        //loadDate(stat);
+                        tests.add(stat);
                     }
                 }
+                listAdapter = new AdapterForMain(tests);
+                listResult.setAdapter(listAdapter);
             }
 
             @Override
@@ -171,12 +184,12 @@ public class MainActivity extends AppCompatActivity{
 
         locationListener = myApplication.getLocationListener();
         locationManager = myApplication.getLocationManager();
-
+/*
         if (myApplication.getTodayStat() == null)
             loadDate(new Stat(0.0));
         else
             loadDate(myApplication.getTodayStat());
-
+*/
         registerProviders();
         //Конец метода onCreate()*/
     }
