@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
+import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder> {
+public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder>implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,6 +49,12 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
     private TextView kilometrs;
 
     private List<Stat> listRes = new ArrayList<>();
+
+    @Override
+    public void onItemDismiss(int position) {
+        listRes.remove(position);
+        notifyItemRemoved(position);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(@NonNull View itemView) {

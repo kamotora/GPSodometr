@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.adapters.AdapterForMain;
 import com.practica.gpsodometr.data.Helper;
+import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity{
 
     RecyclerView listResult;
     private AdapterForMain listAdapter;
+    ItemTouchHelper.Callback callback;
 
     /*
     TableLayout table;*/
@@ -86,6 +89,10 @@ public class MainActivity extends AppCompatActivity{
         listResult.setLayoutManager(new LinearLayoutManager(this));
         listAdapter = new AdapterForMain();
         listResult.setAdapter(listAdapter);
+
+        callback = new SimpleItemTouchHelper(listAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(listResult);
 
         tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
