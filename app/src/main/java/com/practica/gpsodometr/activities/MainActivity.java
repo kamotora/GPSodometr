@@ -164,8 +164,6 @@ public class MainActivity extends AppCompatActivity{
                         tests.add(stat);
                     }
                 }
-                listAdapter = new AdapterForMain(tests);
-                listResult.setAdapter(listAdapter);
             }
 
             @Override
@@ -184,12 +182,16 @@ public class MainActivity extends AppCompatActivity{
 
         locationListener = myApplication.getLocationListener();
         locationManager = myApplication.getLocationManager();
-/*
+
         if (myApplication.getTodayStat() == null)
-            loadDate(new Stat(0.0));
+            //loadDate(new Stat(0.0));
+            tests.add(new Stat(0.0));
         else
-            loadDate(myApplication.getTodayStat());
-*/
+            //loadDate(myApplication.getTodayStat());
+            tests.add(myApplication.getTodayStat());
+        listAdapter = new AdapterForMain(tests);
+        listResult.setAdapter(listAdapter);
+
         registerProviders();
         //Конец метода onCreate()*/
     }
