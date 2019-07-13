@@ -113,7 +113,7 @@ public class MyNotification {
                 builder.setContentTitle(action.getName())
                         .setContentText("Вы уже проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Начиная с даты " + Helper.getDateStringInNeedFormat(action.getDateStart()) + " вы проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
+                                .bigText("Начиная с даты " + Helper.dateToString(action.getDateStart()) + " вы проехали " + action.getKilometers() + "км , пора сделать \"" + action.getName() + "\"! " +
                                         "Нажмите на это уведомление, чтобы перестать отслеживать эту работу"))
                         .setContentIntent(action1PendingIntent)
                         .build();

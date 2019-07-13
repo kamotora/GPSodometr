@@ -14,7 +14,6 @@ import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder>implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
@@ -64,7 +63,7 @@ public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHold
         }
 
         public void bind(Stat pair){
-            dateOfStart.setText(Helper.getDateStringInNeedFormat(pair.getDate()));
+            dateOfStart.setText(Helper.dateToString(pair.getDate()));
             kilometrs.setText(Helper.kmToString(pair.getKilometers()));
         }
     }

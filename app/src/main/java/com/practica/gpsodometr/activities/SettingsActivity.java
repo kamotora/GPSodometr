@@ -28,6 +28,7 @@ import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.servicies.MyApplication;
@@ -38,7 +39,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SettingsActivity extends AppCompatActivity {
     Button btn, quest;
@@ -77,15 +77,15 @@ public class SettingsActivity extends AppCompatActivity {
         listWork = (RecyclerView)findViewById(R.id.listWork);
         listWork.setHasFixedSize(true);
         listWork.setLayoutManager(new LinearLayoutManager(this));
-        listAdapter = new MyAdapter();
+        listAdapter = new MyAdapter(myApplication.getActionsAndKm());
 
         //Здесь должно быть обновление по клику на строку
         listAdapter.setOnItemClickListener(new MyAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                Action actionq = new Action("Работай *****!!!",Helper.getDateFromString("10/10/2019"),Helper.stringToKm("1234"));
-                listAdapter.updateInfo(position,new MyAdapter.PairOfActionAndKm(actionq,123.0));
-                //listAdapter.notifyItemChanged(position);
+                showDialog(SettingsActivity.this, position);
+                //listAdapter.updateInfo(position,new PairActionAndKilometers(actionq,123.0));
+
             }
         });
         listWork.setAdapter(listAdapter);
@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog(SettingsActivity.this);
+                showDialog(SettingsActivity.this, -1);
             }
         });
         quest = (Button) findViewById(R.id.question);
@@ -146,32 +146,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
 
-        printActions();
-
-    }
-
-
-    /**
-     * Вывод всех работ
-     **/
-    private void printActions() {
-        listAdapter.clearItems();
-        ConcurrentHashMap<Action, Double> allActions = myApplication.getActionsAndKm();
-        if (allActions != null) {
-            for (Action action : allActions.keySet()) {
-                if (!action.isValid()) {
-                    allActions.remove(action);
-                    continue;
-                }
-                Double km = allActions.get(action);
-                if (km != null)
-                    listAdapter.setItems(action, km);
-                else
-                    //Если отслеживание начнётся в будущем
-                    //Осталось столько, сколько всего км
-                    listAdapter.setItems(action, action.getKilometers());
-            }
-        }
+        //listAdapter.setItems();
 
     }
 
@@ -211,7 +186,13 @@ public class SettingsActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void showDialog(SettingsActivity activity) {
+    /**
+     * Показать диалог для обновления/добавления
+     * Если position < 0 - добавление
+     * Если >= 0, обновить заданную запись
+     * TODO:Сделать не так коряво
+     */
+    public void showDialog(SettingsActivity activity, final int position) {
         final Dialog dialog = new Dialog(activity);
 
         dialog.setCancelable(false);
@@ -224,8 +205,17 @@ public class SettingsActivity extends AppCompatActivity {
         final TextView kilometrs = dialog.findViewById(R.id.kilometrs);
         final TextView tvDate = dialog.findViewById(R.id.dataOfStart);
 
-
         Button btnOk = (Button) dialog.findViewById(R.id.btnOk);
+
+        if (position >= 0 && position < listAdapter.getItemCount()) {
+            Action action = listAdapter.getItem(position).action;
+            typeOfWork.setText(action.getName());
+            kilometrs.setText(Helper.kmToString(action.getKilometers()));
+            tvDate.setText(Helper.dateToString(action.getDateStart()));
+
+            btnOk.setText("Сохранить");
+        } else
+            btnOk.setText("Добавить");
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,7 +235,7 @@ public class SettingsActivity extends AppCompatActivity {
                 //Если не удалось спарсить данные, ошибка
                 try {
                     kilometers = Helper.stringToKm(kilometrs.getText().toString());
-                    date = Helper.getDateFromString(tvDate.getText().toString());
+                    date = Helper.stringToDate(tvDate.getText().toString());
                     if (kilometers == null || kilometers > 1_000_000)
                         throw new NumberFormatException("Многовато");
                     if (date == null)
@@ -269,17 +259,29 @@ public class SettingsActivity extends AppCompatActivity {
                     errorOfWork.setError("");
                     return;
                 }
-                //Сохранение действия, если всё норм
+
+
+                //Сохранение или изменение действия, если всё норм
                 //И сразу посчитаем, сколько осталось км
-                //Добавим в список для отслеживания
                 Action action = new Action(name, date, kilometers);
-                Double km = ActionRep.countForOneAction(action);
+                if (position >= 0 && position < listAdapter.getItemCount()) {
+                    Action oldVersionOfAction = listAdapter.getItem(position).action;
+                    ActionRep.delete(oldVersionOfAction);
+                }
                 ActionRep.add(action);
+                Double km = ActionRep.countForOneAction(action);
                 if (km < 0)
                     MyNotification.getInstance(SettingsActivity.this).show(action);
-                myApplication.getActionsAndKm().put(action, km);
-
-                listAdapter.setItems(action, km);
+                if (position >= 0 && position < listAdapter.getItemCount()) {
+                    listAdapter.updateInfo(position, new PairActionAndKilometers(action, km));
+                } else
+                    listAdapter.addItem(new PairActionAndKilometers(action, km));
+                System.out.println("Position: " + position);
+                System.out.println("11111111111111111111111111111111");
+                listAdapter.print();
+                System.out.println("2222222222222222222222222222222222222222222");
+                for (PairActionAndKilometers pairActionAndKilometers : myApplication.getActionsAndKm())
+                    System.out.println(pairActionAndKilometers.action + " " + Helper.kmToString(pairActionAndKilometers.leftKilometers));
                 dialog.dismiss();
             }
         });
@@ -327,7 +329,7 @@ public class SettingsActivity extends AppCompatActivity {
                                         //Ищем запись в базе на основе строки
                                         Action actionForDelete = ActionRep.findAction(
                                                 new Action(tvName.getText().toString(),
-                                                        Helper.getDateFromString(tvDate.getText().toString()), Helper.stringToKm(tvKm.getText().toString())
+                                                        Helper.stringToDate(tvDate.getText().toString()), Helper.stringToKm(tvKm.getText().toString())
                                                 ));
                                         //Если запись не найдена, возможно, удалена с помощью уведомления
                                         //Или что-то пошло не так
@@ -356,7 +358,7 @@ public class SettingsActivity extends AppCompatActivity {
 */
     //Добавление в таблицу и бд
   /*      tvName.setText(action.getName());
-        tvDate.setText(Helper.getDateStringInNeedFormat(action.getDateStart()));
+        tvDate.setText(Helper.dateToString(action.getDateStart()));
         tvKm.setText(Helper.kmToString(action.getKilometers()));
         if (leftKm != null) {
             tvLeftKm.setText(Helper.kmToString(leftKm));

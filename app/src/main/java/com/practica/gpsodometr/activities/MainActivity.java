@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity{
                         .setPositiveButton("Да",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Date dateForDelete = Helper.getDateFromString(dateView.getText().toString());
+                                        Date dateForDelete = Helper.stringToDate(dateView.getText().toString());
                                         Stat statForDelete = StatRep.findByDate(dateForDelete);
                                         Stat todayStat = myApplication.getTodayStat();
                                         //Если нужно удалить данные за сегодня и запись в бд есть
@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         //Добавление
-        dateView.setText(Helper.getDateStringInNeedFormat(stat.getDate()));
+        dateView.setText(Helper.dateToString(stat.getDate()));
         kmView.setText(Helper.kmToString(stat.getKilometers()));
         table.addView(tr);
         kol += 1;

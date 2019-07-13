@@ -17,7 +17,7 @@ public class Helper {
         return null;
     }
 
-    public static Date getDateFromString(final String strDate) {
+    public static Date stringToDate(final String strDate) {
         try {
             return dateFormat.parse(strDate);
         } catch (java.text.ParseException exp) {
@@ -32,7 +32,7 @@ public class Helper {
         return dateFormat;
     }
 
-    public static String getDateStringInNeedFormat(Date date) {
+    public static String dateToString(Date date) {
         return dateFormat.format(date);
     }
 

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.repository.ActionRep;
 
@@ -20,6 +21,17 @@ import java.util.List;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
     private static ClickListener clickListener;
+
+    private TextView nameWork;
+    private TextView kilometrs;
+    private TextView dataStart;
+    private TextView leftKilo;
+
+    private List<PairActionAndKilometers> listWork;
+
+    MyAdapter(List<PairActionAndKilometers> pairActionAndKilometers) {
+        this.listWork = pairActionAndKilometers;
+    }
 
     @NonNull
     @Override
@@ -38,13 +50,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         return listWork.size();
     }
 
-    private TextView nameWork;
-    private TextView kilometrs;
-    private TextView dataStart;
-    private TextView leftKilo;
-
-    private List<PairOfActionAndKm> listWork = new ArrayList<>();
-
     /**
      * Удаление с таблицы и из бд
      */
@@ -54,6 +59,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         ActionRep.delete(action);
         listWork.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void print() {
+        for (PairActionAndKilometers pairActionAndKilometers : listWork) {
+            System.out.println(pairActionAndKilometers.action + " " + Helper.kmToString(pairActionAndKilometers.leftKilometers));
+        }
     }
 
 
@@ -68,10 +79,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
             leftKilo = itemView.findViewById(R.id.leftKilo);
         }
 
-        public void bind(PairOfActionAndKm pair) {
+        public void bind(PairActionAndKilometers pair) {
             nameWork.setText(pair.action.getName());
             kilometrs.setText(Helper.kmToString(pair.action.getKilometers()));
-            dataStart.setText(Helper.getDateStringInNeedFormat(pair.action.getDateStart()));
+            dataStart.setText(Helper.dateToString(pair.action.getDateStart()));
             leftKilo.setText(Helper.kmToString(pair.leftKilometers));
         }
 
@@ -82,18 +93,30 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     }
 
-    public void setItems(PairOfActionAndKm pair) {
-        listWork.add(pair);
+    /**
+     * Вывод всех работ
+     **/
+    public void setItems(ArrayList<PairActionAndKilometers> pairActionAndKilometers) {
+        //if(pairActionAndKilometers != null)
+        listWork = pairActionAndKilometers;
+    }
+
+    public void addItem(PairActionAndKilometers e) {
+        if (listWork == null)
+            listWork = new ArrayList<>();
+        listWork.add(e);
         notifyItemInserted(getItemCount());
     }
 
-    public void setItems(Action action, Double leftKm) {
-        listWork.add(new PairOfActionAndKm(action, leftKm));
-        notifyItemInserted(getItemCount());
+    public PairActionAndKilometers getItem(int position) {
+        if (position >= 0 && position < getItemCount())
+            return listWork.get(position);
+        else
+            return null;
     }
 
     //Для обновления данных
-    public void updateInfo(int position, PairOfActionAndKm e){
+    public void updateInfo(int position, PairActionAndKilometers e) {
         listWork.set(position,e);
         notifyItemChanged(position);
     }
@@ -107,15 +130,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         notifyDataSetChanged();
     }
 
-    static class PairOfActionAndKm {
-        final Action action;
-        final Double leftKilometers;
-
-        PairOfActionAndKm(Action action, Double leftKilometers) {
-            this.action = action;
-            this.leftKilometers = leftKilometers;
-        }
-    }
 
     public interface ClickListener{
         void onItemClick(int position, View v);

@@ -61,7 +61,7 @@ public class Stat extends RealmObject {
 
     @Override
     public String toString() {
-        return "Дата: " + Helper.getDateStringInNeedFormat(this.date) + ", километры = " + kilometers;
+        return "Дата: " + Helper.dateToString(this.date) + ", километры = " + kilometers;
     }
 
 

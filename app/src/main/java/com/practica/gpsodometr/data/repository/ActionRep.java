@@ -3,10 +3,11 @@ package com.practica.gpsodometr.data.repository;
 
 import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.Stat;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -24,7 +25,7 @@ public class ActionRep {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         if (!action.isManaged())
-            action = realm.copyToRealm(action);
+            action = findAction(action);
         action.deleteFromRealm();
         realm.commitTransaction();
     }
@@ -45,7 +46,7 @@ public class ActionRep {
      *
      * @return список из пар, где Action - действие, Double - оставшееся кол-во км. Если дейстий нет, null
      */
-    public static ConcurrentHashMap<Action, Double> countForEveryHowMuchKilometersLeft() {
+    public static ArrayList<PairActionAndKilometers> countForEveryHowMuchKilometersLeft() {
         RealmResults<Action> actions = Realm.getDefaultInstance().where(Action.class).findAll().sort("dateStart");
         if (actions.isEmpty())
             return null;
@@ -54,14 +55,13 @@ public class ActionRep {
         //Первая дата - самая ближайшая
         //Первое дейстие - самое старое(дата начала отслеживания самая маленькая)
         RealmResults<Stat> statistics = StatRep.getDays(actions.get(0).getDateStart()).sort("date", Sort.DESCENDING);
-        ConcurrentHashMap<Action, Double> res = new ConcurrentHashMap<>();
-
+        ArrayList<PairActionAndKilometers> res = new ArrayList<>(actions.size());
         Double sum = 0.0;
         for (int i = actions.size() - 1, j = 0; i >= 0; i--) {
             Action action = actions.get(i);
             //Если action должен отслеживаться в будущем, осталось столько, сколько всего
             if (action.getDateStart().after(new Date())) {
-                res.put(action, action.getKilometers());
+                res.add(new PairActionAndKilometers(action, action.getKilometers()));
                 continue;
             }
             try {
@@ -72,7 +72,7 @@ public class ActionRep {
             } catch (ArrayIndexOutOfBoundsException exp) {
                 Log.v("Ошибка в " + ActionRep.class + " \nExcept = " + exp);
             }
-            res.put(action, action.getKilometers() - sum);
+            res.add(new PairActionAndKilometers(action, action.getKilometers() - sum));
         }
         return res;
     }

@@ -10,12 +10,13 @@ import com.practica.gpsodometr.activities.MainActivity;
 import com.practica.gpsodometr.activities.ProfileActivity;
 import com.practica.gpsodometr.activities.SettingsActivity;
 import com.practica.gpsodometr.data.model.Action;
+import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.ActionRep;
 import com.practica.gpsodometr.data.repository.StatRep;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
 
@@ -25,7 +26,7 @@ public class MyApplication extends Application {
     private LocationManager locationManager = null;
 
     //Action - действие, Double - оставшееся кол-во км.
-    private ConcurrentHashMap<Action, Double> actionsAndKm = null;
+    private ArrayList<PairActionAndKilometers> actionsAndKm = null;
 
 
     //Кол-во километров на сегодня
@@ -79,9 +80,9 @@ public class MyApplication extends Application {
         return locationManager;
     }
 
-    public ConcurrentHashMap<Action, Double> getActionsAndKm() {
+    public ArrayList<PairActionAndKilometers> getActionsAndKm() {
         if (actionsAndKm == null)
-            actionsAndKm = new ConcurrentHashMap<>();
+            actionsAndKm = new ArrayList<>();
         return actionsAndKm;
     }
 
@@ -108,26 +109,21 @@ public class MyApplication extends Application {
         // Пересчитаем, сколько осталось км
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;
-        for (Action key : actionsAndKm.keySet()) {
-            if (!key.isValid()) {
-                actionsAndKm.remove(key);
-                continue;
-            }
-            Double newValue = actionsAndKm.get(key);
-            if (newValue == null) {
-                actionsAndKm.remove(key);
+        for (int i = 0; i < actionsAndKm.size(); i++) {
+            Action action = actionsAndKm.get(i).action;
+            if (!action.isValid()) {
+                actionsAndKm.remove(action);
                 continue;
             }
             //Если действие нужно отслеживать в будущем
-            if (key.getDateStart().after(todayStat.getDate()))
+            if (action.getDateStart().after(todayStat.getDate()))
                 continue;
-            newValue -= deltaDistance;
-            actionsAndKm.put(key, newValue);
+            actionsAndKm.get(i).leftKilometers -= deltaDistance;
 
-            if (newValue <= 0) {
-                MyNotification.getInstance(this).show(key);
+            if (actionsAndKm.get(i).leftKilometers <= 0) {
+                MyNotification.getInstance(this).show(action);
                 //Перестаём отслеживать, т.к. уже проехали столько, сколько нужно
-                actionsAndKm.remove(key);
+                actionsAndKm.remove(i--);
             }
         }
 
