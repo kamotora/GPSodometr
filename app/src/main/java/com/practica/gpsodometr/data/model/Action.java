@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import io.realm.BuildConfig;
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.Required;
 
 /**
@@ -30,9 +29,6 @@ public class Action extends RealmObject {
     @Required
     //Нужно проехать км
     private Double kilometers;
-
-    @Ignore
-    private Double leftKilometers;
 
     public Action() {
     }

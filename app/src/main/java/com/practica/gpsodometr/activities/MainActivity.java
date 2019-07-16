@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
     //Обработчик событий от gps
     private MyLocationListener locationListener = null;
     private LocationManager locationManager = null;
-    private MyApplication myApplication = null;
+    private MyApplication myApplication;
     Typeface tf1;//Для Букв
     Typeface tf2;//Для Цифр
 
@@ -87,8 +87,9 @@ public class MainActivity extends AppCompatActivity{
         listResult.setHasFixedSize(true);
         listResult.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new MainAdapter(StatRep.findByDateAll(new Date()));
+        adapter = new MainAdapter(StatRep.findByDateAll(new Date()), myApplication);
         adapter.onAttachedToRecyclerView(listResult);
+
         listResult.setAdapter(adapter);
 
         //listAdapter = new AdapterForMain(myApplication);

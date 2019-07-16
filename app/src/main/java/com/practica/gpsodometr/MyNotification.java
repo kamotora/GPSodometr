@@ -148,7 +148,7 @@ public class MyNotification {
                                 //Если сейчас пользователь в настройках и тыкает на уведомление
                                 //Удалить из таблицы работу
                                 if (activity != null && activity.hasWindowFocus()) {
-                                    activity.updateTable();
+                                    activity.updateTable(act);
                                 }
                             } catch (Exception exp) {
                                 Log.v("Ошибка. Возможно, вы уже удалили эту работу. Except = " + exp);

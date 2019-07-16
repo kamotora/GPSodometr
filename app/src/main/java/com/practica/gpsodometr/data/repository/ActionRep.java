@@ -27,6 +27,8 @@ public class ActionRep {
         realm.beginTransaction();
         if (!action.isManaged())
             action = findAction(action);
+        if (action == null)
+            return;
         action.deleteFromRealm();
         realm.commitTransaction();
     }

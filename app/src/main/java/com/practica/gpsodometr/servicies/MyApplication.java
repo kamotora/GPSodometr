@@ -17,6 +17,7 @@ import com.practica.gpsodometr.data.repository.StatRep;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 
@@ -66,8 +67,6 @@ public class MyApplication extends Application {
             kilometers = todayStat.getKilometers();
         } else {
             todayStat = StatRep.add(new Stat(0.0));
-            if (todayStat.isManaged() == false)
-                System.out.println("PIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAA");
         }
     }
 
@@ -84,9 +83,10 @@ public class MyApplication extends Application {
         return locationManager;
     }
 
-    public ArrayList<PairActionAndKilometers> getActionsAndKm() {
-        if (actionsAndKm == null)
+    public List<PairActionAndKilometers> getActionsAndKm() {
+        if (actionsAndKm == null) {
             actionsAndKm = new ArrayList<>();
+        }
         return actionsAndKm;
     }
 
@@ -101,8 +101,7 @@ public class MyApplication extends Application {
      */
     public void addDistance(double deltaDistance) {
         kilometers += deltaDistance;
-        if (todayStat.isValid() == false) {
-            todayStat = new Stat(deltaDistance);
+        if (!todayStat.isValid()) {
             kilometers = deltaDistance;
             todayStat = StatRep.add(new Stat(kilometers));
             mainActivity.needUpdateTodayInfo();
@@ -117,10 +116,11 @@ public class MyApplication extends Application {
             return;
         for (int i = 0; i < actionsAndKm.size(); i++) {
             Action action = actionsAndKm.get(i).action;
-            if (!action.isValid()) {
-                actionsAndKm.remove(action);
+            if (action == null || !action.isValid()) {
+                actionsAndKm.remove(i--);
                 continue;
             }
+
             //Если действие нужно отслеживать в будущем
             if (action.getDateStart().after(todayStat.getDate()))
                 continue;
@@ -135,11 +135,6 @@ public class MyApplication extends Application {
 
     }
 
-    //Ин-фа за сегодня была удалена
-    public void todayStatWasDeleted() {
-        todayStat = null;
-        kilometers = 0;
-    }
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -161,5 +156,9 @@ public class MyApplication extends Application {
 
     public void setProfileActivity(ProfileActivity profileActivity) {
         this.profileActivity = profileActivity;
+    }
+
+    public void statWasDeleted() {
+        actionsAndKm = ActionRep.countForEveryHowMuchKilometersLeft();
     }
 }
