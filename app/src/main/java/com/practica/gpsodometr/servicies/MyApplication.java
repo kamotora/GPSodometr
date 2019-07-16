@@ -17,6 +17,7 @@ import com.practica.gpsodometr.data.repository.StatRep;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 
@@ -80,9 +81,10 @@ public class MyApplication extends Application {
         return locationManager;
     }
 
-    public ArrayList<PairActionAndKilometers> getActionsAndKm() {
-        if (actionsAndKm == null)
+    public List<PairActionAndKilometers> getActionsAndKm() {
+        if (actionsAndKm == null) {
             actionsAndKm = new ArrayList<>();
+        }
         return actionsAndKm;
     }
 

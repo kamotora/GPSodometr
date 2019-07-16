@@ -20,17 +20,12 @@ import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
-    private static ClickListener clickListener;
-
-    private TextView nameWork;
-    private TextView kilometrs;
-    private TextView dataStart;
-    private TextView leftKilo;
-
+    private ClickListener clickListener;
     private List<PairActionAndKilometers> listWork;
 
-    MyAdapter(List<PairActionAndKilometers> pairActionAndKilometers) {
-        this.listWork = pairActionAndKilometers;
+    public MyAdapter(ClickListener clickListener, List<PairActionAndKilometers> listWork) {
+        this.clickListener = clickListener;
+        this.listWork = listWork;
     }
 
     @NonNull
@@ -42,7 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(listWork.get(position));
+        holder.bind(position, listWork.get(position));
     }
 
     @Override
@@ -68,27 +63,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        private TextView nameWork;
+        private TextView kilometrs;
+        private TextView dataStart;
+        private TextView leftKilo;
+        private View itemView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
-            nameWork = itemView.findViewById(R.id.typeOfWork);
-            kilometrs = itemView.findViewById(R.id.kilometrs);
-            dataStart = itemView.findViewById(R.id.dataOfStart);
-            leftKilo = itemView.findViewById(R.id.leftKilo);
+            this.nameWork = itemView.findViewById(R.id.typeOfWork);
+            this.kilometrs = itemView.findViewById(R.id.kilometrs);
+            this.dataStart = itemView.findViewById(R.id.dataOfStart);
+            this.leftKilo = itemView.findViewById(R.id.leftKilo);
+            this.itemView = itemView;
         }
 
-        public void bind(PairActionAndKilometers pair) {
-            nameWork.setText(pair.action.getName());
-            kilometrs.setText(Helper.kmToString(pair.action.getKilometers()));
-            dataStart.setText(Helper.dateToString(pair.action.getDateStart()));
-            leftKilo.setText(Helper.kmToString(pair.leftKilometers));
-        }
-
-        @Override
-        public void onClick(View view) {
-            clickListener.onItemClick(getAdapterPosition(), view);
+        public void bind(final int position, final PairActionAndKilometers item) {
+            this.nameWork.setText(item.action.getName());
+            this.kilometrs.setText(Helper.kmToString(item.action.getKilometers()));
+            this.dataStart.setText(Helper.dateToString(item.action.getDateStart()));
+            this.leftKilo.setText(Helper.kmToString(item.leftKilometers));
+            this.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickListener.onItemClick(position, item);
+                }
+            });
         }
 
     }
@@ -101,38 +102,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         listWork = pairActionAndKilometers;
     }
 
-    public void addItem(PairActionAndKilometers e) {
+    /*public void addItem(PairActionAndKilometers e) {
         if (listWork == null)
             listWork = new ArrayList<>();
         listWork.add(e);
         notifyItemInserted(getItemCount());
-    }
-
-    public PairActionAndKilometers getItem(int position) {
-        if (position >= 0 && position < getItemCount())
-            return listWork.get(position);
-        else
-            return null;
-    }
+    }*/
 
     //Для обновления данных
-    public void updateInfo(int position, PairActionAndKilometers e) {
+  /*  public void updateInfo(int position, PairActionAndKilometers e) {
         listWork.set(position,e);
         notifyItemChanged(position, e);
-    }
+    }*/
 
-    public void setOnItemClickListener(ClickListener clickListener) {
-        MyAdapter.clickListener = clickListener;
-    }
-
-    public void clearItems(){
+  /*  public void clearItems(){
         listWork.clear();
         notifyDataSetChanged();
     }
-
+*/
 
     public interface ClickListener{
-        void onItemClick(int position, View v);
+        void onItemClick(int position, PairActionAndKilometers item);
     }
 
 }

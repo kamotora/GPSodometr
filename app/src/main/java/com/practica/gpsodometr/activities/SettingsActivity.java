@@ -38,9 +38,11 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity {
+
     Button btn, quest;
     TextView minSpeed;
     //TableLayout table;
@@ -53,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
     RecyclerView listWork;
     private MyAdapter listAdapter;
     ItemTouchHelper.Callback callback;
+    private List<PairActionAndKilometers> items;
 
 
     SharedPreferences mSettings = null;
@@ -62,6 +65,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String SETTING_MINSPEED_NAME = "minSpeed";
 
     private MyApplication myApplication = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,20 +78,19 @@ public class SettingsActivity extends AppCompatActivity {
         tf1 = Typeface.createFromAsset(getAssets(), "Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(), "PFAgoraSlabPro Bold.ttf");
 
-        listWork = (RecyclerView)findViewById(R.id.listWork);
+        listWork = findViewById(R.id.listWork);
         listWork.setHasFixedSize(true);
         listWork.setLayoutManager(new LinearLayoutManager(this));
-        listAdapter = new MyAdapter(myApplication.getActionsAndKm());
-
-        //Здесь должно быть обновление по клику на строку
-        listAdapter.setOnItemClickListener(new MyAdapter.ClickListener() {
+        items = myApplication.getActionsAndKm();
+        listAdapter = new MyAdapter(new MyAdapter.ClickListener() {
             @Override
-            public void onItemClick(int position, View v) {
+            public void onItemClick(int position, PairActionAndKilometers item) {
                 showDialog(SettingsActivity.this, position);
                 //listAdapter.updateInfo(position,new PairActionAndKilometers(actionq,123.0));
-
             }
-        });
+        }, items);
+
+        //Здесь должно быть обновление по клику на строку
         listWork.setAdapter(listAdapter);
         callback = new SimpleItemTouchHelper(listAdapter);
 
@@ -207,8 +210,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         Button btnOk = (Button) dialog.findViewById(R.id.btnOk);
 
-        if (position >= 0 && position < listAdapter.getItemCount()) {
-            Action action = listAdapter.getItem(position).action;
+
+        if (position >= 0 && position < items.size()) {
+            Action action = items.get(position).action;
             typeOfWork.setText(action.getName());
             kilometrs.setText(Helper.kmToString(action.getKilometers()));
             tvDate.setText(Helper.dateToString(action.getDateStart()));
@@ -264,8 +268,8 @@ public class SettingsActivity extends AppCompatActivity {
                 //Сохранение или изменение действия, если всё норм
                 //И сразу посчитаем, сколько осталось км
                 Action action = new Action(name, date, kilometers);
-                if (position >= 0 && position < listAdapter.getItemCount()) {
-                    Action oldVersionOfAction = listAdapter.getItem(position).action;
+                if (position >= 0 && position < items.size()) {
+                    Action oldVersionOfAction = items.get(position).action;
                     ActionRep.delete(oldVersionOfAction);
                 }
                 ActionRep.add(action);
@@ -273,15 +277,13 @@ public class SettingsActivity extends AppCompatActivity {
                 if (km < 0)
                     MyNotification.getInstance(SettingsActivity.this).show(action);
                 if (position >= 0 && position < listAdapter.getItemCount()) {
-                    listAdapter.updateInfo(position, new PairActionAndKilometers(action, km));
-                } else
-                    listAdapter.addItem(new PairActionAndKilometers(action, km));
-                System.out.println("Position: " + position);
-                System.out.println("11111111111111111111111111111111");
-                listAdapter.print();
-                System.out.println("2222222222222222222222222222222222222222222");
-                for (PairActionAndKilometers pairActionAndKilometers : myApplication.getActionsAndKm())
-                    System.out.println(pairActionAndKilometers.action + " " + Helper.kmToString(pairActionAndKilometers.leftKilometers));
+                    PairActionAndKilometers item = items.get(position);
+                    item.action = action;
+                    item.leftKilometers = km;
+                } else {
+                    items.add(new PairActionAndKilometers(action, km));
+                }
+                listAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
