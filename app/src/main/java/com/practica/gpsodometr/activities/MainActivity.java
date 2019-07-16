@@ -28,7 +28,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
-import com.practica.gpsodometr.adapters.AdapterForMain;
+import com.practica.gpsodometr.adapters.MainAdapter;
+import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
@@ -36,9 +37,11 @@ import com.practica.gpsodometr.servicies.MyLocationListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 
 
@@ -56,7 +59,8 @@ public class MainActivity extends AppCompatActivity{
     Typeface tf2;//Для Цифр
 
     RecyclerView listResult;
-    private AdapterForMain listAdapter;
+    MainAdapter adapter;
+    //private AdapterForMain listAdapter;
     ItemTouchHelper.Callback callback;
 
     /*
@@ -82,12 +86,17 @@ public class MainActivity extends AppCompatActivity{
         listResult = (RecyclerView)findViewById(R.id.listResult);
         listResult.setHasFixedSize(true);
         listResult.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new MainAdapter(StatRep.findByDateAll(new Date()));
+        adapter.onAttachedToRecyclerView(listResult);
+        listResult.setAdapter(adapter);
+
         //listAdapter = new AdapterForMain(myApplication);
         //listResult.setAdapter(listAdapter);
 
-        //callback = new SimpleItemTouchHelper(listAdapter);
-        //ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        //touchHelper.attachToRecyclerView(listResult);
+        callback = new SimpleItemTouchHelper(adapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(listResult);
 
         tf1 = Typeface.createFromAsset(getAssets(),"Geometria-Bold.ttf");
         tf2 = Typeface.createFromAsset(getAssets(),"PFAgoraSlabPro Bold.ttf");
@@ -129,14 +138,8 @@ public class MainActivity extends AppCompatActivity{
                 //listAdapter.clearItems();
                 //За сегодня
                 if(position == 0){
-                    //listAdapter.clearItems();
-                    tests.clear();
-                    if (myApplication.getTodayStat() == null)
-                        //loadDate(new Stat(0.0));
-                        tests.add(new Stat(0.0));
-                    else
-                        tests.add(myApplication.getTodayStat());
-                    listAdapter.notifyDataSetChanged();
+                    adapter.updateData(StatRep.findByDateAll(new Date()));
+                    adapter.notifyDataSetChanged();
                 }
                 //За неделю
                 if(position == 1){
@@ -144,13 +147,9 @@ public class MainActivity extends AppCompatActivity{
                     //Получаем дату - 1 неделя и выводим все данные, начиная с той даты
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
-                    //new Date(new Date().getTime() - 604800000);
-                    //listAdapter.clearItems();
-                    for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        //loadDate(stat);
-                        tests.add(stat);
-                    }
-                    listAdapter.notifyDataSetChanged();
+                    RealmResults<Stat> statsOfWeek = StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING);
+                    adapter.updateData(statsOfWeek);
+                    adapter.notifyDataSetChanged();
 
                 }
                 //Аналогично за месяц
@@ -160,13 +159,9 @@ public class MainActivity extends AppCompatActivity{
                     cal.add(Calendar.MONTH, -1);
                     //new Date(new Date().getTime() - 2628000000);
                     //listAdapter.clearItems();
-                    for (Stat stat : StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING)) {
-                        //loadDate(stat);
-                        tests.add(stat);
-
-                        listAdapter.notifyDataSetChanged();
-
-                    }
+                    RealmResults<Stat> statsOfMonth = StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING);
+                    adapter.updateData(statsOfMonth);
+                    adapter.notifyDataSetChanged();
                 }
             }
 
@@ -188,22 +183,9 @@ public class MainActivity extends AppCompatActivity{
         locationListener = myApplication.getLocationListener();
         locationManager = myApplication.getLocationManager();
 
-        if (myApplication.getTodayStat() == null)
-            //loadDate(new Stat(0.0));
-            tests.add(new Stat(0.0));
-        else
-            //loadDate(myApplication.getTodayStat());
-            tests.add(myApplication.getTodayStat());
-        listAdapter = new AdapterForMain(tests);
-        listResult.setAdapter(listAdapter);
 
         registerProviders();
         //Конец метода onCreate()*/
-    }
-
-    public void loadDate(Stat stat) {
-        tests.set(0, stat);
-        listAdapter.notifyItemChanged(0, stat);
     }
 
 
@@ -294,17 +276,17 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     * Обновление данных на экране
-     */
-    public void updateDistance(Stat todayStat) {
-        listAdapter.notifyItemChanged(0, todayStat);
-    }
-
     @Override
     public void finish(){
         super.finish();
         overridePendingTransition(R.anim.left_in,R.anim.right_out);
     }
 
+    /**
+     * Если удаляли значение на сегодня, нужно вывести новое
+     */
+    public void needUpdateTodayInfo() {
+        adapter.updateData(StatRep.findByDateAll(new Date()));
+        adapter.notifyDataSetChanged();
+    }
 }

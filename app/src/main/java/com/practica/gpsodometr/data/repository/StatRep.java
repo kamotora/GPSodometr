@@ -13,14 +13,12 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class StatRep {
-    public static void add(@NonNull final Stat stat) {
+    public static Stat add(@NonNull Stat stat) {
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.insert(stat);
-            }
-        });
+        realm.beginTransaction();
+        stat = realm.copyToRealm(stat);
+        realm.commitTransaction();
+        return stat;
     }
 
     public static void updateKm(Stat stat, final double newKm) {
@@ -55,6 +53,12 @@ public class StatRep {
                 .findFirst();
     }
 
+    public static RealmResults<Stat> findByDateAll(Date date) {
+        Realm realm = Realm.getDefaultInstance();
+        date = Helper.getDateWithothTime(date);
+        return realm.where(Stat.class).equalTo("date", date)
+                .findAll();
+    }
 
     /**
      * Получить статистику начиная с определённого дня date

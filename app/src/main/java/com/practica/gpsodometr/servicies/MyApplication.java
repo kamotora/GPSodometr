@@ -64,6 +64,10 @@ public class MyApplication extends Application {
         }
         if (todayStat != null) {
             kilometers = todayStat.getKilometers();
+        } else {
+            todayStat = StatRep.add(new Stat(0.0));
+            if (todayStat.isManaged() == false)
+                System.out.println("PIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAAPIZDAAAAAAAAAAAAAAAAAAAAAA");
         }
     }
 
@@ -97,18 +101,17 @@ public class MyApplication extends Application {
      */
     public void addDistance(double deltaDistance) {
         kilometers += deltaDistance;
-        if (todayStat == null) {
-            todayStat = new Stat(kilometers);
-            StatRep.add(todayStat);
-            if (mainActivity != null)
-                mainActivity.loadDate(todayStat);
-
-        } else {
-            StatRep.updateKm(todayStat, kilometers);
+        if (todayStat.isValid() == false) {
+            todayStat = new Stat(deltaDistance);
+            kilometers = deltaDistance;
+            todayStat = StatRep.add(new Stat(kilometers));
+            mainActivity.needUpdateTodayInfo();
         }
+        StatRep.updateKm(todayStat, kilometers);
 
-        if (mainActivity != null)
-            mainActivity.updateDistance(todayStat);
+
+        //if (mainActivity != null)
+        //   mainActivity.updateDistance(todayStat);
         // Пересчитаем, сколько осталось км
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;

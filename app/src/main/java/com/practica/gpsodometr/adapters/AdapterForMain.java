@@ -13,18 +13,19 @@ import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.model.Stat;
 import com.practica.gpsodometr.data.repository.StatRep;
-import com.practica.gpsodometr.servicies.MyApplication;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Не используется
+ */
 public class AdapterForMain extends RecyclerView.Adapter<AdapterForMain.ViewHolder>implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
     //private final MyApplication context;
 
     public AdapterForMain(ArrayList<Stat> tests) {
         this.listRes = tests;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
