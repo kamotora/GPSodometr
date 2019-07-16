@@ -83,6 +83,8 @@ public class SettingsActivity extends AppCompatActivity {
         listWork.setHasFixedSize(true);
         listWork.setLayoutManager(new LinearLayoutManager(this));
         items = myApplication.getActionsAndKm();
+
+        //Обработка клика по работе
         listAdapter = new SettingsAdapter(new SettingsAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, PairActionAndKilometers item) {
@@ -90,16 +92,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }, items);
 
-        //Здесь должно быть обновление по клику на строку
         listWork.setAdapter(listAdapter);
         callback = new SimpleItemTouchHelper(listAdapter);
-
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(listWork);
 
-        //loadDate();
-        //table = (TableLayout) findViewById(R.id.tableresult);
-        //inflaer = LayoutInflater.from(this);
+
         btn = (Button) findViewById(R.id.addWork);
         btn.setTypeface(tf1);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -148,8 +146,6 @@ public class SettingsActivity extends AppCompatActivity {
         minSpeed = (TextView) findViewById(R.id.minSpeed);
 
         mSettings = getSharedPreferences(SETTING_FILENAME, Context.MODE_PRIVATE);
-
-        //listAdapter.setItems();
 
     }
 

@@ -26,7 +26,6 @@ import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.practica.gpsodometr.Log;
 import com.practica.gpsodometr.R;
 import com.practica.gpsodometr.adapters.MainAdapter;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
@@ -35,12 +34,10 @@ import com.practica.gpsodometr.data.repository.StatRep;
 import com.practica.gpsodometr.servicies.MyApplication;
 import com.practica.gpsodometr.servicies.MyLocationListener;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -55,25 +52,20 @@ public class MainActivity extends AppCompatActivity{
     private MyLocationListener locationListener = null;
     private LocationManager locationManager = null;
     private MyApplication myApplication;
+
+    private RecyclerView listResult;
+    private MainAdapter adapter;
+
+    private ItemTouchHelper.Callback callback;
+
     Typeface tf1;//Для Букв
     Typeface tf2;//Для Цифр
-
-    RecyclerView listResult;
-    MainAdapter adapter;
-    //private AdapterForMain listAdapter;
-    ItemTouchHelper.Callback callback;
-
-    /*
-    TableLayout table;*/
     Spinner spinDay;
     LayoutInflater inflaer;
-    ArrayList<Stat> tests;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        tests = new ArrayList<>();
 
         myApplication = (MyApplication) getApplicationContext();
 
@@ -92,8 +84,6 @@ public class MainActivity extends AppCompatActivity{
 
         listResult.setAdapter(adapter);
 
-        //listAdapter = new AdapterForMain(myApplication);
-        //listResult.setAdapter(listAdapter);
 
         callback = new SimpleItemTouchHelper(adapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -144,7 +134,6 @@ public class MainActivity extends AppCompatActivity{
                 }
                 //За неделю
                 if(position == 1){
-                    tests.clear();
                     //Получаем дату - 1 неделя и выводим все данные, начиная с той даты
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.DAY_OF_MONTH, -7);
@@ -155,11 +144,9 @@ public class MainActivity extends AppCompatActivity{
                 }
                 //Аналогично за месяц
                 if(position == 2){
-                    tests.clear();
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.add(Calendar.MONTH, -1);
-                    //new Date(new Date().getTime() - 2628000000);
-                    //listAdapter.clearItems();
+
                     RealmResults<Stat> statsOfMonth = StatRep.getDays(cal.getTime()).sort("date", Sort.DESCENDING);
                     adapter.updateData(statsOfMonth);
                     adapter.notifyDataSetChanged();
@@ -171,11 +158,9 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        kol = 0;
-
         //Вывод всех записей из бд(отладка)
-        for (Stat stat : Realm.getDefaultInstance().where(Stat.class).findAll())
-            Log.v(stat.toString());
+        //for (Stat stat : Realm.getDefaultInstance().where(Stat.class).findAll())
+        //   Log.v(stat.toString());
 
         //Добавить запись(отладка)
         //StatRep.add(new Stat(2019,7,12,4.0));
@@ -186,7 +171,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         registerProviders();
-        //Конец метода onCreate()*/
+
     }
 
 
