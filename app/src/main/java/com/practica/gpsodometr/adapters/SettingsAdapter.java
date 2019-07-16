@@ -1,4 +1,4 @@
-package com.practica.gpsodometr.activities;
+package com.practica.gpsodometr.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +15,14 @@ import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.repository.ActionRep;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
+public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
     private ClickListener clickListener;
     private List<PairActionAndKilometers> listWork;
 
-    public MyAdapter(ClickListener clickListener, List<PairActionAndKilometers> listWork) {
+    public SettingsAdapter(ClickListener clickListener, List<PairActionAndKilometers> listWork) {
         this.clickListener = clickListener;
         this.listWork = listWork;
     }
@@ -31,7 +30,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.tableforsettings, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.tableforsettings, parent, false);
         return new ViewHolder(view);
     }
 
@@ -56,14 +55,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
         notifyItemRemoved(position);
     }
 
-    public void print() {
-        for (PairActionAndKilometers pairActionAndKilometers : listWork) {
-            System.out.println(pairActionAndKilometers.action + " " + Helper.kmToString(pairActionAndKilometers.leftKilometers));
-        }
-    }
 
-
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView nameWork;
         private TextView kilometrs;
         private TextView dataStart;
@@ -94,34 +87,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> implem
 
     }
 
-    /**
-     * Вывод всех работ
-     **/
-    public void setItems(ArrayList<PairActionAndKilometers> pairActionAndKilometers) {
-        //if(pairActionAndKilometers != null)
-        listWork = pairActionAndKilometers;
-    }
 
-    /*public void addItem(PairActionAndKilometers e) {
-        if (listWork == null)
-            listWork = new ArrayList<>();
-        listWork.add(e);
-        notifyItemInserted(getItemCount());
-    }*/
-
-    //Для обновления данных
-  /*  public void updateInfo(int position, PairActionAndKilometers e) {
-        listWork.set(position,e);
-        notifyItemChanged(position, e);
-    }*/
-
-  /*  public void clearItems(){
-        listWork.clear();
-        notifyDataSetChanged();
-    }
-*/
-
-    public interface ClickListener{
+    public interface ClickListener {
         void onItemClick(int position, PairActionAndKilometers item);
     }
 

@@ -14,11 +14,12 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 
 public class ActionRep {
-    public static void add(Action action) {
+    public static Action add(Action action) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.insert(action);
+        action = realm.copyToRealm(action);
         realm.commitTransaction();
+        return action;
     }
 
     public static void delete(Action action) {
@@ -26,6 +27,8 @@ public class ActionRep {
         realm.beginTransaction();
         if (!action.isManaged())
             action = findAction(action);
+        if (action == null)
+            return;
         action.deleteFromRealm();
         realm.commitTransaction();
     }

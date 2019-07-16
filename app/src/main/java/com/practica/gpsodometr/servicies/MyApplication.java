@@ -65,6 +65,8 @@ public class MyApplication extends Application {
         }
         if (todayStat != null) {
             kilometers = todayStat.getKilometers();
+        } else {
+            todayStat = StatRep.add(new Stat(0.0));
         }
     }
 
@@ -99,27 +101,26 @@ public class MyApplication extends Application {
      */
     public void addDistance(double deltaDistance) {
         kilometers += deltaDistance;
-        if (todayStat == null) {
-            todayStat = new Stat(kilometers);
-            StatRep.add(todayStat);
-            if (mainActivity != null)
-                mainActivity.loadDate(todayStat);
-
-        } else {
-            StatRep.updateKm(todayStat, kilometers);
+        if (!todayStat.isValid()) {
+            kilometers = deltaDistance;
+            todayStat = StatRep.add(new Stat(kilometers));
+            mainActivity.needUpdateTodayInfo();
         }
+        StatRep.updateKm(todayStat, kilometers);
 
-        if (mainActivity != null)
-            mainActivity.updateDistance(todayStat);
+
+        //if (mainActivity != null)
+        //   mainActivity.updateDistance(todayStat);
         // Пересчитаем, сколько осталось км
         if (actionsAndKm == null || actionsAndKm.isEmpty())
             return;
         for (int i = 0; i < actionsAndKm.size(); i++) {
             Action action = actionsAndKm.get(i).action;
-            if (!action.isValid()) {
-                actionsAndKm.remove(action);
+            if (action == null || !action.isValid()) {
+                actionsAndKm.remove(i--);
                 continue;
             }
+
             //Если действие нужно отслеживать в будущем
             if (action.getDateStart().after(todayStat.getDate()))
                 continue;
@@ -134,11 +135,6 @@ public class MyApplication extends Application {
 
     }
 
-    //Ин-фа за сегодня была удалена
-    public void todayStatWasDeleted() {
-        todayStat = null;
-        kilometers = 0;
-    }
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -160,5 +156,9 @@ public class MyApplication extends Application {
 
     public void setProfileActivity(ProfileActivity profileActivity) {
         this.profileActivity = profileActivity;
+    }
+
+    public void statWasDeleted() {
+        actionsAndKm = ActionRep.countForEveryHowMuchKilometersLeft();
     }
 }

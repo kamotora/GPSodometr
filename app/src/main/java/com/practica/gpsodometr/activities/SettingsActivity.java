@@ -26,6 +26,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.practica.gpsodometr.MyNotification;
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.adapters.SettingsAdapter;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.PairActionAndKilometers;
@@ -53,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
     Typeface tf2;//Для Цифр
 
     RecyclerView listWork;
-    private MyAdapter listAdapter;
+    private SettingsAdapter listAdapter;
     ItemTouchHelper.Callback callback;
     private List<PairActionAndKilometers> items;
 
@@ -82,11 +83,10 @@ public class SettingsActivity extends AppCompatActivity {
         listWork.setHasFixedSize(true);
         listWork.setLayoutManager(new LinearLayoutManager(this));
         items = myApplication.getActionsAndKm();
-        listAdapter = new MyAdapter(new MyAdapter.ClickListener() {
+        listAdapter = new SettingsAdapter(new SettingsAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, PairActionAndKilometers item) {
                 showDialog(SettingsActivity.this, position);
-                //listAdapter.updateInfo(position,new PairActionAndKilometers(actionq,123.0));
             }
         }, items);
 
@@ -193,7 +193,6 @@ public class SettingsActivity extends AppCompatActivity {
      * Показать диалог для обновления/добавления
      * Если position < 0 - добавление
      * Если >= 0, обновить заданную запись
-     * TODO:Сделать не так коряво
      */
     public void showDialog(SettingsActivity activity, final int position) {
         final Dialog dialog = new Dialog(activity);
@@ -220,6 +219,7 @@ public class SettingsActivity extends AppCompatActivity {
             btnOk.setText("Сохранить");
         } else
             btnOk.setText("Добавить");
+
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,7 +241,7 @@ public class SettingsActivity extends AppCompatActivity {
                     kilometers = Helper.stringToKm(kilometrs.getText().toString());
                     date = Helper.stringToDate(tvDate.getText().toString());
                     if (kilometers == null || kilometers > 1_000_000)
-                        throw new NumberFormatException("Многовато");
+                        throw new NumberFormatException("Недопустимое кол-во километров");
                     if (date == null)
                         throw new ParseException("Неверный формат даты", 0);
                     Calendar calendar = new GregorianCalendar();
@@ -265,17 +265,23 @@ public class SettingsActivity extends AppCompatActivity {
                 }
 
 
-                //Сохранение или изменение действия, если всё норм
-                //И сразу посчитаем, сколько осталось км
+                //Новая работа
                 Action action = new Action(name, date, kilometers);
+
+                //Если изменяли работу, удаляем версию без изменений
                 if (position >= 0 && position < items.size()) {
                     Action oldVersionOfAction = items.get(position).action;
                     ActionRep.delete(oldVersionOfAction);
                 }
+
+                //Добавляем новую (или изменённую)
                 ActionRep.add(action);
+                //Сколько осталось км
                 Double km = ActionRep.countForOneAction(action);
                 if (km < 0)
                     MyNotification.getInstance(SettingsActivity.this).show(action);
+
+                //Вывод
                 if (position >= 0 && position < listAdapter.getItemCount()) {
                     PairActionAndKilometers item = items.get(position);
                     item.action = action;
@@ -301,78 +307,7 @@ public class SettingsActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    /**
-     * Добавить новую строку в таблицу
-     **/
-    /*public void addRow(final Action action, Double leftKm) {
-        final TableRow tr = (TableRow) inflaer.inflate(R.layout.tableforsettings, null);
-        final TextView tvName = (TextView) tr.findViewById(R.id.col1);
-        final TextView tvDate = (TextView) tr.findViewById(R.id.col2);
-        final TextView tvKm = (TextView) tr.findViewById(R.id.col3);
-        final TextView tvLeftKm = (TextView) tr.findViewById(R.id.col4);
 
-        tvName.setTypeface(tf1);
-        tvDate.setTypeface(tf2);
-        tvKm.setTypeface(tf2);
-        tvLeftKm.setTypeface(tf2);
-        /**
-         * Обработка удаления с таблицы
-         */
-       /* tr.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                tr.setBackgroundResource(R.color.colorAccent);
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                builder.setTitle("Удалить данную работу?")
-                        .setCancelable(false)
-                        .setPositiveButton("Да",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        //Ищем запись в базе на основе строки
-                                        Action actionForDelete = ActionRep.findAction(
-                                                new Action(tvName.getText().toString(),
-                                                        Helper.stringToDate(tvDate.getText().toString()), Helper.stringToKm(tvKm.getText().toString())
-                                                ));
-                                        //Если запись не найдена, возможно, удалена с помощью уведомления
-                                        //Или что-то пошло не так
-                                        if (actionForDelete == null) {
-                                            Log.v("ERROR при удалении работы из таблицы");
-                                        } else {
-                                            myApplication.getActionsAndKm().remove(actionForDelete);
-                                            ActionRep.delete(actionForDelete);
-                                        }
-                                        table.removeView(tr);
-                                        dialog.cancel();
-                                    }
-                                })
-                        .setNegativeButton("Отмена",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        tr.setBackgroundResource(R.color.back);
-                                        dialog.cancel();
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
-                return true;
-            }
-        });
-*/
-    //Добавление в таблицу и бд
-  /*      tvName.setText(action.getName());
-        tvDate.setText(Helper.dateToString(action.getDateStart()));
-        tvKm.setText(Helper.kmToString(action.getKilometers()));
-        if (leftKm != null) {
-            tvLeftKm.setText(Helper.kmToString(leftKm));
-            //вдруг
-            Action managedObject = ActionRep.findAction(action);
-            if (leftKm <= 0 && managedObject != null)
-                MyNotification.getInstance(this).show(managedObject);
-        } else
-            tvLeftKm.setText(Helper.kmToString(action.getKilometers()));
-        table.addView(tr);
-    }
-*/
     @Override
     public void finish() {
         super.finish();
@@ -381,25 +316,27 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void showAsk(SettingsActivity activity) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-        dialog.setMessage("Чтобы удалить работу, необходимо долговременное нажатие");
+        dialog.setMessage("Удаление свайпом, изменение долгим нажатием");
 
         AlertDialog alert = dialog.create();
         alert.show();
     }
 
-    /**
-     * Обновление таблицы
-     */
-    public void updateTable() {
-
+    public void updateTable(Action action) {
+        for (int i = 0; i < items.size(); i++) {
+            Action curAction = items.get(i).action;
+            if (curAction == action)
+                items.remove(i--);
+        }
+        listAdapter.notifyDataSetChanged();
     }
+
 
 /*
     //Для выпадающего календарика
     public void inClick(View view){
         showDialog(DIALOG_DATE);
     }
-
     protected Dialog onCreateDialog(int id){
         if(id == DIALOG_DATE){
             DatePickerDialog tpd = new DatePickerDialog(this, myCallBack ,myYear, myMonth, myDay);
@@ -407,7 +344,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return super.onCreateDialog(id);
     }
-
     DatePickerDialog.OnDateSetListener myCallBack = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int month, int day) {
