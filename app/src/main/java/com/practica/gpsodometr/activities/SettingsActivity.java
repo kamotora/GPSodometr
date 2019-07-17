@@ -46,8 +46,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button btn, quest;
     TextView minSpeed;
-    //TableLayout table;
-    //LayoutInflater inflaer;
 
 
     Typeface tf1;//Для Букв
@@ -90,7 +88,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onItemClick(int position, PairActionAndKilometers item) {
                 showDialog(SettingsActivity.this, position);
             }
-        }, items);
+        }, items,myApplication);
 
         listWork.setAdapter(listAdapter);
         callback = new SimpleItemTouchHelper(listAdapter);

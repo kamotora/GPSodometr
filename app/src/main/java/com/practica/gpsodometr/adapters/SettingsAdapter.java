@@ -1,5 +1,6 @@
 package com.practica.gpsodometr.adapters;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +10,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.practica.gpsodometr.R;
+import com.practica.gpsodometr.activities.SettingsActivity;
 import com.practica.gpsodometr.data.Helper;
 import com.practica.gpsodometr.data.model.Action;
 import com.practica.gpsodometr.data.model.PairActionAndKilometers;
 import com.practica.gpsodometr.data.model.SimpleItemTouchHelper;
 import com.practica.gpsodometr.data.repository.ActionRep;
+import com.practica.gpsodometr.servicies.MyApplication;
 
 import java.util.List;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
 
+    private MyApplication context;
     private ClickListener clickListener;
     private List<PairActionAndKilometers> listWork;
 
-    public SettingsAdapter(ClickListener clickListener, List<PairActionAndKilometers> listWork) {
+    public SettingsAdapter(ClickListener clickListener, List<PairActionAndKilometers> listWork, MyApplication context) {
         this.clickListener = clickListener;
         this.listWork = listWork;
+        this.context = context;
     }
 
     @NonNull
@@ -74,9 +79,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
         public void bind(final int position, final PairActionAndKilometers item) {
             this.nameWork.setText(item.action.getName());
+            this.nameWork.setTypeface(Typeface.createFromAsset(context.getAssets(),"Geometria-Bold.ttf"));
             this.kilometrs.setText(Helper.kmToString(item.action.getKilometers()));
+            this.kilometrs.setTypeface(Typeface.createFromAsset(context.getAssets(),"PFAgoraSlabPro Bold.ttf"));
             this.dataStart.setText(Helper.dateToString(item.action.getDateStart()));
+            dataStart.setTypeface(Typeface.createFromAsset(context.getAssets(),"PFAgoraSlabPro Bold.ttf"));
             this.leftKilo.setText(Helper.kmToString(item.leftKilometers));
+            leftKilo.setTypeface(Typeface.createFromAsset(context.getAssets(),"PFAgoraSlabPro Bold.ttf"));
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

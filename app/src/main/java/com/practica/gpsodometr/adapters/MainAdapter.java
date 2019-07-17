@@ -1,5 +1,6 @@
 package com.practica.gpsodometr.adapters;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +22,12 @@ import io.realm.RealmRecyclerViewAdapter;
 public class MainAdapter extends RealmRecyclerViewAdapter<Stat, MainAdapter.MyViewHolder> implements SimpleItemTouchHelper.ItemTouchHelperAdapter {
     private MyApplication context;
 
+    private Typeface tf2;
+
     public MainAdapter(OrderedRealmCollection<Stat> data, MyApplication context) {
         super(data, true);
         this.context = context;
+        tf2 = Typeface.createFromAsset(context.getAssets(),"PFAgoraSlabPro Bold.ttf");
     }
 
     @NonNull
@@ -40,6 +44,8 @@ public class MainAdapter extends RealmRecyclerViewAdapter<Stat, MainAdapter.MyVi
         //noinspection ConstantConditions
         holder.dateOfStart.setText(Helper.dateToString(obj.getDate()));
         holder.kilometrs.setText(Helper.kmToString(obj.getKilometers()));
+        holder.dateOfStart.setTypeface(tf2);
+        holder.kilometrs.setTypeface(tf2);
     }
 
 
