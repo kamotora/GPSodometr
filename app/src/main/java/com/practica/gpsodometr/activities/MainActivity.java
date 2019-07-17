@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         new Drawer().withActivity(this).withToolbar(toolbar).withActionBarDrawerToggle(true).withHeader(R.layout.drawer_header).addDrawerItems(
-                new PrimaryDrawerItem().withName("Профиль").withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
                 new PrimaryDrawerItem().withName("Настройки").withIcon(FontAwesome.Icon.faw_gamepad).withIdentifier(2),
                 new PrimaryDrawerItem().withName("Результат").withIcon(FontAwesome.Icon.faw_eye).withIdentifier(3)
         ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener(){
@@ -106,11 +105,6 @@ public class MainActivity extends AppCompatActivity{
                 if (drawerItem == null)
                     return;
                 switch(drawerItem.getIdentifier()){
-                    case 1:
-                        intent = new Intent(MainActivity.this, ProfileActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
-                        break;
                     case 2:
                         intent = new Intent(MainActivity.this, SettingsActivity.class);
                         startActivity(intent);
